@@ -44,23 +44,23 @@ for i in {1..3}; do podman exec -u devops ansible sshpass -f /home/devops/pass s
 log "SSH key is copied into Control Node and Managed Host containers"
 
 podman exec -w /home/devops ansible rm -rvf ansible-training
-podman exec -u devops -w /home/devops ansible git clone https://github.com/csurgay/ansible-training.git
+podman exec -u devops -w /home/devops ansible git clone https://github.com/csurgay/ansible.git
 
 log "Ansible Training Lab git repo cloned into Control Node"
 
-podman cp ansible.cfg ansible:/home/devops/ansible-training/labenv/
+podman cp ansible.cfg ansible:/home/devops/ansible/labenv/
 
 log "Ansible config is saved in Controlnode container"
 
-podman cp host_inventory ansible:/home/devops/ansible-training/labenv/
+podman cp host_inventory ansible:/home/devops/ansible/labenv/
 
 log "Ansible Inventory is saved in Controlnode container"
 
-podman exec -u devops -w /home/devops/ansible-training/labenv ansible ansible all -m ping
+podman exec -u devops -w /home/devops/ansible/labenv ansible ansible all -m ping
 
 log "Ansible accessing Managedhosts is tested OK"
 
 log "Entring Control Node for lessons"
 
-podman exec -it -u devops -w /home/devops/ansible-training/lessons ansible /bin/bash
+podman exec -it -u devops -w /home/devops/ansible/lessons ansible /bin/bash
 
