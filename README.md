@@ -1,6 +1,6 @@
 # Containerized Ansible Training Lab
 
-|           |            |
+| Ansible Bootcamp | OTP Budapest 2026 Fall |
 |-----------|------------|
 | Purpose | Containerized (single host) full Ansible training lab (lessons and exercises) |
 | Audience | Future DevOps engineers new to Ansible |
@@ -40,10 +40,10 @@ Log in to any Red Hat based host or VM, then:
 sudo dnf install -y git podman
 
 # Clone the Git repo on the Host VM
-git clone https://github.com/csurgay/ansible-training.git
+git clone https://github.com/csurgay/ansible.git
 
 # Run the Lab Containers and enter the Control Node (ansible)
-cd ansible-training/labenv/
+cd ansible/labenv/
 sudo ./run.sh
 ```
 
@@ -51,20 +51,20 @@ sudo ./run.sh
 
 In the `labenv` direcotory of the Ansible Control Node container 'ansible'
 ```
-cd /home/devops/ansible-training/labenv
+cd /home/devops/ansible/labenv
 ansible all -m ping
 ```
 
 ### 3. Read and follow the lessons material
 
-Numbered GitHub lesson directories under `ansible-training/lessons`
+Numbered GitHub lesson directories under `ansible/lessons`
 
 ### 4. Hands-on exercises
 
 Enter the Ansible Control Node container (ansible) and run the exercise commands and playbooks
 
 ```
-sudo podman exec -it -u devops -w /home/devops/ansible-training/lessons ansible /bin/bash
+sudo podman exec -it -u devops -w /home/devops/ansible/lessons ansible /bin/bash
 ```
 
 ### Alias for yourself for convenient reuse
@@ -72,7 +72,7 @@ sudo podman exec -it -u devops -w /home/devops/ansible-training/lessons ansible 
 Copy the command below into your builder VM prompt so that it is easy get back to the Control Node any time just by typing `cn`.
 
 ```bash
-alias cn="sudo podman exec -it -u devops -w /home/devops/ansible-training/lessons ansible /bin/bash"
+alias cn="sudo podman exec -it -u devops -w /home/devops/ansible/lessons ansible /bin/bash"
 ```
 
 
