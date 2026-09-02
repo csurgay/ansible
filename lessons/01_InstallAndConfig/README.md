@@ -24,8 +24,8 @@ Launch Ansible Control Node and three Managed Hosts in containers.
 4.	Install “git” if not already installed **`dnf -y install git`**
 5.	Exit privileged by **`exit`** or (ctrl-d)
 6.	Clone the Training Lab Git Repository to your local VM as your regular user into your home directory:
-7.	**`git clone https://github.com/csurgay/ansible-training.git`**
-8.	Change dir into the **`cd /home/<username>/ansible-training/labenv`** directory
+7.	**`git clone https://github.com/csurgay/ansible.git`**
+8.	Change dir into the **`cd /home/<username>/ansible/labenv`** directory
 
 ### Build ansible image
 
@@ -39,7 +39,7 @@ Launch Ansible Control Node and three Managed Hosts in containers.
 You should see the images list:
 
 ```bash
-root@builder:~/ansible-training/labenv/ansible_node/build_image$ podman images -a
+root@builder:~/ansible/labenv/ansible_node/build_image$ podman images -a
 REPOSITORY                         TAG         IMAGE ID      CREATED             SIZE
 docker.io/csurgay/ansible_node     latest      94a737e19025  About a minute ago  1.05 GB
 registry.fedoraproject.org/fedora  latest      e78db4e34c81  3 hours ago         170 MB
@@ -54,7 +54,7 @@ registry.fedoraproject.org/fedora  latest      e78db4e34c81  3 hours ago        
 You should see the list of containers in `Up` state
 
 ```bash
-root@builder:~/ansible-training/labenv/ansible_node$ podman ps -a
+root@builder:~/ansible/labenv/ansible_node$ podman ps -a
 CONTAINER ID  IMAGE                                  COMMAND         CREATED         STATUS         PORTS                                               NAMES
 51d0ad5445c6  docker.io/csurgay/ansible_node:latest  /usr/sbin/init  12 seconds ago  Up 13 seconds  0.0.0.0:2020->22/tcp, 22/tcp                        ansible
 bcec1e67c6f3  docker.io/csurgay/ansible_node:latest  /usr/sbin/init  12 seconds ago  Up 12 seconds  0.0.0.0:2021->22/tcp, 0.0.0.0:8081->80/tcp, 22/tcp  host1
@@ -113,7 +113,7 @@ Clone Training-Lab Lessons git repo into Ansible Control Node.
 
 1.  Enter Control Node container `ansible` by **`sudo podman exec -it -u devops -w /home/devops ansible bash`**
 2.  Clone the Training-Lab git repo as user `devops` under `/home/devops` by
-3.  **`git clone https://github.com/csurgay/ansible-training.git`**
+3.  **`git clone https://github.com/csurgay/ansible.git`**
 
 > [!NOTE]
 > The reason we clone git repo twice is that both the `labenv` for VM `builder` and
@@ -121,7 +121,7 @@ Clone Training-Lab Lessons git repo into Ansible Control Node.
 
 ### Configure Ansible
 
-1. Change dir **`cd /home/devops/ansible-training/labenv`** for ansible config creation
+1. Change dir **`cd /home/devops/ansible/labenv`** for ansible config creation
 
 2.	Create a textfile named **`hosts_inventory`** as follows:
 
@@ -165,7 +165,7 @@ Smoke test Ansible can access Managed Hosts
 ### Ad-hoc command for testing
 
 1.  Enter Ansible Control Node container `ansible` by
-2.  **`sudo podman exec -it -u devops -w /home/devops/ansible-training/labenv ansible bash`**
+2.  **`sudo podman exec -it -u devops -w /home/devops/ansible/labenv ansible bash`**
 3.	As user `devops` inside Control Node `ansible` test Python is installed by
 4.	**`ansible localhost -m setup | grep python_version`** 
 5.	Test that ansible can manage the hosts with the ping module as follows:
