@@ -1,0 +1,14 @@
+# Should be run with --ask-pass because keys are not copied yet
+
+- name: Public key is copied to managed hosts
+  hosts: all
+
+  tasks:
+    - name: Copy key to root user on managed host
+      authorized_key:
+        user: root
+        state: present
+        key: '{{ item }}'
+      with_file:
+        - ~/.ssh/id_rsa.pub
+
