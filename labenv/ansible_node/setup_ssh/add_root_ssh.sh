@@ -18,16 +18,16 @@ log() {
 
 log "Setup sctipt starting..."
 
-podman exec -w=/root ansible rm -rvf ansible-training
-podman exec -w=/root ansible git clone https://github.com/csurgay/ansible-training.git
+podman exec -w=/root ansible rm -rvf ansible
+podman exec -w=/root ansible git clone https://github.com/csurgay/ansible.git
 
 log "Training lab is pulled from Git to Controlnode container"
 
-podman cp ansible.cfg ansible:/root/ansible-training/labenv/
+podman cp ansible.cfg ansible:/root/ansible/labenv/
 
 log "Ansible config is saved in Controlnode container"
 
-podman cp host_inventory ansible:/root/ansible-training/labenv/
+podman cp host_inventory ansible:/root/ansible/labenv/
 
 log "Ansible Inventory is saved in Controlnode container"
 
@@ -46,9 +46,9 @@ for i in {1..3}; do podman exec ansible sshpass -f /root/pass ssh-copy-id host$i
 
 log "SSH key is copied into Managedhost containers"
 
-podman exec -w /root/ansible-training/labenv ansible ansible myhosts -m ping
+podman exec -w /root/ansible/labenv ansible ansible myhosts -m ping
 
 log "Ansible accessing Managedhosts is tested OK"
 
-podman exec -it -w /root/ansible-training/lessons ansible bash
+podman exec -it -w /root/ansible/lessons ansible bash
 

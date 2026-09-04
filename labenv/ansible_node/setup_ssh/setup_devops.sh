@@ -43,7 +43,7 @@ for i in {1..3}; do podman exec -u devops ansible sshpass -f /home/devops/pass s
 
 log "SSH key is copied into Control Node and Managed Host containers"
 
-podman exec -w /home/devops ansible rm -rvf ansible-training
+podman exec -w /home/devops ansible rm -rvf ansible
 podman exec -u devops -w /home/devops ansible git clone https://github.com/csurgay/ansible.git
 
 log "Ansible Training Lab git repo cloned into Control Node"
