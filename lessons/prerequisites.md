@@ -2,7 +2,7 @@
 
 "Automatizálni csak azt tudjuk, amit kézzel is meg tudunk csinálni!"
 
-### In this section the following subjects will be covered:
+### Tartalom
 
 1. Elvárt alapismeretek
 1. Linux
@@ -67,7 +67,9 @@
 
 A résztvevőnek például önállóan meg kell értenie egy ilyen feladatot:
 
+``` bash
 ssh user@server
 sudo systemctl status httpd
 sudo dnf install httpd
 sudo vi /etc/httpd/conf.d/test.conf
+```
