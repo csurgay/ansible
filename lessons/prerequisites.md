@@ -1,4 +1,4 @@
-# Szükséges előismeretek az Ansible bootcamp-hez
+# Ansible bootcamp - Szükséges előismeretek
 
 "Automatizálni csak azt tudjuk, amit kézzel is meg tudunk csinálni!"
 
