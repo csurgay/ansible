@@ -12,7 +12,7 @@
 | Date Created | 2025-09-01 |
 | Last Modified | 2026-08-31 |
 | Contact | csurgay@gmail.com |
-| Author | Automation Architect, Father of three, Red Hat Certified Engineer, Red Hat Certified Instructor |
+| Author | Senior Automation Architect, Father of three, Red Hat Certified Engineer, Red Hat Certified Instructor |
 
 In the first complete zero-to-rhce **Containerized Ansible Traning Lab** there are lightweight containers for both the Ansible Control Node, and the dozens of Managed Host Linux servers. This is new to earlier Labs, where heavyweight VMs were used and only a few fix hosts were available to be managed by exercises. This containerized approach allows for a **high degree of flexibility**. Both the Control Node and Managed Hosts can be preconfigured for the execrcises learning goals. Recontainerization is seamless for participants and all the benefits of containerization contribute to a **steeper learning curve**. These benefits are exclusive environments for different exercise subjects, encapsulation of required dependencies, portability on operating systems, isolated exercise testing, easier management.
 
@@ -72,7 +72,10 @@ sudo podman exec -it -u devops -w /home/devops/ansible-training/lessons ansible 
 Copy the command below into your builder VM prompt so that it is easy get back to the Control Node any time just by typing `cn`.
 
 ```bash
-alias cn="sudo podman exec -it -u devops -w /home/devops/ansible-training/lessons ansible /bin/bash"
+alias c0="sudo podman exec -it -u devops -w /home/devops/ansible-training/lessons ansible /bin/bash"
+alias c1="sudo podman exec -it -u devops -w /home/devops host1 /bin/bash"
+alias c2="sudo podman exec -it -u devops -w /home/devops host2 /bin/bash"
+alias c3="sudo podman exec -it -u devops -w /home/devops host3 /bin/bash"
 ```
 
 
