@@ -1,0 +1,14 @@
+- name: Testing the register <var> keyword
+  hosts: host1
+  gather_facts: false
+
+  tasks:
+    - name: Get date
+      ansible.builtin.command:
+        cmd: date
+      register: date_result
+
+    - name: Print result
+      ansible.builtin.debug:
+        msg: Result of date is {{ date_result.stdout }}
+

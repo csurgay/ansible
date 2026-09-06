@@ -1,0 +1,47 @@
+---
+- name: Create three local users on all servers
+  hosts: all
+  gather_facts: false
+  become: true
+  vars_files:
+    - "passwords.yml"
+
+  vars:
+    users_to_create:
+
+      - name: "alice"
+        pwd: "{{ pwd_alice }}"
+        comment: "Alice User"
+        shell: "/bin/bash"
+        home: "/home/alice"
+
+      - name: "bob"
+        pwd: "{{ pwd_bob }}"
+        comment: "Bob User"
+        shell: "/bin/bash"
+        home: "/home/bob"
+
+      - name: "charlie"
+        pwd: "{{ pwd_charlie }}"
+        comment: "Charlie User"
+        shell: "/bin/bash"
+        home: "/home/charlie"
+
+  tasks:
+
+    - name: Create local users
+      ansible.builtin.user:
+        name: "{{ item.name }}"
+        password: "{{ item.pwd | password_hash('sha512') }}"
+        comment: "{{ item.comment }}"
+        shell: "{{ item.shell }}"
+        home: "{{ item.home }}"
+        create_home: true
+        state: present
+      loop: "{{ users_to_create }}"
+
+    - name: Force password change
+      ansible.builtin.shell:
+        cmd: "chage -d 0 {{ item.name }}"
+      loop: "{{ users_to_create }}"
+

@@ -1,0 +1,15 @@
+---
+- name: Gather facts
+  hosts: all
+
+  tasks:
+
+    - name: Setup
+      ansible.builtin.setup:
+
+    - name: Print in looped include_tasks
+      include_tasks: print.yml
+      loop:
+        - "os_family"
+        - "default_ipv4.address"
+

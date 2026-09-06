@@ -1,0 +1,27 @@
+2025-10-22 11:50:18,485 p=421446 u=csurgay n=ansible | PLAY [Install, config and run chrony (ntp)] ***************************************************************************
+2025-10-22 11:50:18,501 p=421446 u=csurgay n=ansible | TASK [make sure chronyd is installed] *********************************************************************************
+2025-10-22 11:50:18,642 p=421446 u=csurgay n=ansible | fatal: [localhost]: UNREACHABLE! => 
+    changed: false
+    msg: 'Failed to connect to the host via ssh: root@localhost: Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).'
+    unreachable: true
+
+2025-10-22 11:50:18,643 p=421446 u=csurgay n=ansible | PLAY RECAP ************************************************************************************************************
+2025-10-22 11:50:18,643 p=421446 u=csurgay n=ansible | localhost                  : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
+2025-10-22 11:53:03,592 p=421838 u=csurgay n=ansible | PLAY [Install, config and run chrony (ntp)] ***************************************************************************
+2025-10-22 11:53:03,596 p=421838 u=csurgay n=ansible | TASK [make sure chronyd is installed] *********************************************************************************
+2025-10-22 11:53:21,448 p=421838 u=csurgay n=ansible | changed: [localhost]
+2025-10-22 11:53:21,463 p=421838 u=csurgay n=ansible | TASK [deploy chrony.conf template] ************************************************************************************
+2025-10-22 11:53:25,623 p=421838 u=csurgay n=ansible | ok: [localhost]
+2025-10-22 11:53:25,635 p=421838 u=csurgay n=ansible | TASK [Restart chronyd] ************************************************************************************************
+2025-10-22 11:53:27,486 p=421838 u=csurgay n=ansible | changed: [localhost]
+2025-10-22 11:53:27,486 p=421838 u=csurgay n=ansible | PLAY RECAP ************************************************************************************************************
+2025-10-22 11:53:27,487 p=421838 u=csurgay n=ansible | localhost                  : ok=3    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2025-10-22 11:55:18,021 p=423738 u=csurgay n=ansible | PLAY [Install, config and run chrony (ntp)] ***************************************************************************
+2025-10-22 11:55:18,026 p=423738 u=csurgay n=ansible | TASK [make sure chronyd is installed] *********************************************************************************
+2025-10-22 11:55:20,291 p=423738 u=csurgay n=ansible | ok: [localhost]
+2025-10-22 11:55:20,292 p=423738 u=csurgay n=ansible | TASK [deploy chrony.conf template] ************************************************************************************
+2025-10-22 11:55:21,665 p=423738 u=csurgay n=ansible | ok: [localhost]
+2025-10-22 11:55:21,681 p=423738 u=csurgay n=ansible | TASK [Restart chronyd] ************************************************************************************************
+2025-10-22 11:55:22,967 p=423738 u=csurgay n=ansible | changed: [localhost]
+2025-10-22 11:55:22,968 p=423738 u=csurgay n=ansible | PLAY RECAP ************************************************************************************************************
+2025-10-22 11:55:22,968 p=423738 u=csurgay n=ansible | localhost                  : ok=3    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   

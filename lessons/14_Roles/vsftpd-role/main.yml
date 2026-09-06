@@ -1,0 +1,15 @@
+---
+- name: Smoke test of vsftpd-to-role project
+  hosts: host3
+  become: true
+  gather_facts: false
+
+  roles:
+    - vsftpd-role
+
+  tasks:
+
+    - name: Testing
+      ansible.builtin.include_tasks:
+        file: roles/vsftpd-role/tests/main.yml
+

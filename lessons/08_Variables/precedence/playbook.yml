@@ -1,0 +1,13 @@
+---
+- name: Variable Precedence Test
+  hosts: host1
+  gather_facts: false
+
+  tasks:
+
+    - name: Debug myvar
+      ansible.builtin.debug:
+        var:
+          myvar
+
+

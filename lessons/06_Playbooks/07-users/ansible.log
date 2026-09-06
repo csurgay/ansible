@@ -1,0 +1,26 @@
+2025-10-21 23:20:06,563 p=368558 u=csurgay n=ansible | PLAY [Create three local users on all servers] ************************************************************************
+2025-10-21 23:20:06,586 p=368558 u=csurgay n=ansible | TASK [Install pip with dnf] *******************************************************************************************
+2025-10-21 23:20:18,225 p=368558 u=csurgay n=ansible | changed: [host1 -> localhost]
+2025-10-21 23:20:18,235 p=368558 u=csurgay n=ansible | TASK [Install cracklib/pwquality] *************************************************************************************
+2025-10-21 23:20:21,988 p=368558 u=csurgay n=ansible | fatal: [host3]: UNREACHABLE! => 
+    changed: false
+    msg: 'Failed to connect to the host via ssh: ssh: Could not resolve hostname host3:
+        Name or service not known'
+    unreachable: true
+
+2025-10-21 23:20:22,013 p=368558 u=csurgay n=ansible | fatal: [host2]: UNREACHABLE! => 
+    changed: false
+    msg: 'Failed to connect to the host via ssh: ssh: Could not resolve hostname host2:
+        Name or service not known'
+    unreachable: true
+
+2025-10-21 23:20:22,013 p=368558 u=csurgay n=ansible | fatal: [host1]: UNREACHABLE! => 
+    changed: false
+    msg: 'Failed to connect to the host via ssh: ssh: Could not resolve hostname host1:
+        Name or service not known'
+    unreachable: true
+
+2025-10-21 23:20:22,013 p=368558 u=csurgay n=ansible | PLAY RECAP ************************************************************************************************************
+2025-10-21 23:20:22,014 p=368558 u=csurgay n=ansible | host1                      : ok=1    changed=1    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
+2025-10-21 23:20:22,014 p=368558 u=csurgay n=ansible | host2                      : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
+2025-10-21 23:20:22,014 p=368558 u=csurgay n=ansible | host3                      : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   

@@ -1,0 +1,32 @@
+---
+- name: Backup with fetch
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    source_path: /var/www
+    dest_path: /tmp/backup/fetch
+
+  tasks:
+
+    - name: Print all hosts
+      ansible.builtin.debug:
+        var: ansible_play_hosts_all
+      run_once: true
+
+    - name: Create host dir under dest_dir
+      ansible.builtin.file:
+        path: "{{ dest_path }}"
+        state: directory
+        owner: devops
+        group: devops
+        mode: '0755'
+      delegate_to: localhost
+
+    - name: Backup files with fetch
+      ansible.builtin.fetch:
+        src: "{{ source_path }}/html/index.html"
+        dest: "{{ dest_path }}"
+      when: inventory_hostname != 'localhost'
+      become: false
+

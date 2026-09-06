@@ -1,0 +1,2 @@
+2025-10-31 10:33:27,619 p=10134 u=csurgay n=ansible | playbook: vsftpd.yml
+2025-10-31 10:33:28,344 p=10136 u=csurgay n=ansible | playbook: ftpclients.yml

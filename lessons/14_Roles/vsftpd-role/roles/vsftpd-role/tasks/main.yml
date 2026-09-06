@@ -1,0 +1,9 @@
+---
+    # FTP Servers playbook
+    - include_tasks: ./vsftpd.yml
+      when: inventory_hostname in groups['ftpservers']
+
+    # FTP Clients playbook
+    - include_tasks: ./ftpclients.yml
+      when: inventory_hostname in groups['ftpclients']
+

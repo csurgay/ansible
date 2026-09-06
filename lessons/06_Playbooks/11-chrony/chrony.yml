@@ -1,0 +1,40 @@
+---
+- name: Install, config and run chrony (ntp)
+  hosts: all
+  become: true
+  gather_facts: false
+
+  tasks:
+
+    - name: make sure chronyd is installed
+      ansible.builtin.dnf:
+        name: chrony
+        state: latest
+
+    - name: deploy chrony.conf template
+      ansible.builtin.template:
+        src: chrony.conf
+        dest: /etc/chrony.conf
+        owner: root
+        group: root
+        mode: 0644
+        backup: yes
+
+    - name: Restart chronyd
+      ansible.builtin.service:
+        name: chronyd
+        state: restarted
+
+    - name: Set timezone
+      community.general.timezone:
+        name: Europe/Budapest
+
+    - name: Get date time
+      ansible.builtin.shell:
+        cmd: date
+      register: result_date
+
+    - name: Print date
+      ansible.builtin.debug:
+        var: result_date.stdout
+

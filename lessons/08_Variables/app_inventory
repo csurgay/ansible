@@ -1,0 +1,8 @@
+[testnode]
+localhost
+
+[application]
+frontend ansible_host=host1
+backend ansible_host=host2
+appserver ansible_host=host3
+

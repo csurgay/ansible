@@ -1,0 +1,36 @@
+---
+- name: report
+  hosts: all
+  gather_facts: true
+
+  tasks:
+
+    - copy:
+        src: report.txt
+        dest: /tmp/report.txt
+
+    - lineinfile:
+        path: /tmp/report.txt
+        regex: ^HOST
+        line: HOST={{ ansible_facts['hostname'] }}
+        state: present
+
+    - lineinfile:
+        path: /tmp/report.txt
+        regex: ^MEMORY
+        line: MEMORY={{ ansible_facts['memtotal_mb'] }}
+        state: present
+
+    - lineinfile:
+        path: /tmp/report.txt
+        regex: ^BIOS
+        line: BIOS={{ ansible_facts['bios_version'] }}
+        state: present
+
+    - lineinfile:
+        path: /tmp/report.txt
+        regex: ^SDA
+        line: SDA_DISK_SIZE={% if ansible_devices.sda is defined %}{{ ansible_facts['devices']['sda']['size'] }}{% else %}NONE{% endif %}
+        state: present
+ 
+

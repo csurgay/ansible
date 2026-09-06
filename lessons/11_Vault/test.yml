@@ -1,0 +1,13 @@
+- name: Vault Variable illustration
+  hosts: host1
+  gather_facts: false
+  vars_files:
+    - mysecret.yml
+  tasks:
+    - name: Print encrypted variables from Vault
+      ansible.builtin.debug:
+        msg:
+          - "username: {{ username }}"
+          - "password: {{ password }}"
+      # no_log: true # would prevents open secret being logged
+

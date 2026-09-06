@@ -1,0 +1,22 @@
+- name: Check Multiple Services State with include_tasks
+  hosts: all
+  become: false
+  gather_facts: false
+
+  tasks:
+
+    - name: Check services is-active
+      ansible.builtin.shell: systemctl is-active {{ item }}
+      register: results_state
+      loop:
+        - sshd
+        - nginx
+        - firewalld
+      ignore_errors: true
+      no_log: true
+
+    - name: Format and print result
+      include_tasks: print.yml
+      loop: "{{ results_state.results }}"
+      no_log: true
+

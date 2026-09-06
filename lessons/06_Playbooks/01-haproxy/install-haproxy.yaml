@@ -1,0 +1,49 @@
+---
+- name: Install Haproxy Package
+  hosts: all
+  become: true
+  tasks:
+    - name: Ensure haproxy package is installed
+      ansible.builtin.dnf:
+        name: haproxy
+        state: latest
+
+    - name: Create path for haproxy confing
+      ansible.builtin.file:
+        path: /etc/haproxy
+        state: directory
+
+    - name: Copy haproxy configuration to node
+      ansible.builtin.copy:
+        src: haproxy.cfg.sample
+        dest: /etc/haproxy/haproxy.cfg
+        mode: 644
+        owner: root
+        group: root
+        backup: true
+
+    - name: Bind eth0 to public zone
+      ansible.posix.firewalld:
+        zone: public
+        interface: eth0
+        permanent: true
+        state: enabled
+    
+    - name: Open firewall port 5000 for haproxy
+      ansible.posix.firewalld:
+        port: 5000/tcp
+        permanent: true
+        state: enabled
+
+    - name: Reload firewalld to apply changes
+      ansible.builtin.service:
+        name: firewalld
+        state: reloaded
+
+    - name: Enable and start haproxy Service
+      ansible.builtin.systemd:
+        name: haproxy
+        state: restarted
+        enabled: yes
+        masked: no
+

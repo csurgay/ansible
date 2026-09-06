@@ -1,0 +1,98 @@
+---
+- name: Play 1. Install and run httpd/nginx with webcontent template
+  hosts: myhosts
+  gather_facts: no
+  become: yes
+
+  tasks:
+
+    - name: Testing input parameter webserver
+      ansible.builtin.debug:
+        var: webserver
+
+    - name: Stop webservers on port 80
+      ansible.builtin.service:
+        name: "{{ item }}"
+        state: stopped
+      loop:
+        - httpd
+        - nginx
+      ignore_errors: true
+
+    - name: Install webserver httpd or nginx
+      ansible.builtin.package:
+        name: "{{ webserver }}"
+        state: latest
+
+    - name: Start apache or nginx in foreground
+      ansible.builtin.service:
+        name: "{{ webserver }}"
+        state: started
+        enabled: true
+
+    - name: Set location for webcontent
+      ansible.builtin.set_fact:
+        weblocation: "/var/www/html/"
+      when: webserver == "httpd"
+    - ansible.builtin.set_fact:
+        weblocation: "/usr/share/nginx/html/"
+      when: webserver == "nginx"
+
+    - name: Create webcontent
+      ansible.builtin.template:
+        src: index.html.j2
+        dest: "{{ weblocation }}index.html"
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Bind eth0 to public zone
+      ansible.posix.firewalld:
+        zone: public
+        interface: eth0
+        permanent: true
+        state: enabled
+
+    - name: Open HTTP service in public zone
+      ansible.posix.firewalld:
+        zone: public
+        service: http
+        permanent: true
+        state: enabled
+
+    - name: Reload firewalld to apply changes
+      ansible.builtin.service:
+        name: firewalld
+        state: reloaded
+
+    - name: Check webcontent 200 status code from container
+      ansible.builtin.uri:
+        url: http://localhost
+        return_content: true
+      register: container_response
+    - name: Debug container response
+      ansible.builtin.debug:
+        var: container_response.content
+
+- name: Play 2. Tests from localhost
+  hosts: localhost
+  gather_facts: no
+  become: no
+
+  tasks:
+
+    - name: Check webcontent 200 status code from localhost
+      ansible.builtin.command:
+        cmd: curl http://{{ item }}
+      loop:
+        - host1
+        - host2
+        - host3
+      register: localhost_response
+    - ansible.builtin.debug:
+        msg: "From localhost: {{ item.stdout }}"
+      loop: "{{ localhost_response.results }}"
+      loop_control:
+        label: "{{ item.stdout }}"
+
+

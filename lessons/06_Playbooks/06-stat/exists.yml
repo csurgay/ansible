@@ -1,0 +1,49 @@
+---
+- name: Check file exists
+  hosts: all
+  become: false
+  gather_facts: false
+  vars:
+    myfile: /home/devops/file.txt
+
+  tasks:
+
+    - name: Create file.txt only on host1
+      ansible.builtin.file:
+        path: /home/devops/file.txt
+        state: touch
+        owner: devops
+        group: devops
+        mode: '0644'
+      when: inventory_hostname == 'host1'
+
+    - name: Copy file.txt only to host2
+      ansible.builtin.copy:
+        src: ./file.txt
+        dest: /home/devops/file.txt
+        owner: devops
+        group: devops
+        mode: '0644'
+      when: inventory_hostname == 'host2'
+
+    - name: Remove file.txt from host3
+      ansible.builtin.file:
+        path: /home/devops/file.txt
+        state: absent
+      when: inventory_hostname == 'host3'
+
+    - name: Check if a file exists
+      ansible.builtin.stat:
+        path: "{{ myfile }}"
+      register: result_stat
+
+    - name: Report file exists
+      ansible.builtin.debug:
+        msg: "The file {{ myfile }} exist"
+      when: result_stat.stat.exists
+
+    - name: Report file not exists
+      ansible.builtin.debug:
+        msg: "The file {{ myfile }} doesn't exist"
+      when: not result_stat.stat.exists
+

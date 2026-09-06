@@ -1,0 +1,35 @@
+2025-10-21 14:03:27,303 p=283452 u=csurgay n=ansible | [WARNING]: list was not found
+
+2025-10-21 14:04:26,237 p=283467 u=csurgay n=ansible | ERROR! Missing name(s), incorrect options passed for detailed documentation.
+2025-10-22 11:54:11,409 p=423023 u=csurgay n=ansible | PLAY [Collect storage usage data] *************************************************************************************
+2025-10-22 11:54:11,429 p=423023 u=csurgay n=ansible | TASK [Gathering Facts] ************************************************************************************************
+2025-10-22 11:54:12,902 p=423023 u=csurgay n=ansible | ok: [localhost]
+2025-10-22 11:54:12,914 p=423023 u=csurgay n=ansible | TASK [Select storage devices with non-zero size] **********************************************************************
+2025-10-22 11:54:12,963 p=423023 u=csurgay n=ansible | ok: [localhost]
+2025-10-22 11:54:12,964 p=423023 u=csurgay n=ansible | PLAY [Generate storage report on controller] **************************************************************************
+2025-10-22 11:54:12,978 p=423023 u=csurgay n=ansible | TASK [Build markdown report content] **********************************************************************************
+2025-10-22 11:54:13,028 p=423023 u=csurgay n=ansible | ok: [localhost]
+2025-10-22 11:54:13,035 p=423023 u=csurgay n=ansible | TASK [Ensure reports directory exists on controller] ******************************************************************
+2025-10-22 11:54:13,574 p=423023 u=csurgay n=ansible | ok: [localhost]
+2025-10-22 11:54:13,577 p=423023 u=csurgay n=ansible | TASK [Write markdown report to file on controller] ********************************************************************
+2025-10-22 11:54:14,609 p=423023 u=csurgay n=ansible | changed: [localhost]
+2025-10-22 11:54:14,611 p=423023 u=csurgay n=ansible | TASK [Print result file] **********************************************************************************************
+2025-10-22 11:54:14,635 p=423023 u=csurgay n=ansible | ok: [localhost] => (item=# Storage Usage Report
+
+| Hostname | Mount point | Device | Total | Used | Free  |
+|----------|-------------|--------|------:|-----:|------:|
+| vbox | / | /dev/sda3 | 39.0G | 6.2G | 32.8G | 
+| vbox | /home | /dev/sda3 | 39.0G | 6.2G | 32.8G | 
+| vbox | /boot | /dev/sda2 | 1.0G | 0.3G | 0.6G |) => 
+    ansible_loop_var: item
+    item: |-
+        # Storage Usage Report
+
+        | Hostname | Mount point | Device | Total | Used | Free  |
+        |----------|-------------|--------|------:|-----:|------:|
+        | vbox | / | /dev/sda3 | 39.0G | 6.2G | 32.8G |
+        | vbox | /home | /dev/sda3 | 39.0G | 6.2G | 32.8G |
+        | vbox | /boot | /dev/sda2 | 1.0G | 0.3G | 0.6G |
+
+2025-10-22 11:54:14,636 p=423023 u=csurgay n=ansible | PLAY RECAP ************************************************************************************************************
+2025-10-22 11:54:14,636 p=423023 u=csurgay n=ansible | localhost                  : ok=6    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   

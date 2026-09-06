@@ -1,0 +1,15 @@
+# Playbook to illustrate inventory_hostname vs. ansible_hostname
+---
+- name: inventory_hostname vs. ansible_hostname
+  hosts: all
+  become: false
+  gather_facts: false
+
+  tasks:
+
+    - name: Print hostnames
+      ansible.builtin.debug:
+        msg: |
+          {{ inventory_hostname }} is {{ ansible_host }}:{{ ansible_port | default('22') }}
+          {{ ansible_user | default('n/a') }} {{ ansible_connection }}
+

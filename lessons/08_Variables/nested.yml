@@ -1,0 +1,14 @@
+- name: Testing nested variable reference
+  hosts: host1
+  gather_facts: true
+
+  tasks:
+
+    - name: Print result
+      ansible.builtin.debug:
+        msg:
+          - Dictionary format un-nesting {{ ansible_facts['eth0']['ipv4']['address'] }}
+          - Object format un-nesting {{ ansible_facts.interfaces }}
+          - Object format un-nesting {{ ansible_facts.eth0.ipv4.address }}
+          - Object format un-nesting {{ ansible_facts.python.version.major }}
+

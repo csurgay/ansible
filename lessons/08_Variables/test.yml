@@ -1,0 +1,30 @@
+- name: Tests variable definition and referece
+  hosts: host1
+  gather_facts: false
+
+  tasks:
+  
+    - name: Define variables
+      ansible.builtin.set_fact:
+        my_var: 123
+        other: "string with spaces"
+        path_variable: /etc/ansible/hosts
+        list_var:
+          - first
+          - second
+          - third
+        dictionary:
+          name: John
+          born: 1970
+
+    - name: Reference variables
+      ansible.builtin.set_fact:
+        message: Value of other is {{ other }}. # Value of other is string with spaces
+        quoted_if_starts_with_var: "{{ my_var }}" # 123
+        list_item: "{{ list_var[0] }}" # first
+        str: "{{ dictionary['name'] }}:{{ dictionary['born'] }}"  # John:1970
+
+    - name: Reference variables
+      debug:
+        msg: "{{ message }} {{ quoted_if_starts_with_var }} {{ list_item }} {{ str }}"
+

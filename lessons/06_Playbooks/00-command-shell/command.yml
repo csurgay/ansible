@@ -1,0 +1,15 @@
+---
+- name: Check uptime
+  hosts: all
+  gather_facts: false
+
+  tasks:
+
+    - name: Uptime
+      ansible.builtin.command: uptime
+      register: result_uptime
+
+    - name: Print result
+      ansible.builtin.debug:
+        var: result_uptime.stdout_lines
+

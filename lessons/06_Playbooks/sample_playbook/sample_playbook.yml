@@ -1,0 +1,39 @@
+---
+# Comment: Sample Playbook of two Plays
+
+- name: 1st Play. Install and start nginx
+  hosts: webservers
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: 1st Task. Install nginx
+      ansible.builtin.package:
+        name: nginx
+        state: latest
+
+    - name: 2nd Task. Start nginx
+      ansible.builtin.systemd:
+        name: nginx
+        state: started
+        enabled: true
+
+    - name: 3nd Task. Open port 80
+      ansible.builtin.firewalld:
+        service: http
+        state: enabled
+
+- name: 2nd Play. Check return code 200
+  hosts: localhost
+  become: false
+  gather_facts: false
+
+  tasks:
+    - name: Test nginx status code
+      ansible.builtin.uri:
+        url: "http://{{ item }}:80"
+      loop: "{{ groups['webservers'] }}"
+      register: result_curl
+    - ansible.builtin.debug:
+        var: result_curl
+

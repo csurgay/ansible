@@ -1,0 +1,19 @@
+---
+- name: Set system hostname to inventory_hostname
+  hosts: all
+  become: true
+  gather_facts: false
+
+  tasks:
+
+    - name: Set hostname to inventory_hostname
+      ansible.builtin.hostname:
+        name: "{{ inventory_hostname }}"
+
+    - name: Refresh facts after hostname change
+      ansible.builtin.setup:
+
+    - name: Show current hostname
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }}: ansible_hostname={{ ansible_facts['hostname'] }}"
+

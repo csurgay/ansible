@@ -1,0 +1,21 @@
+---
+- name: File download
+  hosts: host1
+  become: false
+  gather_facts: false
+  vars:
+    myurl: "https://releases.ansible.com/ansible/ansible-2.9.27.tar.gz"
+    mycrc: "sha256:https://releases.ansible.com/ansible/ansible-2.9.27.tar.gz.sha"
+    mydest: "/home/devops"
+
+  tasks:
+
+    - name: File Download
+      ansible.builtin.get_url:
+        url: "{{ myurl }}"
+        dest: "{{ mydest }}"
+        checksum: "{{ mycrc }}"
+        owner: devops
+        group: devops
+        mode: '0644'
+

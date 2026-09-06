@@ -1,0 +1,14 @@
+---
+- name: copy-ssh-id to Managed Host
+  hosts: myhosts
+  become: true
+  gather_facts: false
+
+  tasks:
+
+    - name: copy-ssh-id to Managed Host
+      ansible.posix.authorized_key:
+        user: 'bob'
+        state: present
+        key: "{{ lookup('file', '/home/devops/.ssh/id_ed25519.pub') }}"
+

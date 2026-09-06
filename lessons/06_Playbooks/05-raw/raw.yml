@@ -1,0 +1,27 @@
+- name: Use raw to run uname and uptime
+  hosts: all
+  gather_facts: false
+  become: false
+
+  tasks:
+
+    - name: Run uname -r using raw
+      ansible.builtin.raw: uname -r
+      register: result_uname
+      changed_when: false
+      check_mode: false
+
+    - name: Show uname result
+      ansible.builtin.debug:
+        msg: "{{ result_uname.stdout | default('') }}"
+
+    - name: Run uptime using raw
+      ansible.builtin.raw: uptime
+      register: result_uptime
+      changed_when: false
+      check_mode: false
+
+    - name: Show uptime result
+      ansible.builtin.debug:
+        msg: "{{ result_uptime.stdout | default('') }}"
+

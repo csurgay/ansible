@@ -1,0 +1,66 @@
+---
+###   Separated to two plays, because of different scope of hosts
+###   Data collection must be run on all hosts
+###   Report generation runs only on the control node.
+
+- name: Collect storage usage data
+  hosts: localhost
+  gather_facts: true
+  become: true
+
+  tasks:
+
+    - name: Select storage devices with non-zero size
+      ansible.builtin.set_fact:
+        storage_devices: "{{ ansible_mounts | selectattr('size_total', '>', 0) | list }}"
+
+- name: Generate storage report on controller
+  hosts: localhost
+  gather_facts: false
+  vars:
+    output_dir: "output"
+
+  tasks:
+
+    - name: Build markdown report content
+      ansible.builtin.set_fact:
+        storage_report_markdown: |
+          # Storage Usage Report
+
+          | Hostname | Mount point | Device | Total | Used | Free  |
+          |----------|-------------|--------|------:|-----:|------:|
+          {%- for host in groups['all'] | sort %}
+
+          {%- set hname = hostvars[host]['ansible_hostname'] | default(host) %}
+            {%- for m in (hostvars[host]['storage_devices'] | default(hostvars[host]['ansible_mounts'] | default([]))) if (m.size_total | default(0)) > 0 %}
+              {%- set used_g = ((m.size_total - m.size_available) | float / 1073741824) | round(1) %}
+              {%- set free_g = (m.size_available | float / 1073741824) | round(1) %}
+              {%- set total_g = (m.size_total | float / 1073741824) | round(1) %}
+
+          | {{ hname }} | {{ m.mount }} | {{ m.device }} | {{ total_g }}G | {{ used_g }}G | {{ free_g }}G | {{ "" }}
+
+            {%- endfor %}
+          {%- endfor %}
+
+    - name: Ensure reports directory exists on controller
+      ansible.builtin.file:
+        path: "/tmp/{{ output_dir }}"
+        state: directory
+        mode: '0755'
+        owner: devops
+        group: devops
+
+    - name: Write markdown report to file on controller
+      ansible.builtin.copy:
+        dest: "/tmp/{{ output_dir }}/storage.lst"
+        content: "{{ storage_report_markdown | default('# Storage Usage Report\n(No data was collected)') }}\n"
+        mode: '0644'
+        owner: devops
+        group: devops
+
+    - name: Print result file
+      ansible.builtin.debug:
+        var: item
+      with_file:
+        - "/tmp/{{ output_dir }}/storage.lst"
+
