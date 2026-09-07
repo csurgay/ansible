@@ -128,7 +128,7 @@ ansible servers --list-hosts
 
 Inventory can be defined in a few ways for ansible, listed here in ascending precedence.
 
-1. `/etc/ansible/inventory`
+1. `/etc/ansible/hosts`
 1. `ansible.cfg` configuration file
 1. `--inventory <inventory-path>` or `-i <inventory-path>`
 
