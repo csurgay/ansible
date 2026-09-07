@@ -1,3 +1,5 @@
+#!/bin/bash
+
 log() {
         if [ $? -eq 0 ]
         then
