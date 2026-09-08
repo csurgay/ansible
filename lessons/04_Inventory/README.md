@@ -11,6 +11,7 @@
 1. Testing Inventories
 1. Overriding default Inventory
 1. Inventory variables
+1. Multiple inventories
 1. Dynamic Inventory
 
 ---
@@ -144,6 +145,25 @@ dbserver default_db=cities
 ```
 
 More on this topic and best practice for ansible variables will be discussed later.
+
+---
+### Multiple Invetories
+
+It is posslible to specify more than inventories with the -i option for ad-hoc ansible commands and ansible playbook executions.
+
+```
+ansible all -i inventory1 -i inventory2 -m setup
+```
+
+It is also possible to specify an inventory directory in which case ansible will iterate all invetory files from that directory
+
+```
+ls -l inventory_dir/
+-rw-r--r--. 1 devops devops 56 Aug  8  2025 inventory1
+-rw-r--r--. 1 devops devops 51 Aug  8  2025 inventory2
+
+ansible all -i inventory_dir -m setup
+```
 
 ---
 ### Dynamic Inventory
