@@ -8,7 +8,7 @@
         name: haproxy
         state: latest
 
-    - name: Create path for haproxy confing
+    - name: Create path for haproxy config
       ansible.builtin.file:
         path: /etc/haproxy
         state: directory
