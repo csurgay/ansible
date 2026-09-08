@@ -13,7 +13,7 @@
     - name: PasswordAuthentication yes
       ansible.builtin.lineinfile:
         state: present
-        dest: /etc/ssh/sshd_config
+        path: /etc/ssh/sshd_config
         regexp: "^PasswordAuthentication"
         line: "PasswordAuthentication {{ yesorno }}"
         validate: 'sshd -t -f %s'
