@@ -1,114 +1,73 @@
-# Config, SSH
+# Raw
 
 ### In this lesson the following subjects are covered
 
-1. Prompt for a variable at runtime with `vars_prompt`
-1. Edit a config file in place with `lineinfile`
-1. Validate a config change before applying it
-1. Notify a handler only when a change occurs
-1. Copy a multi-line file with the `copy` module
+1. Run commands without needing Python on the Managed Host with `raw`
+1. Mark a task as never `changed` with `changed_when`
+1. Force a task to run even in check mode with `check_mode`
+1. Safely print optional output with the `default` filter
 
 ---
-## Prompt for a variable at runtime
+## Run commands without needing Python on the Managed Host
 
-`vars_prompt` asks a question on the Control Node before the Play starts, and stores the answer in a variable you can use anywhere in the Play. `private: false` means the typed answer is echoed back to the terminal (use `true` for things like passwords).
+Almost every Ansible module — including `command` and `shell` — works by copying a small Python program to the Managed Host and executing it there. `ansible.builtin.raw` is the exception: it sends the command straight over SSH with no Python involved at all.
+
+This makes `raw` the module of choice when Python isn't installed yet on the target — for example bootstrapping a brand-new minimal image, or talking to a network device — often just to install Python so that every other module can be used afterwards.
 
 ```yaml
-  vars_prompt:
-    - name: yesorno
-      prompt: PasswordAuthentication yes or no?
-      private: false
+    - name: Run uname -r using raw
+      ansible.builtin.raw: uname -r
+      register: result_uname
 ```
 
 ---
-## Edit a config file in place with lineinfile
+## Mark a task as never changed with changed_when
 
-`ansible.builtin.lineinfile` finds a line matching `regexp` inside `dest` and replaces it with `line` — or adds the line if no match is found. This is the standard, idempotent way to change a single setting in an existing config file without touching the rest of it.
-
----
-## Validate a config change before applying it
-
-`validate` runs a command against a temporary copy of the file **before** Ansible overwrites the real one. `%s` is replaced by the path to that temporary copy. If the command exits non-zero, Ansible aborts and leaves the original file untouched — here `sshd -t -f %s` asks `sshd` itself to check the syntax, so a typo can never leave you with a broken, unreachable SSH config.
+Because `raw` has no idea what the command it ran was supposed to do, Ansible has no way to tell whether anything actually changed on the Managed Host — so by default a `raw` task always reports `changed`. For a purely informational command like `uname` or `uptime`, that's misleading. Setting `changed_when: false` tells Ansible this task never counts as a change, keeping your Play's summary accurate.
 
 ---
-## Notify a handler only when a change occurs
+## Force a task to run even in check mode
 
-`notify` points to a **handler**, defined separately under the Play's `handlers:` section. A handler only runs if the notifying task actually reports `changed` — if `PasswordAuthentication` was already set to the requested value, `lineinfile` makes no change and `sshd` is never restarted. Handlers also only run once, at the end of the Play, even if notified by several tasks.
+In `--check` (dry-run) mode, Ansible normally skips `raw` tasks, since it can't predict what they would do to the Managed Host. `check_mode: false` overrides that and makes the task always execute — appropriate here because `uname` and `uptime` are read-only and never modify system state, so running them during a dry run is safe.
 
-#### config-ssh.yml
+#### raw.yml
 ```yaml
----
-- name: Modify sshd Configuration
+- name: Use raw to run uname and uptime
   hosts: all
-  become: true
   gather_facts: false
-  vars_prompt:
-    - name: yesorno
-      prompt: PasswordAuthentication yes or no?
-      private: false
+  become: false
 
   tasks:
 
-    - name: PasswordAuthentication yes
-      ansible.builtin.lineinfile:
-        state: present
-        dest: /etc/ssh/sshd_config
-        regexp: "^PasswordAuthentication"
-        line: "PasswordAuthentication {{ yesorno }}"
-        validate: 'sshd -t -f %s'
-      notify: Restart sshd
+    - name: Run uname -r using raw
+      ansible.builtin.raw: uname -r
+      register: result_uname
+      changed_when: false
+      check_mode: false
 
-  handlers:
+    - name: Show uname result
+      ansible.builtin.debug:
+        msg: "{{ result_uname.stdout | default('') }}"
 
-    - name: Restart sshd
-      ansible.builtin.service:
-        name: sshd
-        state: restarted
+    - name: Run uptime using raw
+      ansible.builtin.raw: uptime
+      register: result_uptime
+      changed_when: false
+      check_mode: false
+
+    - name: Show uptime result
+      ansible.builtin.debug:
+        msg: "{{ result_uptime.stdout | default('') }}"
 ```
+
+---
+## Safely print optional output with the default filter
+
+`{{ result_uname.stdout | default('') }}` prints `result_uname.stdout` if it exists, and falls back to an empty string instead of failing if it doesn't. This is good practice whenever a registered result might be missing an expected key — for `raw`, `stdout` is only populated when the command produced output, so the `default` filter keeps `debug` from erroring out on an undefined variable.
 
 ---
 ## Running the Playbook
 
 ```bash
-ansible-playbook config-ssh.yml
-```
-
-Ansible will pause and ask `PasswordAuthentication yes or no?` before running the Play. Run it a second time with the same answer and notice the task reports `ok` instead of `changed` — and the handler does not fire.
-
----
-## Copy a multi-line file with the copy module
-
-`ansible.builtin.copy` can write literal content straight into a file using the `content` key, without needing a separate source file. The `|` (block scalar) preserves line breaks exactly as written. `owner`, `group` and `mode` set the file's permissions, and `backup: true` saves a timestamped copy of any file it overwrites, so previous content is never lost.
-
-#### copy-motd.yml
-```yaml
----
-- name: Create example.txt file
-  hosts: all
-  become: true
-  gather_facts: false
-  vars:
-    motdfile: "/etc/motd"
-
-  tasks:
-
-  - name: Create a text file
-    ansible.builtin.copy:
-      dest: "{{ motdfile }}"
-      content: |
-        *** Containerized Ansible Training ***
-        Greetings on this Managed Host!
-        Weather is nice today.
-        Automation with Ansible is fun!
-      owner: root
-      group: root
-      mode: '0644'
-      backup: true
-```
-
----
-## Running the Playbook
-
-```bash
-ansible-playbook copy-motd.yml
+ansible-playbook raw.yml
 ```
