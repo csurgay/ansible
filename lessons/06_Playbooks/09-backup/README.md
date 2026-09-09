@@ -8,6 +8,8 @@
 1. Sync whole directory trees with `rsync`
 1. Understand `pull` vs `push` mode in `synchronize`
 
+<img width="2720" height="1160" alt="backup_fetch_vs_rsync_flow" src="https://github.com/user-attachments/assets/33282738-f70c-41c3-a0e3-d0bed2a2cc9e" />
+
 ---
 ## Pull a single file back to the Control Node
 
