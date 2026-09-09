@@ -14,7 +14,7 @@
 1. Stashing
 1. Tags
 
-<img width="2720" height="2104" alt="git_staging_areas_flow" src="https://github.com/user-attachments/assets/5ef86530-5fc2-4437-ab3f-fb9aea30397f" />
+<img width="2720" height="2104" alt="git_staging_areas_flow" src="https://github.com/user-attachments/assets/ec0b9f2c-7234-4a2f-8373-5b25e2e067fa" />
 
 ---
 ## The four areas a change moves through
