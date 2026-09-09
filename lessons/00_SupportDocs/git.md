@@ -13,6 +13,7 @@
 1. Inspecting status and history
 1. Stashing
 1. Tags
+1. Difference between fetch vs. pull
 
 <img width="2720" height="2104" alt="git_staging_areas_flow" src="https://github.com/user-attachments/assets/ec0b9f2c-7234-4a2f-8373-5b25e2e067fa" />
 
@@ -132,3 +133,24 @@ git tag v1.0.0                   # lightweight tag on the current commit
 git tag -a v1.0.0 -m "message"   # annotated tag
 git push origin v1.0.0           # tags aren't pushed by default — push explicitly
 ```
+
+---
+## Difference between fetch vs. pull
+
+git fetch and git pull both download commits from the remote, but they differ in what happens next:
+
+### git fetch
+
+Downloads new commits, branches, and tags from the remote into your local repository.
+Updates your remote-tracking branches (e.g. origin/main) to match the remote.
+Does not touch your working directory or your current branch. You have to look at what changed and decide what to do with it — git log main..origin/main, git diff main origin/main, etc.
+
+### git pull
+
+Runs git fetch, then immediately merges (or rebases, with git pull --rebase) the fetched commits into your current branch.
+Updates your working directory right away.
+Can create a merge commit, or conflicts you have to resolve on the spot.
+
+In short: fetch is the safe, look-before-you-leap version — it just updates your knowledge of the remote. pull is fetch + merge in one step, so it changes your working directory immediately, for better or worse.
+
+A common habit among more careful users is to always fetch first, review what came in, and merge/rebase manually — reaching for plain pull only once that review step feels unnecessary for a given repo.
