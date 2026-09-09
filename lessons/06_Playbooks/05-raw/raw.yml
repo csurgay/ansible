@@ -1,3 +1,4 @@
+---
 - name: Use raw to run uname and uptime
   hosts: all
   gather_facts: false
