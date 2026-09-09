@@ -9,6 +9,8 @@
 1. Hash passwords and force a password change
 1. Copy an SSH public key to a Managed Host
 
+<img width="2720" height="2024" alt="users_lesson_flow" src="https://github.com/user-attachments/assets/4a639c1d-06fc-4d94-9bc4-227b9cd96794" />
+
 ---
 ## Install prerequisite packages with dnf and pip
 
