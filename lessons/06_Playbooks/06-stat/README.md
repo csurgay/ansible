@@ -8,6 +8,8 @@
 1. Override a variable from the command line with `-e`
 1. Read file type, size and permissions from `stat`
 
+<img width="2720" height="1760" alt="stat_file_check_flow" src="https://github.com/user-attachments/assets/6e5d46a9-9978-4d2a-b9ac-50f2ee3ed06b" />
+
 ---
 ## Set up different starting conditions per host
 
