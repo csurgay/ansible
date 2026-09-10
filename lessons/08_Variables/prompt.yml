@@ -8,6 +8,7 @@
       private: false
     - name: password
       prompt: What is your password?
+      private: true
     - name: packagename
       prompt: What would you like to install?
       private: false
