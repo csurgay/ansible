@@ -19,11 +19,11 @@ variables (sttuctured Ansible data in textual yaml format) and data files.
 ---
 ### Vault Usage
 
-`ansible-vault create mysecrets.yml`
+`ansible-vault create mysecret.yml`
 
 command will ask for a master password and open the text editor for the strucrtured data to be encrypted.
 
-`mysecrets.yml`
+`mysecret.yml`
 ```
 ---
 # Secrets to be encrypted by Vault
