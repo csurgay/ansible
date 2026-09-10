@@ -31,12 +31,14 @@ username: devops
 password: devops
 ```
 
+```
 `ansible-vault encrypt mysecret.yml`
 `ansible-vault view mysecret.yml`
 `ansible-vault edit mysecret.yml`
 `ansible-vault decrypt mysecret.yml`
 `ansible-vault decrypt mysecret.yml --output=mysecret-decrypted.yml`
 `ansible-vault rekey mysecret.yml`
+```
 
 Master password for Vault can be stored in a textfile too, with appropriate access control of course.
 
