@@ -1,4 +1,5 @@
-- name: Tests variable definition and referece
+---
+- name: Tests variable definition and reference
   hosts: host1
   gather_facts: false
 
@@ -27,4 +28,3 @@
     - name: Reference variables
       debug:
         msg: "{{ message }} {{ quoted_if_starts_with_var }} {{ list_item }} {{ str }}"
-
