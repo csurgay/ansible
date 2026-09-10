@@ -128,7 +128,7 @@ when:
       file:
         path: "{{ mountpoint }}"
         state: directory
-        mode: 755
+        mode: "0755"
       when: not mountpoint_stat.stat.exists
 ```
 
