@@ -1,3 +1,4 @@
+---
 - name: Vault Variable illustration
   hosts: host1
   gather_facts: false
