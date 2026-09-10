@@ -1,4 +1,18 @@
 ---
+- name: Stop all 80 binding webservices
+  ansible.builtin.systemd:
+    name: "{{ loopvar }}"
+    state: stopped
+  with_items:
+    - httpd
+    - nginx
+    - lighttpd
+    - haproxy
+  loop_control:
+    loop_var: loopvar
+  when: ansible_host == item.hostname
+  ignore_errors: true
+
 - name: Debug item value
   ansible.builtin.debug:
     var: item
