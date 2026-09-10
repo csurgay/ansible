@@ -1,0 +1,40 @@
+---
+- name: Fetch CMDB configuration
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    cmdb_repo: https://github.com/csurgay/cmdb.git
+    cmdb_dest: /tmp/cmdb
+  tasks:
+    - name: Clone CMDB repository
+      ansible.builtin.git:
+        repo: "{{ cmdb_repo }}"
+        dest: "{{ cmdb_dest }}"
+        version: main
+        force: true
+
+    - name: Load variables from cloned vars.yml
+      ansible.builtin.include_vars:
+        file: "{{ cmdb_dest }}/vars.yml"
+        name: cmdb
+
+- name: Install and configure webservers from CMDB data
+  hosts: host*
+  become: true
+  tasks:
+    - name: Install webserver package
+      ansible.builtin.package:
+        name: "{{ data.webserver }}"
+        state: latest
+      with_items: data
+      when: ansible_host == {{ data.hostname }}
+
+    - name: Ensure webserver service is running and enabled
+      ansible.builtin.service:
+        name: "{{ data.webserver }}"
+        state: started
+        enabled: true
+      with_items: data
+      when: ansible_host == {{ data.hostname }}
+
