@@ -79,7 +79,7 @@ Conditions can be evaluated by the `when:` keyword. Some useful expressions are:
       ansible.builtin.package:
         name: nginx
         state: latest
-      register: install_nginx_results
+      register: install_nginx_result
 
     - name: Restart nginx only if needed
       ansible.builtin.service:
