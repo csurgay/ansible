@@ -1,0 +1,19 @@
+---
+- name: Debug item value
+  ansible.builtin.debug:
+    var: item
+  when: ansible_host == item.hostname
+
+- name: Install webserver package
+  ansible.builtin.package:
+    name: "{{ item.webserver }}"
+    state: latest
+  when: ansible_host == item.hostname
+
+- name: Ensure webserver service is running and enabled
+  ansible.builtin.systemd:
+    name: "{{ item.webserver }}"
+    state: restarted
+    enabled: true
+  when: ansible_host == item.hostname
+

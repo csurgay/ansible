@@ -1,11 +1,12 @@
 ---
 - name: Fetch CMDB configuration
-  hosts: localhost
-  connection: local
+  hosts: all
+  become: true
   gather_facts: false
   vars:
     cmdb_repo: https://github.com/csurgay/cmdb.git
     cmdb_dest: /tmp/cmdb
+
   tasks:
     - name: Clone CMDB repository
       ansible.builtin.git:
@@ -13,28 +14,30 @@
         dest: "{{ cmdb_dest }}"
         version: main
         force: true
+      delegate_to: controlnode
+      run_once: true
 
     - name: Load variables from cloned vars.yml
       ansible.builtin.include_vars:
         file: "{{ cmdb_dest }}/vars.yml"
         name: cmdb
+      delegate_to: controlnode
+      run_once: true
 
-- name: Install and configure webservers from CMDB data
-  hosts: host*
-  become: true
-  tasks:
-    - name: Install webserver package
-      ansible.builtin.package:
-        name: "{{ data.webserver }}"
-        state: latest
-      with_items: data
-      when: ansible_host == {{ data.hostname }}
+    - name: Debug CMDB data
+      ansible.builtin.debug:
+        var: cmdb.data
+      delegate_to: controlnode
+      run_once: true
 
-    - name: Ensure webserver service is running and enabled
-      ansible.builtin.service:
-        name: "{{ data.webserver }}"
-        state: started
-        enabled: true
-      with_items: data
-      when: ansible_host == {{ data.hostname }}
+    - name: Install and start webserver package
+      ansible.builtin.include_tasks: "service.yml"
+      with_items: "{{ cmdb.data }}"
+      when: inventory_hostname != "controlnode"
+
+    - name: Test all hosts webservers
+      ansible.builtin.uri:
+        url: http://{{ ansible_host }}
+        status_code: 200
+      when: inventory_hostname != "controlnode"
 

@@ -1,4 +1,4 @@
-localhost
+controlnode ansible_host=localhost
 
 host1
 host2
