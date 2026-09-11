@@ -92,6 +92,7 @@ become_ask_pass = true
 ## 5. Playbook Skeleton
 
 ```yaml
+---
 - name: Play name
   hosts: webservers
   become: true
