@@ -24,7 +24,7 @@
 - Keep **consistent indentation** and spacing.  
   - Consistent indentation ensures files parse correctly and improves readability. 
 - Write **clear comments** describing tasks.  
-  - Comments clarify why tasks exist. 
+  - Comments clarify **why** tasks exist. 
 - Follow **consistent naming** for tasks, variables, roles, and files.  
   - Naming conventions help you locate and understand tasks, variables, and roles. 
 - Store projects in **version control** (e.g., Git).  
