@@ -2,28 +2,38 @@
 - name: Pass variable from one play to the next in a playbook
   hosts: localhost
   gather_facts: false
+  vars:
+    my_play_var: "play var value"
 
   tasks:
 
-    - name: Declare variable
+    - name: Declare fact
       ansible.builtin.set_fact:
-        my_var: "value"
+        my_fact: "fact value"
 
-    - name: Debug my_variable
+    - name: Debug variable
       ansible.builtin.debug:
-        var: my_var
+        var: my_play_var
 
-- name: Next play uses same variable
+    - name: Debug fact
+      ansible.builtin.debug:
+        var: my_fact
+
+- name: Next play uses same facts and variables
   hosts: all
   gather_facts: false
 
   tasks:
 
-    - name: Debug my_variable
+    - name: Debug variable
       ansible.builtin.debug:
-        var: my_var
+        var: my_play_var
 
-    - name: Debug my_variable
+    - name: Debug fact
       ansible.builtin.debug:
-        var: hostvars['localhost']['my_var']
+        var: my_fact
+
+    - name: Debug hostvars
+      ansible.builtin.debug:
+        var: hostvars['localhost']['my_fact']
 
