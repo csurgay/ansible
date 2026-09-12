@@ -44,14 +44,14 @@ In this example, we add tags to Tasks that install and start the Apache webserve
   hosts: test
   tasks:
     - name: Install Apache
-      apt:
-        name: apache2
+      ansible.builtin.dnf:
+        name: httpd
         state: present
       tags: install_apache
 
     - name: Start Apache Service
-      service:
-        name: apache2
+      ansible.builtin.service:
+        name: httpd
         state: started
       tags: start_service
 ```
