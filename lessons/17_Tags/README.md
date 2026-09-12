@@ -13,7 +13,7 @@
 1. Examples
 
 ---
-## Understanding Ansible tags?
+## Understanding Ansible Tags
 
 Ansible tags let you control exactly which Tasks, Roles, or Plays run in a Playbook. You add tags in the YAML Playbook file and assign them to a Task or a Role. When you run `ansible-playbook` with the `--tags` option, only the tasks with those tags will run, and everything else will be skipped.
 
@@ -103,23 +103,23 @@ You can do this using the `--list-tags˙` option with the `ansible-playbook` com
   hosts: test
   tasks:
     - name: Install Apache
-      apt:
-        name: apache2
+      ansible.builtin.dnf:
+        name: httpd
         state: present
       tags:
         - install
 
     - name: Start Apache Service
-      service:
-        name: apache2
+      ansible.builtin.service:
+        name: httpd
         state: started
       tags:
         - start
 
     - name: Configure Apache
-      template:
-        src: apache.conf.j2
-        dest: /etc/apache2/apache2.conf
+      ansible.builtin.template:
+        src: httpd.conf.j2
+        dest: /etc/httpd/httpd.conf
       tags:
         - configure
 ```
@@ -155,15 +155,15 @@ Multiple tags are useful when Tasks belong to different groups. For example, you
   hosts: test
   tasks:
     - name: Install Apache
-      apt:
-        name: apache2
+      ansible.builtin.dnf:
+        name: httpd
         state: present
       tags:
         - install
         - webserver
 
     - name: Install MySQL
-      apt:
+      ansible.builtin.dnf:
         name: mysql-server
         state: present
       tags:
@@ -171,15 +171,15 @@ Multiple tags are useful when Tasks belong to different groups. For example, you
         - database
 
     - name: Configure Apache
-      template:
-        src: apache.conf.j2
-        dest: /etc/apache2/apache2.conf
+      ansible.builtin.template:
+        src: httpd.conf.j2
+        dest: /etc/httpd/httpd.conf
       tags:
         - configure
         - webserver
 
     - name: Configure MySQL
-      template:
+      ansible.builtin.template:
         src: my.cnf.j2
         dest: /etc/mysql/my.cnf
       tags:
@@ -187,15 +187,15 @@ Multiple tags are useful when Tasks belong to different groups. For example, you
         - database
 
     - name: Start Apache Service
-      service:
-        name: apache2
+      ansible.builtin.service:
+        name: httpd
         state: started
       tags:
         - start
         - webserver
 
     - name: Start MySQL Service
-      service:
+      ansible.builtin.service:
         name: mysql
         state: started
       tags:
@@ -239,13 +239,13 @@ Suppose you want to apply configuration changes without restarting the service:
   hosts: all
   tasks:
     - name: Apply new configuration
-      template:
+      ansible.builtin.template:
         src: new_config.j2
         dest: /etc/myapp/config.conf
       tags: update_config
 
     - name: Restart myapp service
-      service:
+      ansible.builtin.service:
         name: myapp
         state: restarted
       tags: restart_service
@@ -265,7 +265,7 @@ Tags can also help when deploying to different environments (dev, QA, UAT, prod)
   hosts: all
   tasks:
     - name: Install dependencies
-      apt:
+      ansible.builtin.dnf:
         name: "{{ item }}"
         state: present
       loop:
@@ -274,13 +274,13 @@ Tags can also help when deploying to different environments (dev, QA, UAT, prod)
       tags: install_dependencies
 
     - name: Deploy application code
-      git:
+      ansible.builtin.git:
         repo: 'https://github.com/me/app.git'
         dest: /var/www/myapp
       tags: deploy_code
 
     - name: Configure application
-      template:
+      ansible.builtin.template:
         src: app_config.j2
         dest: /etc/myapp/config.conf
       tags:
@@ -288,7 +288,7 @@ Tags can also help when deploying to different environments (dev, QA, UAT, prod)
         - skip_in_production
 
     - name: Restart application service
-      service:
+      ansible.builtin.service:
         name: app
         state: restarted
       tags:
@@ -296,7 +296,7 @@ Tags can also help when deploying to different environments (dev, QA, UAT, prod)
         - skip_in_production
 
     - name: Run database migrations
-      command: /usr/local/bin/migrate_db.sh
+      ansible.builtin.command: /usr/local/bin/migrate_db.sh
       tags:
         - migrate_db
         - skip_in_production
@@ -344,19 +344,19 @@ This Playbook deploys the application and config, but always deletes temporary f
   hosts: all
   tasks:
     - name: Deploy application
-      git:
+      ansible.builtin.git:
         repo: 'https://github.com/app/myapp.git'
         dest: /var/www/myapp
       tags: deploy_code
 
     - name: Configure application
-      template:
+      ansible.builtin.template:
         src: app_config.j2
         dest: /etc/myapp/config.conf
       tags: configure_app
 
     - name: Cleanup temporary files
-      file:
+      ansible.builtin.file:
         path: /tmp/myapp_temp
         state: absent
       tags: always
@@ -371,17 +371,17 @@ If a Task is deprecated, you can use the `never` tag to prevent it from running,
   hosts: db_servers
   tasks:
     - name: Backup database
-      command: /usr/local/bin/db_backup.sh
+      ansible.builtin.command: /usr/local/bin/db_backup.sh
       tags: db_backup
 
     - name: Update database schema (deprecated)
-      command: /usr/local/bin/db_update.sh
+      ansible.builtin.command: /usr/local/bin/db_update.sh
       tags:
         - db_update
         - never
 
     - name: Reboot database server
-      reboot:
+      ansible.builtin.reboot:
       tags: reboot_db
 ```
 
@@ -394,23 +394,23 @@ You can use `always` and `never` in the same Playbook without conflicts:
   hosts: all
   tasks:
     - name: Validate environment
-      command: /usr/local/bin/validate_env.sh
+      ansible.builtin.command: /usr/local/bin/validate_env.sh
       tags: always
 
     - name: Deploy application
-      git:
+      ansible.builtin.git:
         repo: 'https://github.com/app/myapp.git'
         dest: /var/www/myapp
       tags: deploy_app
 
     - name: Deprecated deployment step
-      command: /usr/local/bin/deprecated_deploy.sh
+      ansible.builtin.command: /usr/local/bin/deprecated_deploy.sh
       tags:
         - deprecated
         - never
 
     - name: Cleanup environment
-      command: /usr/local/bin/cleanup_env.sh
+      ansible.builtin.command: /usr/local/bin/cleanup_env.sh
       tags: always
 ```
 
@@ -433,8 +433,8 @@ You can assign tag values through variables so that all your tag management is c
 
   tasks:
     - name: Install Apache
-      apt:
-        name: apache2
+      ansible.builtin.dnf:
+        name: httpd
         state: present
       tags: "{{ install_tag }}"
 ```
@@ -449,19 +449,19 @@ You can also trigger variables only when their associated tag is used. For examp
   tasks:
     - name: Install web server
       tags: webserver
-      yum:
+      ansible.builtin.dnf:
         name: httpd
         state: present
 
     - name: Start web server
       tags: webserver
-      service:
+      ansible.builtin.service:
         name: httpd
         state: started
 
     - name: Configure web server port
       tags: webserver
-      lineinfile:
+      ansible.builtin.lineinfile:
         path: /etc/httpd/conf/httpd.conf
         regexp: '^Listen '
         line: "Listen {{ web_server_port }}"
@@ -469,19 +469,19 @@ You can also trigger variables only when their associated tag is used. For examp
 
     - name: Install database server
       tags: dbserver
-      yum:
+      ansible.builtin.dnf:
         name: postgresql-server
         state: present
 
     - name: Start database server
       tags: dbserver
-      service:
+      ansible.builtin.service:
         name: postgresql
         state: started
 
     - name: Configure database server port
       tags: dbserver
-      lineinfile:
+      ansible.builtin.lineinfile:
         path: /var/lib/pgsql/data/postgresql.conf
         regexp: '^port = '
         line: "port = {{ db_server_port }}"
@@ -489,12 +489,12 @@ You can also trigger variables only when their associated tag is used. For examp
 
   handlers:
     - name: restart webserver
-      service:
+      ansible.builtin.service:
         name: httpd
         state: restarted
 
     - name: restart dbserver
-      service:
+      ansible.builtin.service:
         name: postgresql
         state: restarted
 ```
@@ -509,11 +509,11 @@ Ansible Facts are system details collected from Managed Hosts. By default, Facts
   gather_facts: false
   tasks:
     - name: Gather facts
-      setup:
+      ansible.builtin.setup:
       tags: gather_facts
 
     - name: Install Apache on Debian
-      apt:
+      ansible.builtin.apt:
         name: apache2
         state: present
       when: ansible_facts['os_family'] == "Debian"
@@ -521,7 +521,7 @@ Ansible Facts are system details collected from Managed Hosts. By default, Facts
         - install_apache
 
     - name: Install Apache on CentOS
-      yum:
+      ansible.builtin.dnf:
         name: httpd
         state: present
       when: ansible_facts['os_family'] == "RedHat"
@@ -537,12 +537,12 @@ Ansible Facts are system details collected from Managed Hosts. By default, Facts
   gather_facts: false
   tasks:
     - name: Gather facts in non-prod
-      setup:
+      ansible.builtin.setup:
       tags: gather_facts_non_prod
       when: env != "production"
 
     - name: Deploy application
-      git:
+      ansible.builtin.git:
         repo: 'https://github.com/example/myapp.git'
         dest: /var/www/myapp
       tags: deploy_app
@@ -576,15 +576,15 @@ You can also tag Roles and imported Tasks to control exactly which parts of a Pl
 
   tasks:
     - name: Import additional common tasks
-      import_tasks: standard_tasks.yml
+      ansible.builtin.import_tasks: standard_tasks.yml
       tags: standard_tasks
 
     - name: Import additional webserver tasks
-      import_tasks: webserver_tasks.yml
+      ansible.builtin.import_tasks: webserver_tasks.yml
       tags: webserver_tasks
 
     - name: Import additional database tasks
-      import_tasks: database_tasks.yml
+      ansible.builtin.import_tasks: database_tasks.yml
       tags: database_tasks
 ```
 
@@ -600,23 +600,24 @@ You can also tag Roles and imported Tasks to control exactly which parts of a Pl
     - tree
 
 - name: Configure timezone
-  timezone:
+  ansible.builtin.timezone:
     name: 'Etc/UTC'
 
 - name: Set up NTP service
-  apt:
+  ansible.builtin.dnf:
     name: ntp
     state: present
 
 - name: Start and enable NTP service
-  service:
+  ansible.builtin.service:
     name: ntp
     state: started
     enabled: yes
 
-- name: Update system packages
-  apt:
-    upgrade: dist
+- name: Update packages
+  ansible.builtin.dnf:
+    name: "*"
+    state: latest
 ```
 
 #### To run a webserver deployment with its additional Tasks, use:
@@ -644,21 +645,22 @@ Ansible tags let you run specific Tasks, Roles, or Plays without executing the e
 
 Use tags to manage database tasks independently:
 ```yaml
+---
 - name: Database Maintenance
   hosts: db_servers
   tasks:
     - name: Backup database
-      command: /usr/local/bin/db_backup.sh
+      ansible.builtin.command: /usr/local/bin/db_backup.sh
       tags: 
         - backup
 
     - name: Update database schema
-      command: /usr/local/bin/db_update.sh
+      ansible.builtin.command: /usr/local/bin/db_update.sh
       tags: 
         - update
 
     - name: Restart database service
-      service:
+      ansible.builtin.service:
         name: postgresql
         state: restarted
       tags: 
@@ -676,11 +678,12 @@ ansible-playbook db_maintenance.yml --tags "restart"
 
 Control deployments to dev, staging, or production using tags:
 ```yaml
+---
 - name: App Deployment
   hosts: all
   tasks:
     - name: Install dependencies
-      apt:
+      ansible.builtin.dnf:
         name: "{{ item }}"
         state: present
       loop:
@@ -693,7 +696,7 @@ Control deployments to dev, staging, or production using tags:
         - prod
 
     - name: Deploy app in dev
-      git:
+      ansible.builtin.git:
         repo: 'https://github.com/app/dev_app.git'
         dest: /var/www/myapp
       tags: 
@@ -701,7 +704,7 @@ Control deployments to dev, staging, or production using tags:
         - dev
 
     - name: Deploy app in staging
-      git:
+      ansible.builtin.git:
         repo: 'https://github.com/app/stage_app.git'
         dest: /var/www/myapp
       tags: 
@@ -709,7 +712,7 @@ Control deployments to dev, staging, or production using tags:
         - staging
 
     - name: Deploy app in prod
-      git:
+      ansible.builtin.git:
         repo: 'https://github.com/app/prod_app.git'
         dest: /var/www/myapp
       tags: 
@@ -717,7 +720,7 @@ Control deployments to dev, staging, or production using tags:
         - prod
 
     - name: Start app service
-      service:
+      ansible.builtin.service:
         name: myapp
         state: started
       tags: 
@@ -737,31 +740,32 @@ ansible-playbook app.yml --tags "install,deploy,prod"
 
 Tags help control rolling updates to minimize downtime:
 ```yaml
+---
 - name: Rolling Update for Web Servers
   hosts: web_servers
   serial: 1
   tasks:
     - name: Take server out of load balancer
-      command: /usr/local/bin/remove_from_lb.sh
+      ansible.builtin.command: /usr/local/bin/remove_from_lb.sh
       tags: 
         - lb_remove
 
     - name: Update application code
-      git:
+      ansible.builtin.git:
         repo: 'https://github.com/app/myapp.git'
         dest: /var/www/myapp
       tags: 
         - update_code
 
     - name: Restart web server
-      service:
+      ansible.builtin.service:
         name: apache2
         state: restarted
       tags: 
         - restart
 
     - name: Add server back to load balancer
-      command: /usr/local/bin/add_to_lb.sh
+      ansible.builtin.command: /usr/local/bin/add_to_lb.sh
       tags: 
         - lb_add
 ```
@@ -777,19 +781,20 @@ ansible-playbook rolling_update.yml --tags "restart"
 
 Use tags to manage web servers, application servers, and databases in one playbook:
 ```yaml
+---
 - name: Managing Multi-Service
   hosts: all
   tasks:
     - name: Install web server
-      apt:
-        name: apache2
+      ansible.builtin.dnf:
+        name: httpd
         state: present
       tags: 
         - install
         - webserver
 
     - name: Install app server
-      apt:
+      ansible.builtin.dnf:
         name: tomcat
         state: present
       tags: 
@@ -797,7 +802,7 @@ Use tags to manage web servers, application servers, and databases in one playbo
         - appserver
 
     - name: Install db server
-      apt:
+      ansible.builtin.dnf:
         name: postgresql
         state: present
       tags: 
@@ -805,15 +810,15 @@ Use tags to manage web servers, application servers, and databases in one playbo
         - dbserver
 
     - name: Configure web server
-      template:
-        src: apache.conf.j2
-        dest: /etc/apache2/apache2.conf
+      ansible.builtin.template:
+        src: httpd.conf.j2
+        dest: /etc/httpd/httpd.conf
       tags: 
         - configure
         - webserver
 
     - name: Configure app server
-      template:
+      ansible.builtin.template:
         src: tomcat.conf.j2
         dest: /etc/tomcat/tomcat.conf
       tags: 
@@ -821,7 +826,7 @@ Use tags to manage web servers, application servers, and databases in one playbo
         - appserver
 
     - name: Configure db server
-      template:
+      ansible.builtin.template:
         src: postgresql.conf.j2
         dest: /etc/postgresql/postgresql.conf
       tags: 
@@ -829,15 +834,15 @@ Use tags to manage web servers, application servers, and databases in one playbo
         - dbserver
 
     - name: Start web server service
-      service:
-        name: apache2
+      ansible.builtin.service:
+        name: httpd
         state: started
       tags: 
         - start
         - webserver
 
     - name: Start app server service
-      service:
+      ansible.builtin.service:
         name: tomcat
         state: started
       tags: 
@@ -845,7 +850,7 @@ Use tags to manage web servers, application servers, and databases in one playbo
         - appserver
 
     - name: Start db server service
-      service:
+      ansible.builtin.service:
         name: postgresql
         state: started
       tags: 
