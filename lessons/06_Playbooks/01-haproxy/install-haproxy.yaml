@@ -17,7 +17,7 @@
       ansible.builtin.copy:
         src: haproxy.cfg.sample
         dest: /etc/haproxy/haproxy.cfg
-        mode: 644
+        mode: "0644"
         owner: root
         group: root
         backup: true
