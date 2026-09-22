@@ -9,6 +9,7 @@
 ---
 ## Summary of setting up Ansible
 
+- [ ] Network connectivity from Control Node to Managed Hosts
 - [ ] Install Ansible on Control Node
 - [ ] Install Python3 all Nodes
 - [ ] Create technical user on all Nodes
