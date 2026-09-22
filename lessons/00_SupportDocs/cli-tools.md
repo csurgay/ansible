@@ -31,7 +31,7 @@ A few typical uses of the other CLI tools:
 - `ansible-console all`
   - ```
     list
-    list goups
+    list groups
     ping
     help ansible.builtin.debug
     command date
