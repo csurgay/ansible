@@ -9,7 +9,7 @@
     - name: Check services is-active
       ansible.builtin.shell: systemctl is-active {{ item }}
       register: results_state
-      loop:
+      with_items:
         - sshd
         - nginx
         - firewalld
@@ -17,7 +17,7 @@
       no_log: true
 
     - name: Format and print result
-      include_tasks: print.yml
-      loop: "{{ results_state.results }}"
+      ansible.builtin.include_tasks: print.yml
+      with_items: "{{ results_state.results }}"
       no_log: true
 
