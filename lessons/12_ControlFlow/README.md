@@ -120,12 +120,12 @@ when:
   hosts: all
   tasks:
     - name: Check mountpoint exists
-      stat:
+      ansible.builtin.stat:
         path: "{{ mountpoint }}"
       register: mountpoint_stat
 
     - name: Create mountpoint
-      file:
+      ansible.builtin.file:
         path: "{{ mountpoint }}"
         state: directory
         mode: "0755"
@@ -171,7 +171,7 @@ when:
   tasks:
 
     - name: Deploy packages based on hostgroup
-      package:
+      ansible.builtin.package:
         name: "{{ item.name }}"
         state: latest
       when: group_names[0] in item.hostgroups
@@ -198,14 +198,14 @@ E.g. you want to execute something on the localhost which is the Control Node, i
   hosts: all
   tasks:
     - name: Download the nginx locally to Control Node
-      get_url:
+      ansible.builtin.get_url:
         url: "https://nginx.org/packages/rhel/8/x86_64/RPMS/nginx-1.28.0-1.el8.ngx.x86_64.rpm"
         dest: "/tmp/nginx_1.28.rpm"
       delegate_to: localhost
       run_once: true
 
     - name: Copy package to Managed Hosts
-      copy:
+      ansible.builtin.copy:
         src: "/tmp/nginx_1.28.rpm"
         dest: "/tmp/"
 
