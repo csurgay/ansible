@@ -356,8 +356,8 @@ ansible_project/
 ├─ playbook2.yml
 └─ roles/ - **role_params**
    ├─ mariadb/
-   |  ├─ **defaults/main.yml**
-   |  ├─ **vars/main.yml**
+   |  ├─ defaults/main.yml
+   |  ├─ vars/main.yml
    |  ├─ templates/main.yml
    |  └─ tasks/main.yml
    └─ nginx/
@@ -385,10 +385,11 @@ Magic variables are automatically set by Ansible and can be used to get informat
 
 | Magic variable | Description |
 |----------------|-------------|
-| **`hostvars`** | Used to get another managed host's variables. Includes facts after `gather_facts=true` |
+| **`hostvars`** | Used to get another managed host's variables. Includes facts after `gather_facts: true` |
 | **`group_names`** | All the groups the current managed host is member of |
-| **`groups`** | All ths groups and hosts of the current inventory |
-| **`inventory_hostname`** | Hostname of the current managed host from the inventory. This may be different from the host name reported by facts for various reasons. |
+| **`groups`** | Indexed by a group, stores all hosts of that group |
+| **`ansible_hostname`** | Hostname of the currently visited managed host. |
+| **`inventory_hostname`** | Alias in inventory of the currently visited managed host. |
 
 #### Usage examples
 
