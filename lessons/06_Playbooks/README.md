@@ -134,10 +134,10 @@ ansible-playbook -i ./myinventrory.ini sample_playbook.yml
 
 Verbosity of output can be increased using the usual `-v`, `-vv`, `-vvv`, `-vvvv` options.
 
-If you just want to check the syntax of your Playbook, use the `--syntax-check` option:  
+To check the syntax of your Playbook without running it, use the `--syntax-check` option:  
 `ansible-playbook -i ./myinventory.ini --syntax-check sample_playbook.yml`
 
-If you just want Ansible to check what would be changed on Managed Hosts:  
+To dry run your Playbook (check what would be changed without changing anything) on Managed Hosts, use the `--check` oprion:  
 `ansible-playbook -i ./myinventory.ini --check sample_playbook.yml`
 
 
