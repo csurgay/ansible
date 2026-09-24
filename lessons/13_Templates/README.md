@@ -128,7 +128,7 @@ server {
 }
 ```
 
-#### playbook.yml
+#### playbook.yml - for Ubuntu!
 ```yaml
 - name: Provision nginx web server
   hosts: all
@@ -141,39 +141,39 @@ server {
 
   tasks:
     - name: Update and upgrade apt
-      apt:
+      ansible.builtin.apt:
         update_cache: yes
         cache_valid_time: 3600
         upgrade: yes
 
     - name: Install Nginx to specific version
-      apt:
+      ansible.builtin.apt:
         name: "nginx={{ nginx_version }}"
         state: present
 
     - name: Copy Nginx configuration from template
-      template:
+      ansible.builtin.template:
         src: templates/nginx.conf.j2
         dest: /etc/nginx/sites-available/default
 
     - name: Enable Nginx config
-      file:
+      ansible.builtin.file:
         src: /etc/nginx/sites-available/default
         dest: /etc/nginx/sites-enabled/default
         state: link
 
     - name: Create Nginx directory
-      file:
+      ansible.builtin.file:
         path: "{{ nginx_custom_directory }}"
         state: directory
 
     - name: Copy index.html
-      copy:
+      ansible.builtin.copy:
         src: files/index.html
         dest: "{{ nginx_custom_directory }}/index.html"
 
     - name: Restart Nginx
-      service:
+      ansible.builtin.service:
         name: nginx
         state: restarted
 ```
