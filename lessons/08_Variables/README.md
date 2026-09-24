@@ -461,6 +461,7 @@ appserver ansible_host=host3
       private: false
     - name: password
       prompt: What is your password?
+      private: true  # default is true
     - name: packagename
       prompt: What would you like to install?
       private: false
