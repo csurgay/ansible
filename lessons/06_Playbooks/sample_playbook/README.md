@@ -90,7 +90,11 @@ A single Playbook can contain several Plays, each with its own `hosts`, `become`
         state: started
         enabled: true
 
-    - name: 3nd Task. Open port 80
+    - name: 3rd Task. index.html
+      ansible.builtin.shell:
+         echo "Hi from {{ ansible_host }}!" > /usr/share/nginx/html/index.html
+
+    - name: 4th Task. Open port 80
       ansible.builtin.firewalld:
         service: http
         state: enabled
