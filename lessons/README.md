@@ -209,7 +209,7 @@ Application deployment	Zero-downtime rolling updates of a web application
 Security compliance	Enforce password policies, firewall rules, and auditing settings
 Disaster recovery	Quickly rebuild production from code
 
-### BitOps benefits
+### GitOps benefits
 
 |     |          |
 |-----|----------|
