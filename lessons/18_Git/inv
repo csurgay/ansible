@@ -1,6 +1,6 @@
 controlnode ansible_host=localhost
 
+[webservers]
 host1
 host2
 host3
-
