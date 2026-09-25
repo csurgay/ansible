@@ -34,17 +34,14 @@
     - name: Install and start webserver package
       ansible.builtin.include_tasks: "service.yml"
       with_items: "{{ hostvars['controlnode']['cmdb'].data }}"
-      when: inventory_hostname != "controlnode"
 
     - name: Test all hosts webservers
       ansible.builtin.uri:
         url: http://{{ ansible_host }}
         status_code: 200
       register: result_webtest
-      when: inventory_hostname != "controlnode"
 
     - name: Debug webtest
       ansible.builtin.debug:
         var: result_webtest.server
-      when: inventory_hostname != "controlnode"
 
