@@ -169,6 +169,7 @@ Smoke test Ansible can access Managed Hosts
 3.	As user `devops` inside Control Node `ansible` test Python is installed by
 4.	**`ansible localhost -m setup | grep python_version`** 
 5.	Test that ansible can manage the hosts with the ping module as follows:
-6.	**`ansible all -m ping`**
-7.	Check ansible output for all four pong responses
+6.	**`ansible all -m ping`** or
+7.	**`ansible all -m ping --become`** to test sudo on managed hosts without password as well
+8.	Check ansible output for all four pong responses
 
