@@ -1,0 +1,12 @@
+---
+- name: Uptime
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: Uptime
+      ansible.builtin.command:
+        cmd: uptime
+      register: result_uptime
+    - ansible.builtin.debug:
+        var: result_uptime.stdout_lines[0]
