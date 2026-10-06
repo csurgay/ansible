@@ -1,0 +1,23 @@
+---
+- name: systemctl status
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: is-active
+      ansible.builtin.command: systemctl is-active {{ item }}
+      with_items:
+        - nginx
+        - lighttpd
+        - httpd
+      register: result_active
+      no_log: true
+      ignore_errors: true
+    - ansible.builtin.debug:
+        msg: "{{ item.item }} is active"
+      when: item is success
+      with_items: "{{ result_active.results }}"
+    - ansible.builtin.debug:
+        msg: "{{ item.item }} is not active"
+      when: item is failed
+      with_items: "{{ result_active.results }}"
