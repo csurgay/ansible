@@ -1,5 +1,8 @@
-alias c0="sudo podman exec -it -u devops -w /home/devops/ansible/lessons ansible bash" 
-alias c1="sudo podman exec -it -u devops -w /home/devops host1 bash" 
-alias c2="sudo podman exec -it -u devops -w /home/devops host2 bash" 
-alias c3="sudo podman exec -it -u devops -w /home/devops host3 bash" 
-
+alias r0="sudo podman exec -it -u root ansible bash" 
+alias r1="sudo podman exec -it -u root host1 bash" 
+alias r2="sudo podman exec -it -u root host2 bash" 
+alias r3="sudo podman exec -it -u root host3 bash" 
+alias d0="sudo podman exec -it -u devops -w /home/devops/ansible/lessons ansible bash" 
+alias d1="sudo podman exec -it -u devops -w /home/devops host1 bash" 
+alias d2="sudo podman exec -it -u devops -w /home/devops host2 bash" 
+alias d3="sudo podman exec -it -u devops -w /home/devops host3 bash" 
