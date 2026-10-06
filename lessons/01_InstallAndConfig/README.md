@@ -170,6 +170,6 @@ Smoke test Ansible can access Managed Hosts
 4.	**`ansible localhost -m setup | grep python_version`** 
 5.	Test that ansible can manage the hosts with the ping module as follows:
 6.	**`ansible all -m ping`** or
-7.	**`ansible all -m ping --become`** to test sudo on managed hosts without password as well
+7.	**`ansible all -m shell -a whoami --become`** to test sudo on managed hosts without password as well
 8.	Check ansible output for all four pong responses
 
