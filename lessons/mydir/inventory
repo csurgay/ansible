@@ -1,0 +1,5 @@
+controlnode ansible_host=localhost
+
+host1 myvar="elso" selected="nginx"
+host2 myvar="masodik" selected="httpd"
+host3 myvar="harmadik" selected="nginx"
