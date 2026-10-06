@@ -1,0 +1,51 @@
+---
+- name: Webservers
+  hosts: host*
+  gather_facts: false
+  vars:
+    proxies:
+      - name: nginx
+        docroot: "/usr/share/fedora-testpage/"
+      - name: httpd
+        docroot: "/var/www/html/"
+      - name: lighttpd
+        docroot: "/var/www/lighttpd/"
+
+  tasks:
+
+    - name: Install all
+      become: true
+      ansible.builtin.dnf:
+        name: "{{ item.name }}"
+        state: present
+      with_items: "{{ proxies }}"
+
+    - name: Stop all
+      become: true
+      ansible.builtin.systemd:
+        name: "{{ item.name }}"
+        state: stopped
+        enabled: false
+      with_items: "{{ proxies }}"
+
+    - name: Start selected
+      become: true
+      ansible.builtin.systemd:
+        name: "{{ selected }}"
+        state: started
+        enabled: true
+    - ansible.builtin.debug:
+        msg: "{{ selected }} is started"
+
+    - name: Copy index.html
+      become: true
+      ansible.builtin.copy:
+        content: "Szia {{ item.name }} from {{ ansible_host }}\n"
+        dest: "{{ item.docroot }}index.html"
+      with_items: "{{ proxies }}"
+
+    - name: Test
+      ansible.builtin.command: curl -s localhost
+      register: result_test
+    - ansible.builtin.debug:
+        var: result_test.stdout
