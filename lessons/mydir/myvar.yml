@@ -1,0 +1,9 @@
+---
+- name: Myvar kiiras
+  hosts: controlnode, host*
+  gather_facts: false
+
+  tasks:
+    - name: Myvar debug
+      ansible.builtin.debug:
+        var: myvar
