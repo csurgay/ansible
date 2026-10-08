@@ -1,0 +1,36 @@
+---
+- name: Handlers illustration
+  hosts: webservers
+  become: true
+  gather_facts: false
+  vars:
+    training_header: "Ansible Bootcamp"
+
+  tasks:
+
+    - name: nginx is installed
+      ansible.builtin.dnf:
+        name: nginx
+        state: present
+
+    - name: Write a small nginx config snippet
+      ansible.builtin.copy:
+        dest: /etc/nginx/default.d/training.conf
+        content: |
+          # Managed by Ansible
+          add_header X-Training "{{ training_header }}";
+        mode: '0644'
+      notify: Restart nginx
+
+    - name: nginx is running
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: true
+
+  handlers:
+
+    - name: Restart nginx
+      ansible.builtin.service:
+        name: nginx
+        state: restarted

@@ -114,9 +114,9 @@ In most cases, all you need is a **terminal** to run commands and a **text edito
 ### How Ansible Works
 
 1. You write a playbook describing the desired configuration.
-2. Ansible connects via SSH to each target machine.
-2. Tasks are executed using modules (like package, service, copy).
-2. System state is enforced and logged.
+1. Ansible connects via SSH to each target machine.
+1. Tasks are executed using modules (like package, service, copy).
+1. System state is enforced and logged.
 
 ---
 ## Your First Playbook
@@ -128,8 +128,7 @@ Here’s a simple playbook to install and start Nginx:
 ---
 - name: Install and configure web server
   hosts: host1, host2
-  become: yes
-  # run with --ask-become-pass (-K)
+  become: true
 
   tasks:
 
@@ -148,15 +147,19 @@ Here’s a simple playbook to install and start Nginx:
 Where 
 
 #### inventory.ini
-```yaml
+```ini
 host1
 host2
 ```
 
 #### Run it:
 ```bash
-ansible-playbook -i inventory.ini -K your-first-playbook.yml
+ansible-playbook -i inventory.ini your-first-playbook.yml
 ```
+
+> [!NOTE]
+> In the lab user `devops` has passwordless `sudo`. On systems where `sudo` asks for a password,
+> add `-K` (`--ask-become-pass`) to the command.
 
 #### Testing
 ```bash
@@ -180,6 +183,8 @@ Examples of things you can manage with IaC:
 
 ### Benefits
 
+| Benefit | Description |
+|---------|-------------|
 | Version Control | Store infrastructure definitions in Git like application code |
 | Collaboration | Teams can review changes via pull requests before applying them |
 | Reproducibility | Build identical environments across dev, test, and production |
@@ -203,11 +208,13 @@ Examples of things you can manage with IaC:
 
 ### Use Case Example
 
-Server provisioning	Deploy 50 cloud VMs on AWS in minutes
-Configuration management	Ensure every server has the correct users, packages, and services
-Application deployment	Zero-downtime rolling updates of a web application
-Security compliance	Enforce password policies, firewall rules, and auditing settings
-Disaster recovery	Quickly rebuild production from code
+| Use case | Example |
+|----------|---------|
+| Server provisioning | Deploy 50 cloud VMs on AWS in minutes |
+| Configuration management | Ensure every server has the correct users, packages, and services |
+| Application deployment | Zero-downtime rolling updates of a web application |
+| Security compliance | Enforce password policies, firewall rules, and auditing settings |
+| Disaster recovery | Quickly rebuild production from code |
 
 ### GitOps benefits
 
@@ -246,7 +253,7 @@ flowchart TD;
 
 Automation with Ansible and IaC transforms the way we manage infrastructure:
 
-+ Manual work → Code-driven processe
++ Manual work → Code-driven processes
 + Slow, error-prone changes → Fast, reliable deployments
 + Hidden tribal knowledge → Transparent, version-controlled playbooks
 

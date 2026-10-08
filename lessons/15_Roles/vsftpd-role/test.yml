@@ -1,0 +1,19 @@
+---
+- name: Apply the vsftpd role to servers and clients
+  hosts: ftpservers:ftpclients
+  become: true
+  gather_facts: false
+
+  roles:
+    - vsftpd-role
+
+- name: Smoke test of vsftpd-role project from the client
+  hosts: ftpclients
+  become: false
+  gather_facts: false
+
+  tasks:
+
+    - name: Testing
+      ansible.builtin.include_tasks:
+        file: roles/vsftpd-role/tests/main.yml

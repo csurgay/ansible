@@ -1,6 +1,6 @@
 # CLI Tools
 
-It this section we explore a number CLI (Command Line Interface) tools coming with the Ansible package.
+In this section we explore a number of CLI (Command Line Interface) tools coming with the Ansible package.
 
 ---
 ## CLI toolset
@@ -14,7 +14,7 @@ hosts without writing a full Playbook.
 | ansible | Runs single Task on managed hosts (aka ad-hoc command ) |
 | ansible-config | View, init, validate an Ansible Configuration |
 | ansible-console | Interactive Ansible command interpreter |
-| ansible-doc | Modules and Plugins documentation tool (snippet|
+| ansible-doc | Modules and Plugins documentation tool (also snippets) |
 | ansible-galaxy | Roles and Collections related operations |
 | ansible-inventory | View actual Inventory groups, hosts, and variables |
 | ansible-playbook | Run Playbook on managed hosts |
@@ -45,11 +45,11 @@ A few typical uses of the other CLI tools:
     ```
 - `ansible-doc debug`
 - `ansible-doc --snippet debug`
-- `ansible-galaxy role install system`
+- `ansible-galaxy role install geerlingguy.ntp` (needs access to galaxy.ansible.com)
 - `ansible-galaxy role list`
 - `ansible-inventory --list --vars`
 - `ansible-inventory --graph`
-- `ansible-playbook --inventory targethosts --become --aks-become-pass myplaybook.yml`
+- `ansible-playbook --inventory targethosts --become --ask-become-pass myplaybook.yml`
 - `ansible-pull -U https://github.com/user/myansible myplaybook.yml`
 - `ansible-vault view --vault-id=@prompt mysecret.yml`
 
@@ -69,8 +69,7 @@ ansible-galaxy role search selinux
 ansible-galaxy role search ntp
 ansible-galaxy role search linux-system-roles
 
-sudo dnf install linux-system-roles
-(same as rhel-system-roles)
+sudo dnf install linux-system-roles      # on RHEL: rhel-system-roles
 ansible-galaxy role list
 ls -la /usr/share/ansible/roles
 

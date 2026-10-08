@@ -1,3 +1,5 @@
+#!/bin/bash
+
 log() {
         if [ $? -eq 0 ]
         then
@@ -14,11 +16,13 @@ log() {
         fi
 }
 
-log "Run sctipt starting..."
+log "Run script starting..."
 
-podman rm -fa
+# Remove only the lab containers (not every container on this host)
+podman rm -f ansible host1 host2 host3 >/dev/null 2>&1
+true
 
-log "All containers removed"
+log "Lab containers removed"
 
 podman network list | grep nw_ansible
 if [ $? -gt 0 ]

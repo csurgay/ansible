@@ -1,4 +1,5 @@
-- name: 2nd Play. Check return code 200
+---
+- name: Check the content served by the webservers
   hosts: localhost
   become: false
   gather_facts: false
@@ -7,14 +8,18 @@
 
   tasks:
     - name: Test nginx webserver return content
-      ansible.builtin.command:
-        cmd: curl -s http://{{ item }}:80
+      ansible.builtin.uri:
+        url: "http://{{ item }}:80"
+        return_content: true
       loop: "{{ groups['webservers'] }}"
       register: result_curl
-    - ansible.builtin.set_fact:
-        outstr_list:  "{{ outstr_list + [item.stdout] }}"
+
+    - name: Collect page contents into a list
+      ansible.builtin.set_fact:
+        outstr_list: "{{ outstr_list + [item.content] }}"
       loop: "{{ result_curl.results }}"
       no_log: true
-    - ansible.builtin.debug:
-        var: outstr_list
 
+    - name: Print the list
+      ansible.builtin.debug:
+        var: outstr_list

@@ -1,0 +1,11 @@
+---
+- name: Deploy Webserver using apache
+  hosts: myhosts
+  become: true
+
+  tasks:
+    - name: Deploy Web service
+      ansible.builtin.include_role:
+        name: deploy-web-server
+      vars:
+        web_title: "Hello from {{ inventory_hostname }}"

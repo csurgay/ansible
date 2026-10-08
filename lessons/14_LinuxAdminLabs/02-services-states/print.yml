@@ -1,0 +1,8 @@
+---
+- name: Format the state line
+  ansible.builtin.set_fact:
+    state_line: "{{ item.item }} state: {{ item.stdout }}"
+
+- name: Print the state line
+  ansible.builtin.debug:
+    var: state_line

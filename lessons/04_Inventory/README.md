@@ -30,18 +30,19 @@ and host specific variables.
 ---
 ### Inventory Locations
 
-Inventory can be places into the `/etc/ansible/hosts` file, or  
+Inventory can be placed into the `/etc/ansible/hosts` file, or  
 into any file in the directories where we run Ansible.
 
-This latter case is more of the best practice, when the file is referenced along with `ansible` command:  
-`ansible-playbook -i ./inventory playbook.yml`
+This latter case is the best practice: the file is either referenced with the `-i` option,  
+`ansible all -i ./inventory --list-hosts`  
+or set as `inventory = ./inventory` in the project's `ansible.cfg`.
 
 ---
 ### Static Inventory
 
-The most simple way to specify an inventory for ansible is a flat list of hostnames one per lines:
+The simplest way to specify an inventory for Ansible is a flat list of hostnames, one per line:
 
-```
+```ini
 webserver1
 192.168.0.2
 host1.samples.com
@@ -54,9 +55,9 @@ host1.samples.com
 + Hosts can be listed under multiple host groups
 + Ungrouped hosts of course can also be listed, before the host group definitions
 + Grouping allows Ansible to easily manage hosts or groups together
-+ There are two gourps always present `all` and `ungrouped`
++ There are two groups always present: `all` and `ungrouped`
 
-```
+```ini
 192.168.0.2
 
 [hostgroup1]
@@ -79,10 +80,10 @@ server2.sample.com
 
 Using the `:children` suffix host groups can be nested under parent hostgroups.
 
-```
+```ini
 [appservers]
 appserver1 ansible_host=host1
-appserver2 anisble_host=host2
+appserver2 ansible_host=host2
 
 [dbservers]
 dbserver1 ansible_host=host2
@@ -98,47 +99,60 @@ dbservers
 
 Using the special range syntax `[begin:end]` many hosts can be specified in a single entry.
 
-```
+```ini
 server_[01:12]
 [a:d].sample.com
 192.168.0.[2:254]
 ```
 
+Host patterns select hosts from the inventory on the command line (always quote them, `!` and `&` are special for the shell):
+
 ```
-myhosts:!host1 # exclusion
-ungrouped:myhosts # union
-ungrouped:&myhosts # intersection
-myhosts:!{{ not_this }} # runtime variable
+myhosts:!host1        # exclusion
+ungrouped:myhosts     # union
+ungrouped:&myhosts    # intersection
+myhosts:!{{ not_this }}  # runtime variable
 ```
 
-`ansible -e not_this=host3 'myhosts:!{{ not_this }}' -m ping`
+```bash
+ansible 'myhosts:!host1' --list-hosts
+ansible -e not_this=host3 'myhosts:!{{ not_this }}' -m ping
+```
 
 ---
 ### Testing Inventories
 
 From the previous session we know how to test inventories with ad-hoc `ansible` command and the option `--list-hosts`.
 
+Save the nested groups example above as `nested_inventory`, then try:
+
+```bash
+ansible -i nested_inventory appservers --list-hosts
+ansible -i nested_inventory dbservers --list-hosts
+ansible -i nested_inventory myhosts --list-hosts
+ansible -i nested_inventory ungrouped --list-hosts
+ansible-inventory -i nested_inventory --graph
 ```
-ansible appservers --list-hosts
-ansible dnservers --list-hosts
-ansible servers --list-hosts
-```
+
+How many hosts does `myhosts` contain, and how many real machines are behind them?
+(Hint: Ansible counts inventory names, `appserver2` and `dbserver1` both connect to `host2`.)
 
 ---
 ### Overriding default Inventory
 
 Inventory can be defined in a few ways for ansible, listed here in ascending precedence.
 
-1. `/etc/ansible/hosts`
-1. `ansible.cfg` configuration file
+1. `/etc/ansible/hosts` (built-in default)
+1. `inventory =` in the `ansible.cfg` configuration file
+1. `ANSIBLE_INVENTORY` environment variable
 1. `--inventory <inventory-path>` or `-i <inventory-path>`
 
 ---
-### Invetory variables
+### Inventory variables
 
 Host specific variables for playbooks can be defined directly in the Inventory file next to the host names.
 
-```
+```ini
 webserver web_port=8081
 host1 ansible_host=192.168.0.2
 dbserver default_db=cities
@@ -147,15 +161,15 @@ dbserver default_db=cities
 More on this topic and best practice for ansible variables will be discussed later.
 
 ---
-### Multiple Invetories
+### Multiple Inventories
 
-It is posslible to specify more than inventories with the -i option for ad-hoc ansible commands and ansible playbook executions.
+It is possible to specify more than one inventory with the -i option for ad-hoc ansible commands and ansible playbook executions.
 
 ```
 ansible all -i inventory1 -i inventory2 -m setup
 ```
 
-It is also possible to specify an inventory directory in which case ansible will iterate all invetory files from that directory
+It is also possible to specify an inventory directory in which case Ansible will read all inventory files from that directory
 
 ```
 ls -l inventory_dir/
@@ -168,4 +182,14 @@ ansible all -i inventory_dir -m setup
 ---
 ### Dynamic Inventory
 
-This topic is discussed in the Automation Platform training.
+Dynamic inventories (scripts or plugins that query a cloud, a CMDB, etc.) are discussed in the Automation Platform training.
+
+---
+### Bonus (after the Playbooks section)
+
+`inventory-hostname.yml` in this directory sets the system hostname of every Managed Host to its inventory name,
+using `inventory_hostname`. Come back to it once you know Playbooks:
+
+```bash
+ansible-playbook inventory-hostname.yml
+```

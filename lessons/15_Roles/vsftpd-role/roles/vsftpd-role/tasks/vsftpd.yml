@@ -1,0 +1,45 @@
+---
+- name: Packages are installed
+  ansible.builtin.dnf:
+    name: "{{ vsftpd_package }}"
+    state: present
+
+- name: Configuration file is installed
+  ansible.builtin.template:
+    src: vsftpd.conf.j2
+    dest: "{{ vsftpd_config_file }}"
+    owner: root
+    group: root
+    mode: '0600'
+  notify: Restart vsftpd
+
+- name: Ensure service is started
+  ansible.builtin.service:
+    name: "{{ vsftpd_service }}"
+    state: started
+    enabled: true
+
+- name: firewalld is installed
+  ansible.builtin.dnf:
+    name: firewalld
+    state: present
+
+- name: firewalld is started and enabled
+  ansible.builtin.service:
+    name: firewalld
+    state: started
+    enabled: true
+
+- name: FTP port is open
+  ansible.posix.firewalld:
+    service: ftp
+    permanent: true
+    state: enabled
+    immediate: true
+
+- name: FTP passive data ports are open
+  ansible.posix.firewalld:
+    port: "{{ vsftpd_pasv_min_port }}-{{ vsftpd_pasv_max_port }}/tcp"
+    permanent: true
+    state: enabled
+    immediate: true

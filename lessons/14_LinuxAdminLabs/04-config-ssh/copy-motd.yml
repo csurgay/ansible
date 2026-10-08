@@ -1,0 +1,22 @@
+---
+- name: Create the message of the day
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    motdfile: "/etc/motd"
+
+  tasks:
+
+    - name: Create /etc/motd
+      ansible.builtin.copy:
+        dest: "{{ motdfile }}"
+        content: |
+          *** Containerized Ansible Training ***
+          Greetings on this Managed Host!
+          Weather is nice today.
+          Automation with Ansible is fun!
+        owner: root
+        group: root
+        mode: '0644'
+        backup: true

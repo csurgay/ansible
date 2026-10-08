@@ -1,0 +1,14 @@
+---
+- name: Install passlib on the Control Node
+  hosts: myhosts
+  gather_facts: false
+  become: true
+
+  tasks:
+
+    - name: Install passlib with dnf (needed by the password_hash filter)
+      ansible.builtin.dnf:
+        name: python3-passlib
+        state: present
+      delegate_to: localhost
+      run_once: true

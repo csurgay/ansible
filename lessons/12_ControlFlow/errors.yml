@@ -1,0 +1,44 @@
+---
+- name: Deciding what is failed and what is changed
+  hosts: host1
+  gather_facts: false
+
+  tasks:
+
+    - name: A read-only command never changes anything
+      ansible.builtin.command: cat /etc/os-release
+      register: result_os
+      changed_when: false
+
+    - name: grep returns 1 if nothing matches, which is not an error for us
+      ansible.builtin.command: grep -c nginx /etc/passwd
+      register: result_grep
+      changed_when: false
+      failed_when: result_grep.rc > 1
+
+    - name: Print whether an nginx user exists
+      ansible.builtin.debug:
+        msg: "nginx user exists: {{ result_grep.rc == 0 }}"
+
+    - name: Ignore errors (the task is red, but the Play continues)
+      ansible.builtin.command: /bin/false
+      ignore_errors: true
+
+    - name: Start a background job that creates a flag file after 3 seconds
+      ansible.builtin.shell: "sleep 3 && touch /tmp/ready_flag"
+      async: 10
+      poll: 0
+      changed_when: false
+
+    - name: Wait for the flag file, at most 5 x 2 seconds
+      ansible.builtin.stat:
+        path: /tmp/ready_flag
+      register: result_flag
+      until: result_flag.stat.exists
+      retries: 5
+      delay: 2
+
+    - name: Fail the Play on purpose with a clear message
+      ansible.builtin.fail:
+        msg: "Too few CPUs"
+      when: false   # try: when: true

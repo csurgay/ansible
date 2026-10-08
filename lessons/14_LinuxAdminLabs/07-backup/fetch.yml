@@ -1,0 +1,29 @@
+---
+- name: Backup with fetch
+  hosts: myhosts
+  become: true
+  gather_facts: false
+  vars:
+    source_path: /srv/appdata
+    dest_path: /tmp/backup/fetch
+
+  tasks:
+
+    - name: Print all hosts of the Play
+      ansible.builtin.debug:
+        var: ansible_play_hosts_all
+      run_once: true
+
+    - name: Create the backup dir on the Control Node
+      ansible.builtin.file:
+        path: "{{ dest_path }}"
+        state: directory
+        mode: '0755'
+      delegate_to: localhost
+      run_once: true
+      become: false
+
+    - name: Backup one file with fetch
+      ansible.builtin.fetch:
+        src: "{{ source_path }}/config.txt"
+        dest: "{{ dest_path }}"

@@ -18,6 +18,9 @@ log() {
 
 log "Usage script starting..."
 
+# Always work relative to this script, wherever it is called from
+cd "$(dirname "$0")"
+
 sudo ./ansible_node/run_containers.sh
 
 log "Containers are running"

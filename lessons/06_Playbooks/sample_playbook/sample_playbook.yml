@@ -10,7 +10,7 @@
     - name: 1st Task. Install nginx
       ansible.builtin.package:
         name: nginx
-        state: latest
+        state: present
 
     - name: 2nd Task. Start nginx
       ansible.builtin.systemd:
@@ -19,12 +19,16 @@
         enabled: true
 
     - name: 3rd Task. index.html
-      ansible.builtin.shell:
-         echo "Hi from {{ ansible_host }}!" > /usr/share/nginx/html/index.html
+      ansible.builtin.copy:
+        content: "Hi from {{ inventory_hostname }}!\n"
+        dest: /usr/share/nginx/html/index.html
+        mode: '0644'
 
     - name: 4th Task. Open port 80
-      ansible.builtin.firewalld:
+      ansible.posix.firewalld:
         service: http
+        permanent: true
+        immediate: true
         state: enabled
 
 - name: 2nd Play. Check return code 200
@@ -36,8 +40,9 @@
     - name: Test nginx status code
       ansible.builtin.uri:
         url: "http://{{ item }}:80"
-      with_items: "{{ groups['webservers'] }}"
+      loop: "{{ groups['webservers'] }}"
       register: result_curl
-    - ansible.builtin.debug:
-        var: result_curl
 
+    - name: Print results
+      ansible.builtin.debug:
+        var: result_curl

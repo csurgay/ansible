@@ -1,2 +1,3 @@
 ---
-# defaults file for myrole
+# defaults file for myrole: the LOWEST precedence of all
+myvar: 10

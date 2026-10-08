@@ -1,0 +1,13 @@
+---
+# Uses the timesync Linux System Role: sudo dnf install -y linux-system-roles
+- name: Configure time synchronization with a System Role
+  hosts: myhosts
+  become: true
+  vars:
+    timesync_ntp_servers:
+      - hostname: 2.fedora.pool.ntp.org
+        pool: true
+        iburst: true
+
+  roles:
+    - fedora.linux_system_roles.timesync

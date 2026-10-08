@@ -1,17 +1,25 @@
 ---
-- name: Install Haproxy Package
-  hosts: all
+- name: Install and configure HAProxy in front of nginx
+  hosts: myhosts
   become: true
+  gather_facts: false
+
   tasks:
+    - name: Ensure nginx (the backend webserver) is installed
+      ansible.builtin.dnf:
+        name: nginx
+        state: present
+
+    - name: Ensure nginx is started and enabled
+      ansible.builtin.systemd:
+        name: nginx
+        state: started
+        enabled: true
+
     - name: Ensure haproxy package is installed
       ansible.builtin.dnf:
         name: haproxy
-        state: latest
-
-    - name: Create path for haproxy config
-      ansible.builtin.file:
-        path: /etc/haproxy
-        state: directory
+        state: present
 
     - name: Copy haproxy configuration to node
       ansible.builtin.copy:
@@ -27,23 +35,38 @@
         zone: public
         interface: eth0
         permanent: true
+        immediate: true
         state: enabled
-    
+
     - name: Open firewall port 5000 for haproxy
       ansible.posix.firewalld:
         port: 5000/tcp
         permanent: true
+        immediate: true
         state: enabled
 
-    - name: Reload firewalld to apply changes
-      ansible.builtin.service:
-        name: firewalld
-        state: reloaded
-
-    - name: Enable and start haproxy Service
+    - name: Enable and (re)start haproxy service
       ansible.builtin.systemd:
         name: haproxy
         state: restarted
-        enabled: yes
-        masked: no
+        enabled: true
 
+- name: Test the proxies from the Control Node
+  hosts: localhost
+  become: false
+  gather_facts: false
+
+  tasks:
+    - name: Request the page through haproxy (port 5000)
+      ansible.builtin.uri:
+        url: "http://{{ item }}:5000/"
+        return_content: true
+      loop: "{{ groups['myhosts'] }}"
+      register: result_proxy
+
+    - name: Show the status codes
+      ansible.builtin.debug:
+        msg: "{{ item.item }}:5000 -> {{ item.status }}"
+      loop: "{{ result_proxy.results }}"
+      loop_control:
+        label: "{{ item.item }}"

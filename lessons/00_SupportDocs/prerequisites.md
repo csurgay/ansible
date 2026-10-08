@@ -64,17 +64,16 @@ A résztvevőknek önállóan meg kell tudni oldani az alábbi feladatokat:
 
 Mit csinál az alábbi script részlet?
 
-``` bash
-ssh user@server
-sudo systemctl status httpd
-sudo dnf install httpd
-sudo vi /etc/httpd/conf.d/test.conf
+```bash
+ssh user@server sudo dnf install -y httpd
+ssh user@server sudo systemctl enable --now httpd
+ssh user@server curl -s http://localhost
 ```
 
-- A) A server-en telepít és elindít egy apache-ot
+- A) A server-en csak telepít egy apache-ot
 - B) Megkeresi és lemásolja az apache konfigurációját
 - C) Telepít és konfigurál egy apache-ot
-- D) Beüzemel és tesztel egy apache-ot
+- D) A server-en telepít, elindít és tesztel egy apache-ot
 
 ### 2. Linux parancssor
 
@@ -89,7 +88,9 @@ Melyik paranccsal tudod megnézni az aktuális könyvtár tartalmát?
 
 Mit csinál az alábbi parancs?
 
+```
 cd /etc/httpd
+```
 
 - A) Létrehozza az /etc/httpd könyvtárat
 - B) Törli az /etc/httpd könyvtárat
@@ -109,7 +110,9 @@ Melyik paranccsal keresnél meg egy httpd.conf nevű fájlt a /etc alatt?
 
 Mit jelent nagyjából ez a jogosultság?
 
+```
 -rwxr-xr--
+```
 
 - A) A tulajdonos írhatja, más nem olvashatja
 - B) A tulajdonos olvashat/írhat/futtathat, a csoport olvashat/futtathat, mások csak olvashatják
@@ -138,7 +141,9 @@ Melyik parancs segítségével tudod például megnézni a futó processzeket?
 
 Mit csinál?
 
+```
 systemctl status sshd
+```
 
 - A) Újratelepíti az SSH-t
 - B) Megmutatja az SSH szolgáltatás állapotát
@@ -158,7 +163,9 @@ Fedora/RHEL rendszeren melyik paranccsal telepítenél egy httpd csomagot?
 
 Mit jelent az alábbi parancs?
 
+```
 ssh admin@server1.example.com
+```
 
 - A) SSH szervert telepít a server1 gépre
 - B) SSH-kapcsolatot kezdeményez a server1.example.com gépre admin felhasználóval
@@ -178,11 +185,13 @@ Miért használunk SSH public/private key párost?
 
 Egy szerver IP-címe:
 
-192.168.10.25
+`192.168.10.25`
 
 A kliensről működik a ping, de az alábbi nem:
 
+```
 ssh user@192.168.10.25
+```
 
 Mi lehet az egyik legvalószínűbb ok?
 
@@ -204,11 +213,13 @@ Melyik portot használja alapértelmezés szerint az SSH?
 
 Mi a probléma az alábbi YAML-lal?
 
+```yaml
 name: webserver
 packages:
- - httpd
- - vim
-  - git
+  - httpd
+  - vim
+ - git
+```
 
 - A) A YAML nem támogat listákat
 - B) A git behúzása hibás
@@ -219,9 +230,11 @@ packages:
 
 Mit reprezentál az alábbi YAML?
 
+```yaml
 server:
   hostname: web01
   port: 8080
+```
 
 - A) Egy változót és két egymástól független listát
 - B) Egy server nevű struktúrát, benne hostname és port értékekkel
@@ -232,10 +245,12 @@ server:
 
 Mit jelent programozási szempontból az alábbi?
 
+```
 IF operating_system == "RedHat"
     install httpd
 ELSE
     install apache2
+```
 
 - A) Mindkét csomagot telepíti
 - B) Véletlenszerűen választ
@@ -246,7 +261,9 @@ ELSE
 
 Mit csinál nagyjából?
 
+```
 git clone https://example.com/project.git
+```
 
 - A) Törli a Git repositoryt
 - B) Lemásolja/klónozza a repository tartalmát egy helyi könyvtárba
@@ -266,7 +283,7 @@ Mi a szerepe a git commit parancsnak?
 
 Van egy Linux szerver, amelyen egy webalkalmazás konfigurációja itt található:
 
-/etc/myapp/config.conf
+`/etc/myapp/config.conf`
 
 A konfiguráció módosítása után szeretnéd, hogy az alkalmazás az új beállításokat használja.
 

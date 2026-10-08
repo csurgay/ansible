@@ -1,0 +1,16 @@
+---
+# Install with:  ansible-galaxy install -r requirements.yml
+# (needs access to galaxy.ansible.com and github.com)
+roles:
+  # A role from Ansible Galaxy (namespace.rolename). Pin it with "version:" in real projects.
+  - name: geerlingguy.ntp
+
+  # A role straight from a Git repository, installed under the name given in "name"
+  - name: git_role
+    src: https://github.com/geerlingguy/ansible-role-git.git
+    scm: git
+
+collections:
+  - name: ansible.posix
+    version: ">=1.5.0"
+  - name: community.general

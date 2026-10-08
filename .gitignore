@@ -1,0 +1,7 @@
+# Ansible run artefacts
+ansible.log
+*.retry
+# Local archives / editor leftovers
+*.tgz
+*.tzg
+*.swp

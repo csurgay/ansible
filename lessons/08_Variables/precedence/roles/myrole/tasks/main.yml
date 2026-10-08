@@ -1,2 +1,5 @@
 ---
 # tasks file for myrole
+- name: Debug myvar inside the role
+  ansible.builtin.debug:
+    var: myvar

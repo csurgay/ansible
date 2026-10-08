@@ -1,36 +1,36 @@
 ---
-- name: report
-  hosts: all
+- name: Fill a report file with lineinfile (compare with a template!)
+  hosts: myhosts
   gather_facts: true
 
   tasks:
 
-    - copy:
+    - name: Copy the report skeleton
+      ansible.builtin.copy:
         src: report.txt
         dest: /tmp/report.txt
+        mode: '0644'
 
-    - lineinfile:
+    - name: Fill in the hostname
+      ansible.builtin.lineinfile:
         path: /tmp/report.txt
-        regex: ^HOST
+        regexp: ^HOST
         line: HOST={{ ansible_facts['hostname'] }}
-        state: present
 
-    - lineinfile:
+    - name: Fill in the memory
+      ansible.builtin.lineinfile:
         path: /tmp/report.txt
-        regex: ^MEMORY
+        regexp: ^MEMORY
         line: MEMORY={{ ansible_facts['memtotal_mb'] }}
-        state: present
 
-    - lineinfile:
+    - name: Fill in the BIOS version
+      ansible.builtin.lineinfile:
         path: /tmp/report.txt
-        regex: ^BIOS
+        regexp: ^BIOS
         line: BIOS={{ ansible_facts['bios_version'] }}
-        state: present
 
-    - lineinfile:
+    - name: Fill in the disk size
+      ansible.builtin.lineinfile:
         path: /tmp/report.txt
-        regex: ^SDA
-        line: SDA_DISK_SIZE={% if ansible_devices.sda is defined %}{{ ansible_facts['devices']['sda']['size'] }}{% else %}NONE{% endif %}
-        state: present
- 
-
+        regexp: ^SDA
+        line: SDA_DISK_SIZE={{ ansible_facts['devices']['sda']['size'] if 'sda' in ansible_facts['devices'] else 'NONE' }}

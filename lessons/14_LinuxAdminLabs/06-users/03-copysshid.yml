@@ -1,0 +1,16 @@
+---
+- name: Copy the devops SSH public key to bob on the Managed Hosts
+  hosts: myhosts
+  become: true
+  gather_facts: false
+  vars:
+    # setup_devops.sh creates an RSA key; use id_ed25519.pub if you created an ed25519 key
+    ssh_pubkey_file: /home/devops/.ssh/id_rsa.pub
+
+  tasks:
+
+    - name: Add the key to ~bob/.ssh/authorized_keys
+      ansible.posix.authorized_key:
+        user: bob
+        state: present
+        key: "{{ lookup('ansible.builtin.file', ssh_pubkey_file) }}"

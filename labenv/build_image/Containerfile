@@ -1,0 +1,49 @@
+# Pinned so rebuilds match the documented versions (Fedora 42, ansible-core 2.18)
+FROM registry.fedoraproject.org/fedora:42
+
+# Install systemd, ssh, ansible, git and other tools
+
+RUN dnf install -y \
+    systemd \
+    systemd-libs \
+    systemd-container \
+    openssh-clients \
+    sshd \
+    sudo \
+    iproute \
+    openssh-server \
+    passwd \
+    ip \
+    ps \
+    tree \
+    vim \
+    ping \
+    sshpass \
+    python3 \
+    python3-dnf \
+    procps-ng \
+    git \
+    ansible \
+    firewalld && \
+  dnf clean all && \
+  echo "root:root" | chpasswd && \
+  ssh-keygen -A
+
+COPY ssh_config /etc/ssh/
+
+# Enable root ssh login and password login
+COPY sshd_config /etc/ssh/
+
+# Enable sshd service
+RUN mkdir -p /var/run/sshd && \
+    systemctl enable sshd.service
+
+# Expose ssh port
+EXPOSE 22
+
+# Systemd needs a few things mounted when container runs
+VOLUME [ "/sys/fs/cgroup" ]
+
+# Use systemd as PID 1
+CMD ["/usr/sbin/init"]
+

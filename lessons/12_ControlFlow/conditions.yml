@@ -1,0 +1,58 @@
+---
+- name: Variable as Condition
+  hosts: host1
+  gather_facts: false
+  vars:
+    weather: good   # or bad, try: -e weather=bad
+
+  tasks:
+
+    - name: Task based on the weather variable
+      ansible.builtin.debug:
+        msg: "Yay! We go hiking!"
+      when: weather == "good"
+
+    - name: Task based on the weather variable
+      ansible.builtin.debug:
+        msg: "Staying home to play chess!"
+      when: weather == "bad"
+
+- name: Fact as Condition
+  hosts: webservers
+  gather_facts: true
+  become: true
+
+  tasks:
+
+    - name: Install httpd on the Red Hat family (RHEL, Fedora, CentOS, ...)
+      ansible.builtin.dnf:
+        name: httpd
+        state: present
+      when: ansible_facts['os_family'] == 'RedHat'
+
+    - name: Install apache2 on Debian and Ubuntu
+      ansible.builtin.apt:
+        name: apache2
+        state: present
+      when: ansible_facts['distribution'] == 'Debian' or
+            ansible_facts['distribution'] == 'Ubuntu'
+
+- name: Registered result and NOT as Condition
+  hosts: host1
+  gather_facts: false
+  vars:
+    mountpoint: /srv/data
+
+  tasks:
+
+    - name: Check mountpoint exists
+      ansible.builtin.stat:
+        path: "{{ mountpoint }}"
+      register: mountpoint_stat
+
+    - name: Create mountpoint
+      ansible.builtin.file:
+        path: "{{ mountpoint }}"
+        state: directory
+        mode: "0755"
+      when: not mountpoint_stat.stat.exists

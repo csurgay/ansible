@@ -1,0 +1,54 @@
+---
+- name: Block of Tasks
+  hosts: webservers
+  gather_facts: true
+
+  tasks:
+
+    - name: Install and start nginx, only on the Red Hat family
+      when: ansible_facts['os_family'] == 'RedHat'
+      become: true
+      block:
+
+        - name: Install nginx
+          ansible.builtin.dnf:
+            name: nginx
+            state: present
+
+        - name: Start and enable service
+          ansible.builtin.service:
+            name: nginx
+            state: started
+            enabled: true
+
+- name: Error handling with Blocks
+  hosts: host1
+  gather_facts: false
+
+  tasks:
+
+    - name: Catching errors
+      block:
+
+        - name: Print a message
+          ansible.builtin.debug:
+            msg: 'I execute normally'
+
+        - name: Force a failure
+          ansible.builtin.command: /bin/false
+
+        - name: Never print this
+          ansible.builtin.debug:
+            msg: 'I never execute, due to the above failure'
+
+      rescue:
+
+        - name: Print when errors
+          ansible.builtin.debug:
+            msg: 'I caught an error: {{ ansible_failed_result.rc }}'
+
+      always:
+
+        - name: Always do this
+          ansible.builtin.debug:
+            msg: "This always executes"

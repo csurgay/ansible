@@ -1,0 +1,25 @@
+---
+- name: Create some application data to back up
+  hosts: myhosts
+  become: true
+  gather_facts: false
+  vars:
+    source_path: /srv/appdata
+
+  tasks:
+
+    - name: Create the data directory
+      ansible.builtin.file:
+        path: "{{ source_path }}"
+        state: directory
+        mode: '0755'
+
+    - name: Create a few data files
+      ansible.builtin.copy:
+        dest: "{{ source_path }}/{{ item }}"
+        content: "{{ item }} of {{ inventory_hostname }}\n"
+        mode: '0644'
+      loop:
+        - config.txt
+        - data1.txt
+        - data2.txt

@@ -1,0 +1,20 @@
+---
+- name: Test host3.lftp to host2.vsftpd get file to host3
+  ansible.builtin.shell:
+    cmd: |
+      lftp -u devops,devops host2 <<EOF
+      get -e /etc/hosts -o /tmp/hosts.from.host2
+      bye
+      EOF
+  register: result_lftp
+  changed_when: false
+
+- name: Read the downloaded file
+  ansible.builtin.command:
+    cmd: cat /tmp/hosts.from.host2
+  register: result_cat
+  changed_when: false
+
+- name: Print file content
+  ansible.builtin.debug:
+    msg: "{{ result_cat.stdout_lines }}"

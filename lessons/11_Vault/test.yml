@@ -10,5 +10,5 @@
         msg:
           - "username: {{ username }}"
           - "password: {{ password }}"
-      # no_log: true # would prevents open secret being logged
+      # no_log: true # would prevent the secret from being printed and logged
 

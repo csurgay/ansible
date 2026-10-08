@@ -1,0 +1,38 @@
+---
+- name: Deploy and use custom (local) facts
+  hosts: myhosts
+  become: true
+  gather_facts: false
+
+  tasks:
+
+    - name: Create the facts.d directory
+      ansible.builtin.file:
+        path: /etc/ansible/facts.d
+        state: directory
+        mode: '0755'
+
+    - name: Deploy a static custom fact file (INI format)
+      ansible.builtin.copy:
+        dest: /etc/ansible/facts.d/training.fact
+        content: |
+          [course]
+          name=Ansible Bootcamp
+          trainer=devops
+
+          [host]
+          environment={{ 'production' if inventory_hostname == 'host1' else 'test' }}
+        mode: '0644'
+
+    - name: Re-gather facts, so that the new custom facts are read
+      ansible.builtin.setup:
+        filter: ansible_local
+
+    - name: Print the custom facts
+      ansible.builtin.debug:
+        var: ansible_facts['ansible_local']['training']
+
+    - name: Use a custom fact in a condition
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }} is a production server, be careful!"
+      when: ansible_facts['ansible_local']['training']['host']['environment'] == 'production'

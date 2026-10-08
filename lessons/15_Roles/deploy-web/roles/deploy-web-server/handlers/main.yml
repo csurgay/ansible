@@ -1,0 +1,6 @@
+---
+# handlers file for deploy-web-server
+- name: Restart webserver
+  ansible.builtin.service:
+    name: "{{ web_service }}"
+    state: restarted

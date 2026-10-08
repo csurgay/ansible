@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# LEGACY: earlier lab setup using root on the Managed Hosts.
+# Not used by run.sh any more (see setup_devops.sh). Kept for reference only.
+
 log() {
 	if [ $? -eq 0 ]
 	then
@@ -16,7 +19,7 @@ log() {
 	fi
 }
 
-log "Setup sctipt starting..."
+log "Setup script starting..."
 
 podman exec -w=/root ansible rm -rvf ansible
 podman exec -w=/root ansible git clone https://github.com/csurgay/ansible.git

@@ -1,0 +1,9 @@
+[controlnode]
+localhost
+
+[webservers]
+host1
+host2
+
+[databases]
+host3

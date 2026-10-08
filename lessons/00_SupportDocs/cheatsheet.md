@@ -1,6 +1,6 @@
 # Ansible Bootcamp Cheatsheet
 
-*Compiled from all 18 lesson modules (`YourFirstPlaybook` → `17_Tags`)*
+*Compiled from all lessons (`01_InstallAndConfig` → `19_Git`)*
 
 ---
 
@@ -28,10 +28,11 @@
 | `ansible-vault create/edit/view/decrypt/rekey <file>` | Manage encrypted files |
 | `ansible-vault decrypt <file> --output=<f>` | Decrypt to a new file |
 | `ansible-galaxy role init <name>` | Scaffold a new role directory structure |
+| `ansible-galaxy install -r requirements.yml` | Install roles/collections listed in a requirements file |
 | `ansible-galaxy collection install <ns.collection>` | Install a collection (e.g. `kubernetes.core`) |
 | `ansible-lint` | Lint playbooks/roles against best practices |
 
-**Useful ad-hoc modules:** `ping`, `command`, `shell`, `copy`, `fetch`, `file`, `package`, `yum`, `service`, `systemd`, `reboot`, `setup`, `user`, `debug`
+**Useful ad-hoc modules:** `ping`, `command`, `shell`, `copy`, `fetch`, `file`, `package`, `dnf`, `service`, `systemd`, `reboot`, `setup`, `user`, `debug`
 
 ---
 
@@ -40,9 +41,9 @@
 | Category | Modules |
 |---|---|
 | Connectivity / facts | `ping`, `setup`, `debug`, `stat`, `group_by` |
-| Package management | `yum`, `dnf`, `apt`, `package` |
-| Service management | `service`, `systemd`, `reboot`, `firewalld`, `timezone` |
-| Files & content | `copy`, `file`, `template`, `get_url`, `fetch` |
+| Package management | `dnf` (`yum` is an alias), `apt`, `package` |
+| Service management | `service`, `systemd`, `reboot`, `ansible.posix.firewalld`, `community.general.timezone` |
+| Files & content | `copy`, `file`, `template`, `lineinfile`, `get_url`, `fetch`, `ansible.posix.synchronize` |
 | Users | `user` |
 | Execution | `command`, `shell` |
 | Source control | `git` |
@@ -78,15 +79,18 @@ databases
 
 ```ini
 [defaults]
-inventory = ./hosts_inventory
+inventory = ./host_inventory
 remote_user = devops
 ask_pass = false
+log_path = ./ansible.log
+interpreter_python = /usr/bin/python3
+callback_result_format = yaml
 
 [privilege_escalation]
 become = true
 become_method = sudo
 become_user = root
-become_ask_pass = true
+become_ask_pass = false
 ```
 
 ## 5. Playbook Skeleton
@@ -100,9 +104,9 @@ become_ask_pass = true
     my_var: value
   tasks:
     - name: Install httpd
-      ansible.builtin.yum:
+      ansible.builtin.dnf:
         name: httpd
-        state: latest
+        state: present
       tags: [webserver]
 ```
 
@@ -118,7 +122,7 @@ become_ask_pass = true
 | Keyword | Purpose |
 |---|---|
 | `when:` | Conditional execution |
-| `loop:` / `with_items:` | Iterate over a list |
+| `loop:` | Iterate over a list (`with_items:` is the older form) |
 | `register:` | Capture task output |
 | `until:` / `retries:` / `delay:` | Retry loop |
 | `changed_when:` / `failed_when:` | Override task status |
@@ -178,21 +182,24 @@ Use via `roles:` list in a play, or `include_role:` / `import_role:` mid-task-li
 ```yaml
 tasks:
   - name: Install dependencies
-    apt: { name: git, state: present }
+    ansible.builtin.dnf:
+      name: git
+      state: present
     tags: [install, webserver]
 ```
 ```bash
-ansible-playbook site.yml --tags "webserver"
+ansible-playbook site.yml --tags "webserver"          # tasks with ANY of the listed tags
 ansible-playbook site.yml --skip-tags "backup"
 ansible-playbook site.yml --list-tags
 ```
+Special tags: `always` (runs unless skipped explicitly), `never` (runs only when one of its tags is requested).
 Best practice: 2–3 tags per task max, descriptive names (`install_apache`, not `task1`).
 
 ## 13. Kubernetes (kubernetes.core)
 
 ```bash
 ansible-galaxy collection install kubernetes.core
-pip install kubernetes
+sudo dnf install -y python3-kubernetes
 ```
 ```yaml
 - name: Create namespace

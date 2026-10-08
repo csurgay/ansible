@@ -16,7 +16,10 @@ log() {
 	fi
 }
 
-log  "Setup user_ansible script started..."
+log "Setup devops user script started..."
+
+# podman cp below uses files next to this script
+cd "$(dirname "$0")"
 
 podman exec -it ansible bash -c "useradd devops"
 for i in {1..3}; do podman exec -it host$i bash -c "useradd devops"; done
@@ -60,7 +63,7 @@ podman exec -u devops -w /home/devops/ansible/labenv ansible ansible all -m ping
 
 log "Ansible accessing Managedhosts is tested OK"
 
-log "Entring Control Node for lessons"
+log "Entering Control Node for lessons"
 
 podman exec -it -u devops -w /home/devops/ansible/lessons ansible /bin/bash
 

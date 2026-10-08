@@ -12,35 +12,37 @@
 
 A typical ansible configuration file:
 
-```
+```ini
 [defaults]
 remote_user = devops
-inventory = ./inventory
+inventory = ./host_inventory
 ask_pass = false
 log_path = ./ansible.log
-stdout_callback = yaml
+callback_result_format = yaml
 interpreter_python = /usr/bin/python3
 
 [privilege_escalation]
 become = true
 become_user = root
-become_ask_pass = true
+become_ask_pass = false
 become_method = sudo
 ```
 
-Directives in the configuratin file above
+This is the `ansible.cfg` used in (almost) every lesson directory of this course.
+
+Directives in the configuration file above
 
 |Directive|Semantics|
 |---------|---------|
 | inventory | Path to the inventory file |
 | remote_user | user to log in to the managed hosts, default is current user |
 | ask_pass | Asking for SSH password, false for public key authentication |
-| become | Switch user on the managed host (default is root) |
+| become | `true`/`false`: use privilege escalation (e.g. sudo) on the managed host |
 | become_method | sudo is the default, su also can be used |
 | become_user | Switch to this user on the managed host, default is root |
-| become_ask_pass | Asking for sudo password, only one for all hosts |
+| become_ask_pass | Asking for sudo password (one for all hosts); `false` with passwordless sudo |
 | log_path | Ansible will append all output to this file |
-| stdout_callback | YAML or JSON format for the result ansible outputs |
+| callback_result_format | `yaml` or `json` (default) format of task results in the output |
 | interpreter_python|Specifying exact location of python version suppresses warning in logs |
 
 ---
@@ -52,10 +54,16 @@ Directives in the configuratin file above
 /etc/ansible/ansible.cfg
 ~/.ansible.cfg
 ./ansible.cfg
-export ANSIBLE_CONFIG=/home/devops/ansible-training/labenv/ansible.cfg
+export ANSIBLE_CONFIG=/home/devops/ansible/labenv/ansible.cfg
 ```
 
-The last one is best practice and have the highest precedence over all the others.
+The environment variable has the highest precedence over all the others, and only **one** file is used
+(settings are not merged). In this course every lesson directory has its own `./ansible.cfg`, so always run
+Ansible from inside the lesson directory. Check which file is in effect with `ansible --version` (`config file =`).
+
+> [!NOTE]
+> For security reasons Ansible ignores `./ansible.cfg` in a world-writable directory.
+> `stdout_callback = yaml`, found in many older examples, is deprecated; use `callback_result_format = yaml`.
 
 ---
 ### Ansible Log

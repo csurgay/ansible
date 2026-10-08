@@ -1,0 +1,60 @@
+---
+- name: Variable list Loops
+  hosts: webservers
+  become: true
+  gather_facts: false
+
+  tasks:
+
+    - name: Create several directories
+      ansible.builtin.file:
+        path: "/srv/{{ item }}"
+        state: directory
+        mode: '0755'
+      loop:
+        - logs
+        - backup
+        - data
+
+    - name: Install a list of packages (no loop needed, the module takes a list)
+      ansible.builtin.dnf:
+        name:
+          - git
+          - tree
+          - vim
+        state: present
+
+- name: Combining Loops and Conditions
+  hosts: webservers:databases
+  become: true
+  gather_facts: false
+  vars:
+    apps:
+      - name: httpd
+        hostgroups: ['webservers']
+      - name: mariadb-server
+        hostgroups: ['databases']
+      - name: git
+        hostgroups: ['webservers', 'databases']
+
+  tasks:
+
+    - name: Deploy packages based on hostgroup
+      ansible.builtin.dnf:
+        name: "{{ item.name }}"
+        state: present
+      when: item.hostgroups | intersect(group_names) | length > 0
+      loop: "{{ apps }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+- name: Loop through Inventory
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+
+    - name: Print every host with its groups
+      ansible.builtin.debug:
+        msg: "{{ item }} : {{ hostvars[item].group_names }}"
+      loop: "{{ groups['all'] }}"

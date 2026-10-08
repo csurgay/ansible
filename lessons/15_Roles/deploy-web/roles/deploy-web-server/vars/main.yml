@@ -1,0 +1,7 @@
+---
+# vars file for deploy-web-server (high precedence, internal values)
+web_package: httpd
+web_service: httpd
+web_conflicting_services:
+  - nginx
+  - lighttpd

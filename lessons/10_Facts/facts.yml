@@ -1,0 +1,20 @@
+---
+- name: How to gather ansible facts from hosts
+  hosts: host1
+  gather_facts: true
+
+  tasks:
+
+    - name: Print a few facts
+      ansible.builtin.debug:
+        msg:
+          - "Hostname: {{ ansible_facts['hostname'] }}"
+          - "OS: {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }}"
+          - "OS family: {{ ansible_facts['os_family'] }}"
+          - "IPv4: {{ ansible_facts['default_ipv4']['address'] }}"
+          - "Memory: {{ ansible_facts['memtotal_mb'] }} MB"
+          - "Python: {{ ansible_facts['python_version'] }}"
+
+    - name: Print all facts (long!)
+      ansible.builtin.debug:
+        var: ansible_facts

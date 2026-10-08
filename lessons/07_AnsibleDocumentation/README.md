@@ -13,7 +13,9 @@
 
 Use `-l` or `--list` for a complete list of installed modules to find something you need. 
 
-`ansible-doc -l | grep firewall`
+```bash
+ansible-doc -l | grep firewall
+```
 
 ```
 devops@ansible:~$ ansible-doc -l | grep firewalld
@@ -26,7 +28,13 @@ ansible.posix.firewalld_info
 
 Use the `-s` or `--snippet` option for a module template with complete list of arguments with explanations.
 
-`ansible-doc -s firewalld`  
+```bash
+ansible-doc -s firewalld
+```
+
+The short name works because Ansible finds the module in the installed collections; the full name is
+`ansible.posix.firewalld` (it is **not** part of `ansible.builtin`). Use the full name in Playbooks.
+
 
 ```
 devops@ansible:~$ ansible-doc -s firewalld
@@ -83,9 +91,21 @@ devops@ansible:~$ ansible-doc -s firewalld
 ```
 
 ---
+### More ansible-doc
+
+```bash
+ansible-doc ansible.builtin.copy          # full documentation with EXAMPLES at the end
+ansible-doc -l ansible.posix              # modules of one collection
+ansible-doc -t keyword -l                 # Playbook keywords (become, loop, when, ...)
+ansible-doc -t filter -l | grep password  # filter plugins, e.g. password_hash
+ansible-doc -t lookup file                # lookup plugins
+```
+
+---
 ### Official Ansible Documentation
 
-Follow this link for a comprehensive documentation on Ansible:
-
-https://docs.ansible.com/ansible/latest/collections/index_module.html
+- All modules by collection: https://docs.ansible.com/ansible/latest/collections/index_module.html
+- `ansible.builtin` modules and plugins: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/index.html
+- Playbook keywords: https://docs.ansible.com/ansible/latest/reference_appendices/playbooks_keywords.html (also [keywords.md](../00_SupportDocs/keywords.md))
+- Frequently used modules of this course: [modules.md](../00_SupportDocs/modules.md)
 

@@ -1,0 +1,29 @@
+---
+- name: Playbook to test templates
+  hosts: host1
+  gather_facts: true
+  vars:
+    favourite_color: blue
+    age: 21
+    voting_center: ab456-g
+    fruits:
+      - banana
+      - apple
+      - mango
+      - pear
+
+  tasks:
+    - name: Template test
+      ansible.builtin.template:
+        src: templates/test.conf.j2
+        dest: /tmp/test.conf
+        mode: '0644'
+
+    - name: Read the result back
+      ansible.builtin.command: cat /tmp/test.conf
+      register: result_cat
+      changed_when: false
+
+    - name: Print the result
+      ansible.builtin.debug:
+        var: result_cat.stdout_lines

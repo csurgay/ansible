@@ -1,99 +1,99 @@
 ## Schedule of the week
 
-| Day | Session | Topics |
-|-----|---------|--------|
-| 1 | 1	| Why automate, what is Ansible, architecture, infrastructure as code, installing Ansible and ssh keys, ad-hoc commands |
-|	| 2	| Inventories (static), hosts, hostgroups, nested groups, host ranges, host patterns, Ansible config, first playbooks, multiple plays |
-| 2 | 3	| YAML syntax, finding modules, variables and facts, variable precedence, inventory host and group variables, vars directories |
-|	| 4	| Secrets with Ansible Vault, create and edit encrypted files, secrets in playbooks, managing passwords, using ansible_facts, magic variables |
-| 3 |	5 |	Task control: conditionals, iteration with loops, multiple conditions, combining loops and conditions, handlers, error handling |
-| |	6	| Files and templates with Jinja2, file modules, SELinux context changes, copying and editing files, synchronizing, using Jijna2, Jinja2 loops and conditionals |
-| 4	| 7	| Importing in large playbooks, Roles, Role structure, using and creating roles, system Roles, dependencies, best practices |
-|	| 8	| Ansible Galaxy, browsing Roles, Galaxy command line, Deploying with Galaxy, requirements file, reuse |
-| 5	| 9	| Debug module, check mode, ad-hoc testing, Linux admin tasks with Ansible, user management, package management, services management, storage management |
-| |	10	| Further topics, Summary and Q&A session|
+5 days, 2 sessions of 2 hours per day.
 
+| Day | Session | Topics | Lessons |
+|-----|---------|--------|---------|
+| 1 | 1 | Why automate, what is Ansible, architecture, infrastructure as code, installing Ansible and ssh keys, ad-hoc commands | [Intro](../README.md), [01](../01_InstallAndConfig), [02](../02_TroubleshootConfig), [03](../03_AdHocCommands) |
+|   | 2 | Static inventories, hosts, host groups, nested groups, host ranges, host patterns, Ansible config, first playbooks, multiple plays | [04](../04_Inventory), [05](../05_Configuration), [06](../06_Playbooks) |
+| 2 | 3 | YAML syntax, finding modules, variables, variable precedence, inventory host and group variables, vars directories, facts, custom facts | [07](../07_AnsibleDocumentation), [08](../08_Variables), [09](../09_DirectoryLayout), [10](../10_Facts) |
+|   | 4 | Secrets with Ansible Vault, create and edit encrypted files, secrets in playbooks; running parts of playbooks with tags | [11](../11_Vault), [18](../18_Tags) |
+| 3 | 5 | Task control: conditionals, loops, combining loops and conditions, handlers, blocks, error handling | [12](../12_ControlFlow) |
+|   | 6 | Files and templates with Jinja2, file modules, Jinja2 loops and conditionals | [13](../13_Templates) |
+| 4 | 7 | Importing and including in large playbooks, Roles, Role structure, using and creating roles, best practices | [15](../15_Roles), [16](../16_BestPractice) |
+|   | 8 | Ansible Galaxy, collections, requirements file, system roles, playbooks and vars from Git | [15](../15_Roles#ansible-galaxy), [19](../19_Git) |
+| 5 | 9 | Linux admin tasks with Ansible: users, packages, services, sshd, backup, time sync; check mode, troubleshooting | [14](../14_LinuxAdminLabs) |
+|   | 10 | Ansible in the broader toolchain (Kubernetes), summary and Q&A | [17](../17_Kubernetes) |
+
+> [!NOTE]
+> Lesson numbers follow the topics, not strictly the calendar: `14_LinuxAdminLabs` builds on everything up to
+> Templates and is done on Day 5, `18_Tags` fits right after Vault on Day 2.
 
 ---
 ## Day 1 Session 1 – Introduction to Automation and Ansible
 
-- Understand why to automating Linux administration tasks with Ansible
+- Understand why to automate Linux administration tasks with Ansible
 - Learn what Ansible is, how Ansible works
 - Install and configure Ansible on a Control Node
-- Purpose of Ansible ad-hoc commands and the Ansible cli-toolset
+- Purpose of Ansible ad-hoc commands and the Ansible CLI toolset
 - Run single automation tasks with Ansible ad-hoc commands
-- Use ansible-doc to learn about modules you can use
 
-## Day 1 Session 2 - Inventories
+## Day 1 Session 2 – Inventories, configuration, first Playbooks
 
 - Create a list (inventory) of the systems you manage, write a simple playbook, and run it to automate tasks
 - Learn how Ansible inventories work and how to manage a simple static inventory file
-- Inventory Hosts, Hostgroups, Nested groups, Host ranges, Host patterns
+- Inventory Hosts, Host groups, Nested groups, Host ranges, Host patterns
 - Find out where Ansible configuration files are located and how Ansible decides which one to use
 - Edit configuration files to change default settings
 - Write and run a basic playbook with the ansible-playbook command
 - Write a playbook with several plays, including privilege escalation
 
-## Day 2 Session 3 - YAML, modules, variables
+## Day 2 Session 3 – Modules, variables, facts
 
 - YAML vs JSON syntax and semantics
-- Static inventory files
-- How to find modules
+- How to find modules and their documentation with `ansible-doc`
 - Use variables and facts in playbooks to make them easier to manage and reuse
 - Create and use variables that apply to specific hosts, groups, plays, or globally
 - How Ansible decides which variable takes priority (Variable precedence)
+- Magic variables (`hostvars`, `groups`, `inventory_hostname`, ...)
 - Use Ansible facts to get system information from managed hosts
 - Create your own custom facts
 
-## Day 2 Session 4 - Vault, Magic variables
+## Day 2 Session 4 – Vault, Tags
 
 - Protect sensitive variables with Ansible Vault
-- Run playbooks that use encrypted variable files
 - Create and edit vault secret files
-- Magic variables for hosts related Ansible management data
+- Run playbooks that use encrypted variable files
+- Run or skip parts of a playbook with tags
 
-## Day 3 Session 5 - Task control
+## Day 3 Session 5 – Task control
 
-- Manage how tasks run and how errors are handled in playbooks
-- Loops to repeat tasks efficiently
 - Conditions to decide when tasks should run
-- Create tasks that only run when another task changes something on a host
-- Control what happens if a task fails, and decide when a task should be marked as failed
+- Loops to repeat tasks efficiently
+- Create tasks that only run when another task changes something on a host (handlers)
+- Group tasks with blocks
+- Control what happens if a task fails, and decide when a task should be marked as failed or changed
 
-## Day 3 Session - 6 Templates
+## Day 3 Session 6 – Templates
 
-- Copy files to Managed Hosts
-- Fetch files from Managed Hosts
-- Change textfile content
-- Create and Delete files and directories on Managed Hosts
-- Control permissions and ownership of files
 - Deploy files that are automatically customized with Jinja2 templates
-- Download files to Managed Hosts
-- Jinja2 Loops and Conditionals
+- Jinja2 variables, filters, loops and conditionals
+- Copy, fetch, create and edit files on Managed Hosts
+- Control permissions and ownership of files
 
-## Day 4 Session 7 - Complex Playbooks
+## Day 4 Session 7 – Roles
 
-– Handling large or complex Playbooks
 - Organize and simplify complex automation projects
-- Use advanced host patterns to choose exactly which systems to target
-- Difference between include_task and import_task
+- Difference between `include_*` and `import_*`
 - Split large playbooks into smaller pieces by including or importing other files
-- Include/import either always or only when certain conditions are true
-
-## Day 4 Session 8 - Roles
-
-- Use roles to make your playbooks easier to write and reuse
-- What a roles are, how they are organized, and how to use them in Playbooks
-- Use Red Hat Enterprise Linux System Roles to perform common system tasks.
+- What roles are, how they are organized, and how to use them in Playbooks
 - Create your own role inside a project and run it in a Playbook
-- Download and use roles from Ansible Galaxy or other sources like Git repositories
+- Best practices
 
-## Day 5 Session 9 – Troubleshooting
+## Day 4 Session 8 – Galaxy, Git
 
+- Download and use roles and collections from Ansible Galaxy or Git repositories
+- `requirements.yml`
+- Use Linux System Roles to perform common system tasks
+- Use configuration data (CMDB) from a Git repository in a playbook
+
+## Day 5 Session 9 – Linux admin labs, troubleshooting
+
+- Use Ansible to handle everyday Linux administration jobs: users, packages, services, sshd, backup, time sync
+- Check mode and dry runs
 - Find and fix problems with playbooks or managed hosts
-- Debug general playbook issues and fix them
-- Investigate and solve errors that happen on managed systems during playbook runs
-- Use Ansible to handle everyday Linux administration jobs automatically
 
-## Day 5 Session 10 - Further topics, Summary, Q&A
+## Day 5 Session 10 – Further topics, Summary, Q&A
 
+- Ansible with Kubernetes
+- Summary of the week, Q&A

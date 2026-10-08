@@ -1,0 +1,4 @@
+---
+# defaults file for deploy-web-server (low precedence, meant to be overridden)
+web_title: "Deployed by the deploy-web-server role"
+web_root: /var/www/html

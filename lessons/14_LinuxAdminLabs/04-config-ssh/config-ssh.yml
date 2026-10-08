@@ -1,0 +1,32 @@
+---
+- name: Modify sshd Configuration
+  hosts: all
+  become: true
+  gather_facts: false
+  vars_prompt:
+    - name: yesorno
+      prompt: PasswordAuthentication yes or no?
+      private: false
+
+  tasks:
+
+    - name: Check the answer
+      ansible.builtin.assert:
+        that: yesorno in ['yes', 'no']
+        fail_msg: "Please answer yes or no"
+
+    - name: Set PasswordAuthentication
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: "^PasswordAuthentication"
+        line: "PasswordAuthentication {{ yesorno }}"
+        state: present
+        validate: 'sshd -t -f %s'
+      notify: Restart sshd
+
+  handlers:
+
+    - name: Restart sshd
+      ansible.builtin.service:
+        name: sshd
+        state: restarted

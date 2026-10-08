@@ -1,2 +1,3 @@
 ---
-# vars file for myrole
+# vars file for myrole: higher than inventory, group_vars, host_vars and play vars
+myvar: 16

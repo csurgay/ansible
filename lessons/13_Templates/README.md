@@ -3,8 +3,8 @@
 ### In this section the following subjects will be covered:
 
 1. Templates
-2. Jinja2
-3. Examples
+1. Jinja2
+1. Exercises
 
 ---
 ## Templates
@@ -18,9 +18,9 @@ When updates are needed, you only change the template once, and Ansible will gen
 ---
 ## Jinja2
 
-By default, Ansible uses the Jinja2 templating engine to create dynamic content.
+Ansible uses the Jinja2 templating engine to create dynamic content.
 
-Jinja2 is a powerful Python-based template engine that’s also used in web frameworks like Flask and Django. It allows you to mix plain text with special syntax to include variables, conditions, and loops in your files.
+Jinja2 is a powerful Python-based template engine that’s also used in web frameworks like Flask. It allows you to mix plain text with special syntax to include variables, conditions, and loops in your files.
 
 The main syntax is:
 
@@ -29,13 +29,13 @@ The main syntax is:
 - `{# #}` for comments
 
 #### Variable
-```yaml
+```jinja
 My favourite color is {{ favourite_color }}
 ```
 
 #### If Statement
-```yaml
-{% if age > 18 %}
+```jinja
+{% if age | int > 18 %}
 You are an adult and can vote at {{ voting_center }}
 {% else %}
 Sorry, you are a minor and can’t vote yet.
@@ -43,44 +43,60 @@ Sorry, you are a minor and can’t vote yet.
 ```
 
 #### Loop
-```yaml
+```jinja
 Here’s a list of fruits:
 {% for fruit in fruits %}
 {{ fruit }}
 {% endfor %}
 ```
 
-Templating happens before tasks are sent to the managed host, so you don’t need any extra software installed there. It also keeps network traffic small since the final files are generated locally.
+#### Filters
+```jinja
+{{ name | upper }}                     {# JOHN #}
+{{ port | default(80) }}               {# 80 if port is undefined #}
+{{ servers | join(', ') }}             {# a, b, c #}
+{{ users | map(attribute='name') | list }}
+```
 
-Jinja2 also comes with filters and tests to modify data. Ansible adds extra ones to make it easier to work with variables and external data sources.
+Templating happens on the **Control Node**: the `template` module renders the file there and copies the result to the Managed Host, so nothing extra is needed on the Managed Hosts. Templates can use all variables and facts of the host they are rendered for.
+
+Jinja2 comes with many filters and tests to modify data, and Ansible adds extra ones (e.g. `password_hash`, `regex_search`, `to_nice_yaml`).
+
+> [!TIP]
+> Put `# {{ ansible_managed }}` into the first line of templated config files: it renders as a comment telling
+> everybody that the file is managed by Ansible and manual edits will be overwritten.
 
 ---
-## Examples
+## Exercises
 
-### Example 1: Basic Template
+Each subdirectory is a small project with its own `ansible.cfg` and `host_inventory`.
 
-This template example shows how variables, conditionals, and loops combine to generate a complete configuration file.
+### 00-basics: variables, conditions, loops
 
-#### test.conf.j2
-```yaml
+#### templates/test.conf.j2
+```jinja
 My favourite color is {{ favourite_color }}
 
-{% if age > 18 %}
+{% if age | int > 18 %}
 You are an adult, and you can vote in the voting center: {{ voting_center }}
 {% else %}
-Sorry, you are a minor and you can’t vote yet.
+Sorry, you are a minor and you can't vote yet.
 {% endif %}
 
 A list of fruits:
 {% for fruit in fruits %}
  - {{ fruit }}
 {% endfor %}
+{# This is a Jinja2 comment, it does not appear in the result #}
+Generated for {{ inventory_hostname }} ({{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }})
 ```
 
 #### playbook.yml
 ```yaml
+---
 - name: Playbook to test templates
-  hosts: all
+  hosts: host1
+  gather_facts: true
   vars:
     favourite_color: blue
     age: 21
@@ -93,106 +109,180 @@ A list of fruits:
 
   tasks:
     - name: Template test
-      template:
+      ansible.builtin.template:
         src: templates/test.conf.j2
         dest: /tmp/test.conf
+        mode: '0644'
+
+    - name: Read the result back
+      ansible.builtin.command: cat /tmp/test.conf
+      register: result_cat
+      changed_when: false
+
+    - name: Print the result
+      ansible.builtin.debug:
+        var: result_cat.stdout_lines
 ```
 
-#### Result
-```yaml
-My favourite color is blue
-
-You are an adult, and you can vote in the voting center: ab456-g
-
-A list of fruits:
- - banana
- - apple
- - mango
- - pear
+```bash
+cd 00-basics
+ansible-playbook playbook.yml
 ```
 
-### Example 2: Nginx Config
+Change `age` to 16 with `-e age=16` and run again. Why does the `{# ... #}` line not appear in the result?
+(Values given with `-e key=value` are always **strings**, that is why the template converts `age` with the `int` filter.)
 
-Now let’s use a template to create an Nginx web server configuration file.
+### 01-hostdata: facts of all hosts in one file
 
-#### nginx.conf.j2
-```yaml
+`hostdata.j2` loops over `groups['all']` and reads the facts of **every** host through `hostvars`, so each Managed
+Host gets a file listing the IP, MAC, interface, date and FQDN of all hosts.
+
+```bash
+cd 01-hostdata
+ansible-playbook hostdata.yml
+```
+
+### 02-report: lineinfile vs template
+
+`report.yml` fills the placeholders of `report.txt` one by one with four `lineinfile` tasks.
+`report_template.yml` produces the same result with **one** `template` task and `report.txt.j2`.
+Compare the two: which one is easier to read and to extend? When is `lineinfile` still the right tool?
+(Hint: when you own only one line of a file that someone else manages.)
+
+```bash
+cd 02-report
+ansible-playbook report.yml && ansible host1 -m command -a "cat /tmp/report.txt"
+ansible-playbook report_template.yml && ansible host1 -m command -a "cat /tmp/report.txt"
+```
+
+### 03-storage: a Markdown report built with Jinja2
+
+`storage.yml` collects mount point facts and builds a Markdown table with a Jinja2 loop, including
+whitespace control (`{%-`), `set` and `round`. Run it on a VM (see `RUN_THIS_ON_VM_NOT_CONTAINER`): containers
+report no mounts.
+
+### 04-nginx-site: a website from templates
+
+A second nginx website on port 8080 on every Managed Host: the nginx config and the `index.html` both come
+from templates, and a handler reloads nginx only when the config changed.
+
+#### templates/training-site.conf.j2
+```jinja
+# {{ ansible_managed }}
 server {
-       listen {{ web_server_port }};
-       listen [::]:{{ web_server_port }};
-       root {{ nginx_custom_directory }};
-       index index.html;
-       location / {
-               try_files $uri $uri/ =404;
-       }
+    listen       {{ site_port }};
+    server_name  {{ inventory_hostname }};
+    root         {{ site_root }};
+    index        index.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
 }
 ```
 
-#### playbook.yml - for Ubuntu!
-```yaml
-- name: Provision nginx web server
-  hosts: all
-  gather_facts: yes
-  become: yes
-  vars:
-    nginx_version: 1.18.0-0ubuntu1.4
-    nginx_custom_directory: /home/ubuntu/nginx
-    web_server_port: 80
-
-  tasks:
-    - name: Update and upgrade apt
-      ansible.builtin.apt:
-        update_cache: yes
-        cache_valid_time: 3600
-        upgrade: yes
-
-    - name: Install Nginx to specific version
-      ansible.builtin.apt:
-        name: "nginx={{ nginx_version }}"
-        state: present
-
-    - name: Copy Nginx configuration from template
-      ansible.builtin.template:
-        src: templates/nginx.conf.j2
-        dest: /etc/nginx/sites-available/default
-
-    - name: Enable Nginx config
-      ansible.builtin.file:
-        src: /etc/nginx/sites-available/default
-        dest: /etc/nginx/sites-enabled/default
-        state: link
-
-    - name: Create Nginx directory
-      ansible.builtin.file:
-        path: "{{ nginx_custom_directory }}"
-        state: directory
-
-    - name: Copy index.html
-      ansible.builtin.copy:
-        src: files/index.html
-        dest: "{{ nginx_custom_directory }}/index.html"
-
-    - name: Restart Nginx
-      ansible.builtin.service:
-        name: nginx
-        state: restarted
-```
-
-#### test index.html
-```html
+#### templates/index.html.j2
+```jinja
 <html>
   <head>
-    <title>Hello from Nginx</title>
+    <title>{{ site_title }}</title>
   </head>
   <body>
-    <h1>This is our test web server</h1>
-    <p>This Nginx web server was deployed by Ansible.</p>
+    <h1>{{ site_title }}</h1>
+    <p>This page of {{ inventory_hostname }} ({{ ansible_facts['default_ipv4']['address'] }}) was deployed by Ansible.</p>
+    <ul>
+{% for host in groups['myhosts'] %}
+      <li><a href="http://{{ host }}:{{ site_port }}/">{{ host }}</a>{% if host == inventory_hostname %} (this host){% endif %}</li>
+{% endfor %}
+    </ul>
   </body>
 </html>
 ```
 
-Run the playbook, then log into your server to check the file `/etc/nginx/sites-available/default`. 
+#### nginx-site.yml
+```yaml
+---
+- name: Provision an extra nginx website from templates
+  hosts: myhosts
+  gather_facts: true
+  become: true
+  vars:
+    site_port: 8080
+    site_root: /srv/training-site
+    site_title: Hello from the Ansible Bootcamp
 
-You’ll see the configuration file generated from your template — confirming that the templating and deployment worked perfectly.
+  tasks:
+    - name: Install nginx
+      ansible.builtin.dnf:
+        name: nginx
+        state: present
 
+    - name: Create the web root
+      ansible.builtin.file:
+        path: "{{ site_root }}"
+        state: directory
+        mode: '0755'
 
+    - name: Deploy index.html from template
+      ansible.builtin.template:
+        src: templates/index.html.j2
+        dest: "{{ site_root }}/index.html"
+        mode: '0644'
+
+    - name: Deploy the nginx site config from template
+      ansible.builtin.template:
+        src: templates/training-site.conf.j2
+        dest: /etc/nginx/conf.d/training-site.conf
+        mode: '0644'
+      notify: Reload nginx
+
+    - name: Open the site port in the firewall
+      ansible.posix.firewalld:
+        port: "{{ site_port }}/tcp"
+        permanent: true
+        immediate: true
+        state: enabled
+
+    - name: Start and enable nginx
+      ansible.builtin.systemd:
+        name: nginx
+        state: started
+        enabled: true
+
+  handlers:
+    - name: Reload nginx
+      ansible.builtin.systemd:
+        name: nginx
+        state: reloaded
+
+- name: Test the sites from the Control Node
+  hosts: localhost
+  gather_facts: false
+  become: false
+  vars:
+    site_port: 8080
+
+  tasks:
+    - name: Request every site
+      ansible.builtin.uri:
+        url: "http://{{ item }}:{{ site_port }}/"
+        return_content: true
+      loop: "{{ groups['myhosts'] }}"
+      register: result_sites
+
+    - name: Print the titles
+      ansible.builtin.debug:
+        msg: "{{ item.item }}: {{ item.content | regex_search('<title>(.*)</title>', '\\1') | first }}"
+      loop: "{{ result_sites.results }}"
+      loop_control:
+        label: "{{ item.item }}"
+```
+
+```bash
+cd 04-nginx-site
+ansible-playbook nginx-site.yml
+curl http://host1:8080/
+```
+
+Run it again with `-e "site_title='New title'"`: which tasks change, and does the handler run? Why not?
+(Hint: which template contains the title?)

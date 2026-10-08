@@ -1,0 +1,87 @@
+---
+- name: Play 1. Install and run httpd or nginx with webcontent template
+  hosts: myhosts
+  gather_facts: false
+  become: true
+
+  tasks:
+
+    - name: Testing input parameter webserver
+      ansible.builtin.assert:
+        that: webserver in ['httpd', 'nginx']
+        fail_msg: "Run with -e webserver=httpd or -e webserver=nginx"
+
+    - name: Stop the other webserver, it would also use port 80
+      ansible.builtin.systemd:
+        name: "{{ item }}"
+        state: stopped
+      loop: "{{ ['httpd', 'nginx', 'lighttpd'] | difference([webserver]) }}"
+      failed_when: false
+
+    - name: Install webserver httpd or nginx
+      ansible.builtin.package:
+        name: "{{ webserver }}"
+        state: present
+
+    - name: Start and enable the selected webserver
+      ansible.builtin.systemd:
+        name: "{{ webserver }}"
+        state: started
+        enabled: true
+
+    - name: Set location for webcontent (httpd)
+      ansible.builtin.set_fact:
+        weblocation: "/var/www/html/"
+      when: webserver == "httpd"
+
+    - name: Set location for webcontent (nginx)
+      ansible.builtin.set_fact:
+        weblocation: "/usr/share/nginx/html/"
+      when: webserver == "nginx"
+
+    - name: Create webcontent
+      ansible.builtin.template:
+        src: index.html.j2
+        dest: "{{ weblocation }}index.html"
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Open HTTP service in public zone
+      ansible.posix.firewalld:
+        zone: public
+        service: http
+        permanent: true
+        immediate: true
+        state: enabled
+
+    - name: Check webcontent 200 status code from the host itself
+      ansible.builtin.uri:
+        url: http://localhost
+        return_content: true
+      register: container_response
+
+    - name: Debug container response
+      ansible.builtin.debug:
+        var: container_response.content
+
+- name: Play 2. Tests from the Control Node
+  hosts: localhost
+  gather_facts: false
+  become: false
+
+  tasks:
+
+    - name: Check webcontent 200 status code from the Control Node
+      ansible.builtin.uri:
+        url: "http://{{ item }}"
+        return_content: true
+      loop: "{{ groups['myhosts'] }}"
+      register: localhost_response
+
+    - name: Print the pages
+      ansible.builtin.debug:
+        msg: "From localhost: {{ item.content }}"
+      loop: "{{ localhost_response.results }}"
+      loop_control:
+        label: "{{ item.item }}"

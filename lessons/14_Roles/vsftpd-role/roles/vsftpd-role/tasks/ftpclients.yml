@@ -1,6 +1,0 @@
----
-  - name: latest version of lftp is installed
-    ansible.builtin.dnf:
-      name: lftp
-      state: latest
-

@@ -1,6 +1,7 @@
-# Section xx: Keywords
+# Playbook Keywords (reference)
 
 Keywords on common Playbook objects configure or modify Ansible behavior.
+Source and full list: [Playbook Keywords](https://docs.ansible.com/ansible/latest/reference_appendices/playbooks_keywords.html).
 
 ### In this section the following subjects will be covered:
 
@@ -33,7 +34,7 @@ User that you ‘become’ after using privilege escalation. The remote/login us
 #### check_mode
 A boolean that controls if a task is run normally or avoids changes to the target and tries to report what it would have done (check mode/dry run). See Validating tasks: check mode and diff mode.
 
-#### Ccollections
+#### collections
 List of collection namespaces to search for modules, plugins, and roles. See Using collections in a playbook
 
 Note

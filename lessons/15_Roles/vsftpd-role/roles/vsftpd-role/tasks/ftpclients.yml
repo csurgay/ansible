@@ -1,0 +1,5 @@
+---
+- name: lftp is installed
+  ansible.builtin.dnf:
+    name: lftp
+    state: present

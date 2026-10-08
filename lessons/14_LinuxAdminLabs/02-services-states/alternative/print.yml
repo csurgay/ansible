@@ -1,0 +1,4 @@
+---
+- name: Print one fact
+  ansible.builtin.debug:
+    var: ansible_facts.{{ item }}

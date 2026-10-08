@@ -1,0 +1,38 @@
+---
+- name: Backup with rsync
+  hosts: myhosts
+  become: true
+  gather_facts: false
+  vars:
+    source_path: /srv/appdata
+    dest_path: /tmp/backup/rsync
+
+  tasks:
+
+    - name: Install rsync on the Managed Hosts
+      ansible.builtin.dnf:
+        name: rsync
+        state: present
+
+    - name: Install rsync on the Control Node
+      ansible.builtin.dnf:
+        name: rsync
+        state: present
+      delegate_to: localhost
+      run_once: true
+
+    - name: Create the backup dir on the Control Node
+      ansible.builtin.file:
+        path: "{{ dest_path }}"
+        state: directory
+        mode: '0755'
+      delegate_to: localhost
+      run_once: true
+      become: false
+
+    - name: Backup the whole directory with rsync
+      ansible.posix.synchronize:
+        src: "{{ source_path }}"
+        dest: "{{ dest_path }}/{{ inventory_hostname }}"
+        mode: pull
+      become: false

@@ -1,0 +1,88 @@
+---
+# The CMDB (a Git repo) says which webserver runs on which host:
+#   https://github.com/csurgay/cmdb/blob/main/vars.yml
+#   data:
+#     - hostname: host1
+#       webserver: nginx
+#     - ...
+
+- name: Fetch the CMDB configuration on the Control Node
+  hosts: controlnode
+  become: false
+  gather_facts: false
+  vars:
+    cmdb_repo: https://github.com/csurgay/cmdb.git
+    cmdb_dest: /tmp/cmdb
+
+  tasks:
+    - name: Clone (or update) the CMDB repository
+      ansible.builtin.git:
+        repo: "{{ cmdb_repo }}"
+        dest: "{{ cmdb_dest }}"
+        version: main
+        force: true
+
+    - name: Load variables from the cloned vars.yml under the name cmdb
+      ansible.builtin.include_vars:
+        file: "{{ cmdb_dest }}/vars.yml"
+        name: cmdb
+
+    - name: Debug CMDB data
+      ansible.builtin.debug:
+        var: cmdb.data
+
+- name: Install the webserver the CMDB defines for each host
+  hosts: webservers
+  become: true
+  gather_facts: false
+  vars:
+    all_webservers: [httpd, nginx, lighttpd]
+
+  tasks:
+    - name: Find this host's entry in the CMDB (loaded on the Control Node)
+      ansible.builtin.set_fact:
+        cmdb_entry: "{{ hostvars['controlnode']['cmdb']['data']
+                        | selectattr('hostname', 'equalto', inventory_hostname)
+                        | first | default({}) }}"
+
+    - name: Stop if the CMDB has no entry for this host
+      ansible.builtin.fail:
+        msg: "No CMDB entry for {{ inventory_hostname }}"
+      when: cmdb_entry.webserver is not defined
+
+    - name: Stop the other webservers, they would block port 80
+      ansible.builtin.systemd:
+        name: "{{ item }}"
+        state: stopped
+      loop: "{{ all_webservers | difference([cmdb_entry.webserver]) }}"
+      failed_when: false
+
+    - name: Install the webserver package
+      ansible.builtin.dnf:
+        name: "{{ cmdb_entry.webserver }}"
+        state: present
+
+    - name: Ensure the webserver is running and enabled
+      ansible.builtin.systemd:
+        name: "{{ cmdb_entry.webserver }}"
+        state: started
+        enabled: true
+
+    - name: Open HTTP in the firewall
+      ansible.posix.firewalld:
+        service: http
+        permanent: true
+        immediate: true
+        state: enabled
+
+    - name: Test the webserver from the Control Node
+      ansible.builtin.uri:
+        url: "http://{{ inventory_hostname }}"
+        status_code: [200, 403]   # 403: default test page of some servers without index.html
+      register: result_webtest
+      delegate_to: controlnode
+      become: false
+
+    - name: Show which server answered
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }}: CMDB says {{ cmdb_entry.webserver }}, Server header says {{ result_webtest.server | default('n/a') }}"

@@ -1,0 +1,25 @@
+---
+- name: Facts and tags
+  hosts: myhosts
+  become: true
+  gather_facts: false
+
+  tasks:
+
+    - name: Gather facts, whatever tags are selected
+      ansible.builtin.setup:
+      tags: always
+
+    - name: Install httpd on the Red Hat family
+      ansible.builtin.dnf:
+        name: httpd
+        state: present
+      when: ansible_facts['os_family'] == "RedHat"
+      tags: install_apache
+
+    - name: Install apache2 on Debian/Ubuntu
+      ansible.builtin.apt:
+        name: apache2
+        state: present
+      when: ansible_facts['os_family'] == "Debian"
+      tags: install_apache

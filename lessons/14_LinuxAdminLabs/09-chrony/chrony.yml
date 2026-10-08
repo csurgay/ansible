@@ -1,0 +1,53 @@
+---
+- name: Install, configure and run chrony (NTP)
+  hosts: myhosts
+  become: true
+  gather_facts: false
+  vars:
+    # Use your company's NTP servers here, public pools are often blocked in corporate networks
+    ntp_servers:
+      - 2.fedora.pool.ntp.org
+
+  tasks:
+
+    - name: Make sure chrony is installed
+      ansible.builtin.dnf:
+        name: chrony
+        state: present
+
+    - name: Deploy chrony.conf from template
+      ansible.builtin.template:
+        src: chrony.conf.j2
+        dest: /etc/chrony.conf
+        owner: root
+        group: root
+        mode: '0644'
+        backup: true
+      notify: Restart chronyd
+
+    - name: Make sure chronyd is started and enabled
+      ansible.builtin.systemd:
+        name: chronyd
+        state: started
+        enabled: true
+
+    - name: Set timezone
+      community.general.timezone:
+        name: Europe/Budapest
+
+    - name: Get date and time
+      ansible.builtin.command:
+        cmd: date
+      register: result_date
+      changed_when: false
+
+    - name: Print date
+      ansible.builtin.debug:
+        var: result_date.stdout
+
+  handlers:
+
+    - name: Restart chronyd
+      ansible.builtin.systemd:
+        name: chronyd
+        state: restarted

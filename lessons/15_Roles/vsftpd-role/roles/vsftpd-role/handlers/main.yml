@@ -1,0 +1,6 @@
+---
+# handlers file for vsftpd-role
+- name: Restart vsftpd
+  ansible.builtin.service:
+    name: "{{ vsftpd_service }}"
+    state: restarted

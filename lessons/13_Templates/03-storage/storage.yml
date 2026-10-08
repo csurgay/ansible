@@ -1,7 +1,8 @@
 ---
-###   Separated to two plays, because of different scope of hosts
-###   Data collection must be run on all hosts
-###   Report generation runs only on the control node.
+# Separated into two plays, because of the different scope of hosts:
+#  - data collection runs on the hosts to report on (here: localhost, i.e. the VM itself;
+#    change to 'all' on a real network, containers usually report no mounts)
+#  - report generation runs only on the Control Node, looping over groups['all']
 
 - name: Collect storage usage data
   hosts: localhost

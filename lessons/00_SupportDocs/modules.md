@@ -10,7 +10,7 @@
 | | ansible.builtin.**lineinfile** | Ensure a particular line is or is not in a file |
 | | ansible.posix.**synchronize** | Synchronize content using rsync |
 | Package modules | ansible.builtin.**package** | Autodetected package manager |
-| | ansible.builtin.**yum** | YUM package manager |
+| | ansible.builtin.**yum** | YUM package manager (an alias of `dnf` in current Ansible) |
 | | ansible.builtin.**apt** | APT package manager |
 | | ansible.builtin.**dnf** | DNF package manager |
 | | ansible.builtin.**gem** | Manage Ruby gems |
@@ -80,17 +80,15 @@ This checks if Nginx is installed and adds it if not.
 ---
 ### Service Module (Systemd Module)
 
-| Feature	| Service Module | Systemd Module |
-|---------|----------------|----------------|
-| Platform support | Universal across Unix-like systems	| Specific to systemd-enabled systems |
-| Service manager detection	| Automatic detection of underlying service manager	| Direct systemd integration only | 
-| Advanced features	| Basic service operations (start, stop, restart, enable)	| Advanced systemd features (masking, daemon-reload, user services) | 
-| Dependency management	| Limited dependency handling	| Comprehensive systemd dependency management | 
-| Unit file management | No direct unit file manipulation	| Direct unit file creation and modification | 
-| Socket management	| Not supported	| Full socket unit support | 
-| Performance	| Lightweight, minimal overhead	| Feature-rich with additional overhead | 
-| Portability	| High portability across different init systems	| Limited to systemd environments | 
-| State management	| Basic state control	| Advanced state management with service properties | 
+| Feature | `service` module | `systemd` (`systemd_service`) module |
+|---------|------------------|-----------------------------------|
+| Platform support | Any init system (systemd, SysV, upstart, BSD init...) | systemd only |
+| Service manager detection | Detects the init system and calls the right backend | Talks to systemd directly |
+| Basic operations | start, stop, restart, reload, enable | the same |
+| systemd extras | No | `daemon_reload`, `masked`, `scope` (user units) |
+| Unit files | Does not create unit files | Does not create them either (deploy them with `copy`/`template`, then `daemon_reload: true`) |
+| Returned status | Basic | Full unit properties under `status` (ActiveState, UnitFileState, ...) |
+| Portability | High | systemd environments only |
 
 #### Start and enable Nginx
 
@@ -99,7 +97,7 @@ This checks if Nginx is installed and adds it if not.
   service:
     name: nginx
     state: started
-    enabled: yes
+    enabled: true
 ```
 
 #### Restart Nginx
@@ -118,7 +116,7 @@ After e.g. config modification.
 ```yaml
 - name: Restart multiple services
   hosts: appservers
-  become: yes
+  become: true
 
   tasks:
 
@@ -137,7 +135,7 @@ After e.g. config modification.
 ```yaml
 - name: Check Service Status
   hosts: all
-  become: yes
+  become: true
 
   tasks:
     - name: Get service information
@@ -198,6 +196,7 @@ After e.g. config modification.
     name: sarah
     state: present
     groups: wheel
+    append: true   # without it, groups REPLACES all secondary groups
     shell: /bin/bash
 ```
 
@@ -243,7 +242,17 @@ Install multiple packages at once with a loop:
     - curl
 ```
 
-This installs all three in one shot.
+This works, but most package modules accept a list directly, which is faster (one transaction):
+
+```yaml
+- name: Install several packages
+  package:
+    name:
+      - nginx
+      - git
+      - curl
+    state: present
+```
 
 ### Waiting for Something
 

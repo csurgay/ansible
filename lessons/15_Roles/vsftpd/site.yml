@@ -1,0 +1,8 @@
+---
+# FTP Servers playbook
+- name: FTP servers
+  ansible.builtin.import_playbook: vsftpd.yml
+
+# FTP Clients playbook
+- name: FTP clients
+  ansible.builtin.import_playbook: ftpclients.yml

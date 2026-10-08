@@ -1,0 +1,44 @@
+---
+- name: Webserver setup with tags
+  hosts: myhosts
+  become: true
+  gather_facts: false
+
+  tasks:
+
+    - name: Install nginx
+      ansible.builtin.dnf:
+        name: nginx
+        state: present
+      tags: [install, webserver]
+
+    - name: Install tools
+      ansible.builtin.dnf:
+        name: [tree, vim]
+        state: present
+      tags: [install, tools]
+
+    - name: Configure index.html
+      ansible.builtin.copy:
+        content: "Tagged hello from {{ inventory_hostname }}\n"
+        dest: /usr/share/nginx/html/index.html
+        mode: '0644'
+      tags: [configure, webserver]
+
+    - name: Start nginx
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: true
+      tags: [start, webserver]
+
+    - name: Always print where we are
+      ansible.builtin.debug:
+        msg: "Working on {{ inventory_hostname }}"
+      tags: always
+
+    - name: Clean up /tmp/backup (only when explicitly requested)
+      ansible.builtin.file:
+        path: /tmp/backup
+        state: absent
+      tags: [never, cleanup]

@@ -1,10 +1,16 @@
 # Ansible Installation
 
+> [!NOTE]
+> This is an **older reference walkthrough** (RHEL 8, Ansible 2.9 / ansible-core 2.11, Python 3.6), adapted from
+> [techbeatly](https://www.techbeatly.com/). The lab uses Fedora 42 with ansible-core 2.18, so versions and outputs
+> differ, but the steps are the same. Note that Ansible uses the user `ansible` on the Control Node here and
+> the remote user `devops` on the Managed Node.
+
 ## Installing Ansible on RHEL OS
 
 Read official documentation [Installing Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html) for other platforms.
 
-Create a user for Ansible (Optional) with sudo acccess
+Create a user for Ansible (Optional) with sudo access
 
 ```shell
 [root@ansible ~]# useradd ansible
@@ -53,7 +59,7 @@ ansible 2.9.27
   python version = 3.6.8 (default, Mar 18 2021, 08:58:41) [GCC 8.4.1 20200928 (Red Hat 8.4.1-1)]
 ```
 
-Remove old Ansibe
+Remove old Ansible
 
 ```shell
 [ansible@ansible ~]$ sudo dnf remove ansible
@@ -68,7 +74,7 @@ Install Ansible using Python pip
 Check Ansible version again
 
 ```shell
-ansible@ansible ~]$ ansible --version
+[ansible@ansible ~]$ ansible --version
 [DEPRECATION WARNING]: Ansible will require Python 3.8 or newer on the controller starting with Ansible 
 2.12. Current version: 3.6.8 (default, Mar 18 2021, 08:58:41) [GCC 8.4.1 20200928 (Red Hat 8.4.1-1)]. This 
 feature will be removed from ansible-core in version 2.12. Deprecation warnings can be disabled by setting 
@@ -94,7 +100,7 @@ Create a project directory and `ansible.cfg`
 [ansible@ansible ansible-demo]$ vim ansible.cfg
 
 [ansible@ansible ansible-demo]$ cat ansible.cfg 
-  [Defaults]
+  [defaults]
   inventory = ./hosts 
   remote_user = devops
   ask_pass = false       
@@ -103,18 +109,18 @@ Create a project directory and `ansible.cfg`
 Check version and ansible.cfg
 
 ```shell
-  ansible@ansible ansible-demo]$ ansible --version
+  [ansible@ansible ansible-demo]$ ansible --version
   ansible [core 2.11.6] 
     config file = /home/ansible/ansible-demo/ansible.cfg
     .
     .
 ```
 
-Sample `ansible.cfg` with privilege escaltion details.
+Sample `ansible.cfg` with privilege escalation details.
 
 ```shell
 [ansible@ansible ansible-demo]$ cat ansible.cfg 
-[Defaults]
+[defaults]
 inventory = ./hosts 
 remote_user = devops
 ask_pass = false       
@@ -209,16 +215,16 @@ Ansible help
 .
 ```
 
-Filtering nodes
+Filtering nodes (quote patterns, otherwise the shell may expand `*` itself)
 
 ```shell
-[ansible@ansible ansible-demo]$ ansible --list-hosts -i myinventory *techbeatly.com
+[ansible@ansible ansible-demo]$ ansible --list-hosts -i myinventory '*techbeatly.com'
   hosts (3):
     servera.techbeatly.com
     serverb.techbeatly.com
     db101.techbeatly.com
 
-[ansible@ansible ansible-demo]$ ansible --list-hosts -i myinventory db*
+[ansible@ansible ansible-demo]$ ansible --list-hosts -i myinventory 'db*'
   hosts (1):
     db101.techbeatly.com
 ```
@@ -305,8 +311,7 @@ Configure ssh details in inventory
 
 ```shell
 [dev]
-dev-rhel8-55 ansible_host=192.168.100.4 ansible_ssh_private_key_file=/home/ansible/.ssh/id_rsa ansible_user=
-devops
+dev-rhel8-55 ansible_host=192.168.100.4 ansible_ssh_private_key_file=/home/ansible/.ssh/id_rsa ansible_user=devops
 
 ## or
 

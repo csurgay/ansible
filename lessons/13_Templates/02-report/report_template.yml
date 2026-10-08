@@ -1,0 +1,12 @@
+---
+- name: The same report with one template task
+  hosts: myhosts
+  gather_facts: true
+
+  tasks:
+
+    - name: Generate the report from a template
+      ansible.builtin.template:
+        src: report.txt.j2
+        dest: /tmp/report.txt
+        mode: '0644'

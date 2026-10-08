@@ -8,41 +8,41 @@
 1. Inventory for Playbooks
 1. Sample Playbook
 1. Running Playbook
+1. Exercises
 
 ---
 ### Playbooks Introduction
 
-We learnt that the Ansible ad-hoc commands is a powerful tool to manipulate all kinds of states in managed hosts. But of course they can only carry out single tasks at a time. The real power of Ansible though is that complex tasks can be carried out by Playbooks. **Playbooks** can be seen as a collection of ad-hoc Ansible commands in an organized, documented, reusable manner to manipulate states of managed host. And of course Playbooks have a whole lot of other constructs and benefits to be discussed later.
+We learnt that Ansible ad-hoc commands are a powerful tool to manipulate all kinds of states in managed hosts. But of course they can only carry out a single task at a time. The real power of Ansible is that complex tasks can be carried out by Playbooks. **Playbooks** can be seen as a collection of ad-hoc Ansible commands in an organized, documented, reusable manner to manipulate states of managed hosts. And of course Playbooks have a whole lot of other constructs and benefits to be discussed later.
 
-Playbooks consist of muntiple **Plays**, each for a complex operation in itself, and Plays consist of **Tasks**. Tasks are the building blocks of complex operations, much like the ad-hoc commands we have seen so far.
+Playbooks consist of one or more **Plays**, each for a complex operation in itself, and Plays consist of **Tasks**. Tasks are the building blocks of complex operations, much like the ad-hoc commands we have seen so far.
 
-Playbooks are written in **yaml** format, so let's go through it's basics firts.
+Playbooks are written in **YAML** format, so let's go through its basics first.
 
 ---
 ### YAML format
 
-YAML is much like JSON in terms of 
+YAML is much like JSON in terms of
 
 * key-value pairs
 * lists
 * dictionaries
 * complex (or nested) objects
-* comments
 
-the main difference being the rigorous use of intendation (like in Python).
+the main difference being the rigorous use of indentation (like in Python). YAML also supports comments, JSON does not.
 
-| Construct | JSON | YAML (__ is space intendation) |
+| Construct | JSON | YAML (`__` is a space of indentation) |
 | --------- | ---- | ---- |
-| key-value pair | "key": value | key: value |
-| list | ["a",1,"b"] | - "a"<br> - 1<br> - "b" |
-| dict | tags:{"A": 1, "B": 2, "C": 3} | tags:<br>__A: 1<br>__B: 2<br>__C: 3 |
-| nesting<br>(complex objects) | { "A": { "L": [ V1, V2 ], "K": 3 } } | A: <br> __"L": <br> __ __- V1 <br> __ __- V2 <br> __"K": 3 |
-| comment | // comment | # comment |
-| multiline strings | N/A | \| <br> multi <br> line <br> string |
+| key-value pair | `{"key": "value"}` | `key: value` |
+| list | `["a", 1, "b"]` | `- a`<br>`- 1`<br>`- b` |
+| dict | `{"tags": {"A": 1, "B": 2, "C": 3}}` | `tags:`<br>`__A: 1`<br>`__B: 2`<br>`__C: 3` |
+| nesting<br>(complex objects) | `{"A": {"L": ["V1", "V2"], "K": 3}}` | `A:`<br>`__L:`<br>`____- V1`<br>`____- V2`<br>`__K: 3` |
+| comment | N/A | `# comment` |
+| multiline strings | `"multi\nline\nstring"` | `script: \|`<br>`__multi`<br>`__line`<br>`__string` |
 
-There is also a multiline string option in YAML which comes handy when including scripts in other languages or SQL queries.
+The multiline string option (`|` keeps the line breaks) comes handy when including scripts in other languages or SQL queries.
 
-A copmplete Playbook looks like the one below. `---` is the start of the Playbook: a list of Plays. Each Play starts with a dash `-` symbol to indicate list element (see table above). Similarly `tasks:` of a Play is list of Tasks, so each Task starts with the dash `-` symbol.
+A complete Playbook is shown in the [Sample Playbook](#sample-playbook) section below. `---` is the start of the YAML document, which is a list of Plays. Each Play starts with a dash `-` symbol to indicate a list element (see table above). Similarly `tasks:` of a Play is a list of Tasks, so each Task starts with the dash `-` symbol.
 
 ---
 ### Configuration for Playbooks
@@ -53,10 +53,10 @@ A copmplete Playbook looks like the one below. `---` is the start of the Playboo
 
 A minimal config file for a simple playbook could be:
 
-```yaml
+```ini
 [defaults]
-interpreter_python=/usr/bin/python3
-result_format=yaml
+interpreter_python = /usr/bin/python3
+callback_result_format = yaml
 ```
 
 ---
@@ -64,14 +64,14 @@ result_format=yaml
 
 Inventory lists all hosts that Plays in a Playbook will potentially manage.
 
-The same rules and locations apply for Playbooks Inventory than for ad-hoc commands Inventory.
+The same rules and locations apply for the Playbook Inventory as for the ad-hoc command Inventory.
 
 #### myinventory.ini
 
 A minimal inventory for this simple playbook could be:
 
-```yaml
-[ansible_controlnode]
+```ini
+[controlnode]
 localhost
 
 [webservers]
@@ -82,13 +82,13 @@ host2
 ---
 ### Sample Playbook
 
-The sample Playbook below installs and starts an nginx service and tests it from the Control Node. Control Node is referred to as `localhost` because that is where the Playbook is run by Ansible.
+The sample Playbook below installs and starts an nginx service, opens the firewall and tests it from the Control Node. The Control Node is referred to as `localhost` because that is where the Playbook is run by Ansible.
 
-You can use blank lines and comments anywhere to increase readability. Intendation however are handled rigorously: children have to be indented more than parents and siblings have to be intended exactly the same (much like in Python).
+You can use blank lines and comments anywhere to increase readability. Indentation however is handled rigorously: children have to be indented more than parents and siblings have to be indented exactly the same (much like in Python).
 
-The Playbook below is saved e.g. in the file `sample_playbook.yml`. 
+The Playbook below is saved in the file `sample_playbook/sample_playbook.yml`, see the [sample_playbook lesson](sample_playbook/README.md) for a detailed walkthrough.
 
-```
+```yaml
 ---
 # Comment: Sample Playbook of two Plays
 
@@ -101,13 +101,26 @@ The Playbook below is saved e.g. in the file `sample_playbook.yml`.
     - name: 1st Task. Install nginx
       ansible.builtin.package:
         name: nginx
-        state: latest
+        state: present
 
     - name: 2nd Task. Start nginx
       ansible.builtin.systemd:
         name: nginx
         state: started
         enabled: true
+
+    - name: 3rd Task. index.html
+      ansible.builtin.copy:
+        content: "Hi from {{ inventory_hostname }}!\n"
+        dest: /usr/share/nginx/html/index.html
+        mode: '0644'
+
+    - name: 4th Task. Open port 80
+      ansible.posix.firewalld:
+        service: http
+        permanent: true
+        immediate: true
+        state: enabled
 
 - name: 2nd Play. Check return code 200
   hosts: localhost
@@ -120,33 +133,41 @@ The Playbook below is saved e.g. in the file `sample_playbook.yml`.
         url: "http://{{ item }}:80"
       loop: "{{ groups['webservers'] }}"
       register: result_curl
-    - ansible.builtin.debug:
+
+    - name: Print results
+      ansible.builtin.debug:
         var: result_curl
 ```
 
 ---
 ### Running a Playbook
 
-Playbooks are run then with the command:
+Playbooks are run with the `ansible-playbook` command, from the directory of the Playbook:
+
 ```bash
-ansible-playbook -i ./myinventrory.ini sample_playbook.yml
+cd sample_playbook
+ansible-playbook -i ./myinventory.ini sample_playbook.yml
 ```
 
 Verbosity of output can be increased using the usual `-v`, `-vv`, `-vvv`, `-vvvv` options.
 
-To check the syntax of your Playbook without running it, use the `--syntax-check` option:  
+To check the syntax of your Playbook without running it, use the `--syntax-check` option:
 `ansible-playbook -i ./myinventory.ini --syntax-check sample_playbook.yml`
 
-To dry run your Playbook (check what would be changed without changing anything) on Managed Hosts, use the `--check` oprion:  
+To dry run your Playbook (check what would be changed without changing anything) on Managed Hosts, use the `--check` option:
 `ansible-playbook -i ./myinventory.ini --check sample_playbook.yml`
 
+---
+### Exercises
 
+Work through the subdirectories in this order:
 
+| Lesson | Topics |
+|--------|--------|
+| [sample_playbook](sample_playbook/README.md) | Anatomy of a Playbook, two Plays, `package`, `systemd`, `firewalld`, `uri`, `loop`, `register` |
+| [00-command-shell](00-command-shell/README.md) | Your own project directory, `command` vs `shell`, `register` + `debug` |
+| [01-haproxy](01-haproxy/README.md) | Install and configure a service from a config file: `dnf`, `file`, `copy`, `firewalld`, `systemd` |
+| [02-raw](02-raw/README.md) | Running commands without Python with `raw`, `changed_when`, `check_mode` |
 
-
-
-
-
-
-
-
+More complex, real-life playbooks (users, sshd, backups, time sync, troubleshooting...) follow in
+[14_LinuxAdminLabs](../14_LinuxAdminLabs/README.md), once Variables, Vault, Control Flow and Templates are covered.

@@ -1,9 +1,13 @@
-# Section 9. DirectoryLayout
+# Section 9. Directory Layout
 
 ### In this section the following subjects will be covered:
 
 1. Recommended Layout
 1. Alternative Layout
+
+Both layouts come from the [Ansible documentation](https://docs.ansible.com/ansible/latest/tips_tricks/sample_setup.html).
+`group_vars/` and `host_vars/` and their precedence are explained in [08_Variables](../08_Variables/README.md#precedence-of-variable-locations),
+roles in [15_Roles](../15_Roles/README.md).
 
 ---
 ### Recommended Layout

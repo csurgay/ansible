@@ -1,0 +1,5 @@
+# Normalize line endings: everything is LF in the repo, so scripts also work
+# when the working copy was checked out or edited on Windows.
+* text=auto eol=lf
+*.png binary
+*.jpg binary

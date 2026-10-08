@@ -1,0 +1,48 @@
+---
+# tasks file for deploy-web-server
+
+- name: Install the webserver and firewalld
+  ansible.builtin.dnf:
+    name:
+      - "{{ web_package }}"
+      - firewalld
+    state: present
+
+- name: Create the web root
+  ansible.builtin.file:
+    path: "{{ web_root }}"
+    state: directory
+    mode: '0755'
+
+- name: Deploy index.html
+  ansible.builtin.template:
+    src: index.html.j2
+    dest: "{{ web_root }}/index.html"
+    mode: '0644'
+
+- name: Enable and run firewalld
+  ansible.builtin.service:
+    name: firewalld
+    enabled: true
+    state: started
+
+- name: Firewalld permit http service
+  ansible.posix.firewalld:
+    service: http
+    permanent: true
+    state: enabled
+    immediate: true
+
+- name: Stop the conflicting webservers, they would block port 80
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: stopped
+    enabled: false
+  loop: "{{ web_conflicting_services }}"
+  failed_when: false
+
+- name: Webserver enabled and running
+  ansible.builtin.service:
+    name: "{{ web_service }}"
+    enabled: true
+    state: started

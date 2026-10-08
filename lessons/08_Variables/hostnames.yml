@@ -1,6 +1,6 @@
-# Playbook to illustrate inventory_hostname vs. ansible_hostname
+# Playbook to illustrate inventory_hostname vs. ansible_host
 ---
-- name: inventory_hostname vs. ansible_hostname
+- name: inventory_hostname vs. ansible_host
   hosts: all
   become: false
   gather_facts: false

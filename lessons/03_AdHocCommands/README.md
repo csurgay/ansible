@@ -14,22 +14,31 @@
 1. File Permissions (`file`)
 1. Gathering Facts (`setup`)
 1. Rebooting Hosts (`reboot`)
-1. Limit and Control Parallel Processes (`limit` and `fork`)
+1. Limit and Control Parallel Processes (`--limit` and `--forks`)
 1. Final Exercise: Multi-Step Task
 
-> [!WARNING]
-> For these exercises to work in the `lessons/03_AdHocCommands` directory you need to set up an inventory
-> in this directory locally and use `-i inventory` option with the `ansible` command!
+> [!IMPORTANT]
+> This directory contains no Ansible project files yet, you create them now. Work in `lessons/03_AdHocCommands`
+> and create the two files below. Ansible always reads `./ansible.cfg` from the current directory first.
 
 #### inventory
-```yaml
+```ini
 host1
 host2
+host3
+```
+
+#### ansible.cfg
+```ini
+[defaults]
+inventory = ./inventory
+remote_user = devops
+interpreter_python = /usr/bin/python3
 ```
 
 #### ansible command
-```yaml
-ansible all -i inventory -m <module> -a <module arguments>
+```bash
+ansible all -m <module> -a "<module arguments>"
 ```
 
 ## Ad-Hoc commands
@@ -41,7 +50,7 @@ Ad-Hoc commands are executed with the **`ansible`** command-line tool and genera
 
 ```
 ansible <host-pattern> <options> -m <module> -a "<module-options>"
-````
+```
 
 * **`<host-pattern>`** → Specifies target hosts (from the inventory)
   * `all`
@@ -49,14 +58,14 @@ ansible <host-pattern> <options> -m <module> -a "<module-options>"
   * any hostgroups
   * single hosts or IP addresses
   * set of hosts, wildcards, regular expressions
-* **`<options>`** → Options for ths ansible command
+* **`<options>`** → Options for the ansible command
   * `-i`, `--inventory`: location of inventory file
   * `--list-hosts`: list hosts from inventory
   * `-u`, `--user`: ssh user
   * `-b`, `--become`: become root on managed host
   * `--become-user`: default is root, can be other user
   * `-K`, `--ask-become-pass`: asks for sudo password on managed host
-  * `-f`, `--fork`: limits parallel processes
+  * `-f`, `--forks`: number of parallel processes
   * `-l`, `--limit`: limit hosts to specified group or pattern
 * **`-m <module>`** → Defines the module to use (e.g., `ping`, `shell`, `copy`)
 * **`-a "<module-options>"`** → Provides arguments to the module
@@ -73,7 +82,7 @@ ansible <host-pattern> <options> -m <module> -a "<module-options>"
 ansible all --list-hosts
 ```
 
-Lists all hosts from the default configured inventory file.
+Lists all hosts from the inventory configured in `ansible.cfg`.
 
 **Exercise:**
 
@@ -118,13 +127,15 @@ Checks if hosts are reachable.
 
 ```
 ansible all -m command -a "uptime"
-ansible all -m shell -a "echo $HOME"
+ansible all -m shell -a 'echo $HOME'
 ```
 
 **Exercise:**
 
 * Use `command` to display the system’s uptime.
 * Use `shell` to check the current user’s home directory.
+* Now run it with double quotes: `ansible all -m shell -a "echo $HOME $HOSTNAME"`. Why does every host print
+  `ansible`? (Hint: who expands `$...` inside double quotes, your local shell or the Managed Host?)
 
 > [!WARNING]
 > Although Ansible is idempotent and reports changes through colored output, `shell` and `command` modules always report “changed”, because Ansible cannot determine actual effect of arbitrary operations on the system.
@@ -139,7 +150,8 @@ ansible all -m shell -a "echo $HOME"
 ansible all --become -m shell -a whoami
 ```
 
-This will return an error message because `devops` cannot `sudo` without password.
+This prints `root` for every host: in the lab, user `devops` has **passwordless** `sudo`
+(see `/etc/sudoers.d/devops` on the Managed Hosts).
 
 * **Ask to provide `sudo` password**:
 
@@ -147,7 +159,9 @@ This will return an error message because `devops` cannot `sudo` without passwor
 ansible all --become --ask-become-pass -m shell -a whoami
 ```
 
-This will ask for the `sudo` password and use that on the managed hosts (user `devops` passwd is `devops`).  
+On real servers `sudo` usually asks for the user's password. `-K` (`--ask-become-pass`) makes Ansible prompt
+for it once and use it on all managed hosts. In the lab you can type anything (or `devops`), since no
+password is required.
 
 > [!NOTE]
 > The reason why it's called "become" is that there can be other elevations than `sudo`.  
@@ -157,6 +171,7 @@ This will ask for the `sudo` password and use that on the managed hosts (user `d
 
 * Try becoming `root` and using `shell` module to `whoami` on host1.
 * Try the same but with providing the `sudo` password for the managed host.
+* Try `whoami` without `--become`: which user does Ansible log in as, and where is that configured?
 
 ---
 
@@ -187,7 +202,7 @@ ansible all -m copy -a "src=myscript.sh dest=/usr/local/bin mode=0755" --become 
 ansible all -m command -a "cat /usr/local/bin/myscript.sh"
 ```
 
-* Fetch `/etc/redhat-release` from all hosts into into `/tmp/hosts/`:
+* Fetch `/etc/redhat-release` from all hosts into `/tmp/hosts/`:
 
 ```
 ansible all -m fetch -a "src=/etc/redhat-release dest=/tmp/hosts"
@@ -198,32 +213,39 @@ cat /tmp/hosts/*/etc/redhat-release
 ---
 
 > [!WARNING]
-> From here onwards let's set privilege escalation in `ansible.cfg` so that no `--become` option is necessary:
-> ```
+> From here onwards let's set privilege escalation in `ansible.cfg` so that no `--become` option is necessary.
+> Append this section to your `ansible.cfg`:
+> ```ini
 > [privilege_escalation]
-> become=true
-> become_ask_pass=true
+> become = true
+> become_ask_pass = false
 > ```
+> (`become_ask_pass = true` would prompt for the sudo password at every command, which is only useful
+> where sudo really needs a password.)
 
-### Package Management (`package`, `yum` / `apt`)
+### Package Management (`package`, `dnf` / `apt`)
 
 ```
-ansible all -m yum -a "name=git state=present"
-ansible all -m yum -a "name=nginx state=latest"
+ansible all -m dnf -a "name=git state=present"
+ansible all -m dnf -a "name=nginx state=present"
 ```
+
+`package` picks the right package manager automatically, `dnf` (Fedora/RHEL) and `apt` (Debian/Ubuntu) are the
+specific ones. (`yum` still works on RHEL, but in current Ansible it is just an alias of `dnf`.)
 
 **Exercise:**
 
-* Install `git` on all hosts. (Note, that because of idempotency nothing changes.)
+* Install `git` on all hosts. (Note, that because of idempotency nothing changes, it is already installed.)
 
 ```
-ansible all -m yum -a "name=git state=present"
+ansible all -m dnf -a "name=git state=present"
 ```
 
-* Remove `nginx` from a specific host.
+* Install `tmux` on all hosts, then remove it from a specific host.
 
 ```
-ansible host1 -m yum -a "name=nginx state=absent"
+ansible all -m package -a "name=tmux state=present"
+ansible host1 -m package -a "name=tmux state=absent"
 ```
 
 ---
@@ -237,7 +259,7 @@ ansible all -m systemd -a "name=nginx enabled=yes state=stopped"
 
 **Exercise:**
 
-* Start `httpd` or `nginx` service on all hosts.
+* Start the `nginx` service on all hosts (installed in the previous section).
 
 ```
 ansible all -m service -a "name=nginx state=started"
@@ -254,10 +276,14 @@ ansible all -m systemd -a "name=nginx enabled=yes"
 ### User and Group Management (`user` / `group`)
 
 ```
-ansible -i inventory host1 -m user -a "name=deploy state=present"
-ansible -i inventory host1 -m user -a "name=deploy groups=wheel state=present append=true" --become
-ansible -i inventory host1 -m group -a "name=wheel state=absent" --become
+ansible host1 -m group -a "name=developers state=present"
+ansible host1 -m user -a "name=deploy state=present"
+ansible host1 -m user -a "name=deploy groups=developers append=true state=present"
+ansible host1 -m command -a "id deploy"
 ```
+
+> [!CAUTION]
+> Without `append=true` the `groups` list **replaces** all secondary groups of the user.
 
 **Exercise:**
 
@@ -267,11 +293,14 @@ ansible -i inventory host1 -m group -a "name=wheel state=absent" --become
 ansible all -m user -a "name=ansibleuser state=present"
 ```
 
-* Delete the `devops` group from one host.
+* Remove user `deploy` and then the `developers` group from host1.
 
 ```
-ansible host1 -m group -a "name=devops state=absent"
+ansible host1 -m user -a "name=deploy state=absent remove=true"
+ansible host1 -m group -a "name=developers state=absent"
 ```
+
+* Try to delete the `devops` group from host1. Why does it fail? (Hint: `id devops`)
 
 ---
 
@@ -314,12 +343,13 @@ ansible all -m reboot
 * Test if they are online with `ping`.
 
 > [!CAUTION]
+> Never reboot the Control Node (`localhost`) this way, you would lose your session.
 > Containers do not come back after reboot in default behaviour, so they are run by `--restart always`. Check status by `sudo podman ps -a`. Still, to get back with ssh can take some time.  
 > If you happen to stop them by accident, restart them by `sudo podman start ansible host1 host2 host3`
 
 ---
 
-### Limit and Control Parallel Processes (`limit` and `fork`)
+### Limit and Control Parallel Processes (`--limit` and `--forks`)
 
 * Run against **specific subset (`--limit <host-pattern>`) of hosts**:
 
@@ -386,14 +416,3 @@ ansible all -m shell -a "curl -s localhost"
 > [!TIP]
 > With ad-hoc commands, you can quickly **test, configure, and troubleshoot** systems.  
 > For more complex workflows, you’ll want to use **Ansible Playbooks**.
-
-
-
-
-
-
-
-
-
-
-

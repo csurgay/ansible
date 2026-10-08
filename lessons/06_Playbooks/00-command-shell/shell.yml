@@ -1,3 +1,4 @@
+# Usage of the shell module: bash parsing is required (e.g. pipes, redirections, etc.)
 ---
 - name: Listing files
   hosts: all
@@ -6,10 +7,21 @@
 
   tasks:
 
-    - name: Listing
-      ansible.builtin.shell: "ls -la /etc/ssh/ > /tmp/sshdir.lst"
+    - name: List the SSH host keys (pipe needs the shell)
+      ansible.builtin.shell: "ls -la /etc/ssh/ | grep ssh_host"
       register: result_listing
 
     - name: Print result
       ansible.builtin.debug:
         var: result_listing.stdout_lines
+
+    - name: Save the listing into a file (redirection needs the shell)
+      ansible.builtin.shell: "ls -la /etc/ssh/ > /tmp/sshdir.lst"
+
+    - name: Read the file back
+      ansible.builtin.command: cat /tmp/sshdir.lst
+      register: result_file
+
+    - name: Print file content
+      ansible.builtin.debug:
+        var: result_file.stdout_lines

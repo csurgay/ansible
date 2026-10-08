@@ -1,0 +1,6 @@
+---
+vsftpd_package: vsftpd
+vsftpd_service: vsftpd
+vsftpd_config_file: /etc/vsftpd/vsftpd.conf
+vsftpd_pasv_min_port: 21000
+vsftpd_pasv_max_port: 21020

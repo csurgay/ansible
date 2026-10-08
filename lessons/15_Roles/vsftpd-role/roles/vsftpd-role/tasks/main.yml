@@ -1,0 +1,12 @@
+---
+# tasks file for vsftpd-role
+
+# FTP servers
+- name: Set up the FTP servers
+  ansible.builtin.include_tasks: vsftpd.yml
+  when: inventory_hostname in groups['ftpservers']
+
+# FTP clients
+- name: Set up the FTP clients
+  ansible.builtin.include_tasks: ftpclients.yml
+  when: inventory_hostname in groups['ftpclients']

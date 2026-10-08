@@ -7,7 +7,11 @@
 
     - name: Debug myvar
       ansible.builtin.debug:
-        var:
-          myvar
+        var: myvar
 
+- name: Variable Precedence Test with a role
+  hosts: host1
+  gather_facts: false
 
+  roles:
+    - myrole

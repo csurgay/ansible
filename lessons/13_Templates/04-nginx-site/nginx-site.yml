@@ -1,0 +1,75 @@
+---
+- name: Provision an extra nginx website from templates
+  hosts: myhosts
+  gather_facts: true
+  become: true
+  vars:
+    site_port: 8080
+    site_root: /srv/training-site
+    site_title: Hello from the Ansible Bootcamp
+
+  tasks:
+    - name: Install nginx
+      ansible.builtin.dnf:
+        name: nginx
+        state: present
+
+    - name: Create the web root
+      ansible.builtin.file:
+        path: "{{ site_root }}"
+        state: directory
+        mode: '0755'
+
+    - name: Deploy index.html from template
+      ansible.builtin.template:
+        src: templates/index.html.j2
+        dest: "{{ site_root }}/index.html"
+        mode: '0644'
+
+    - name: Deploy the nginx site config from template
+      ansible.builtin.template:
+        src: templates/training-site.conf.j2
+        dest: /etc/nginx/conf.d/training-site.conf
+        mode: '0644'
+      notify: Reload nginx
+
+    - name: Open the site port in the firewall
+      ansible.posix.firewalld:
+        port: "{{ site_port }}/tcp"
+        permanent: true
+        immediate: true
+        state: enabled
+
+    - name: Start and enable nginx
+      ansible.builtin.systemd:
+        name: nginx
+        state: started
+        enabled: true
+
+  handlers:
+    - name: Reload nginx
+      ansible.builtin.systemd:
+        name: nginx
+        state: reloaded
+
+- name: Test the sites from the Control Node
+  hosts: localhost
+  gather_facts: false
+  become: false
+  vars:
+    site_port: 8080
+
+  tasks:
+    - name: Request every site
+      ansible.builtin.uri:
+        url: "http://{{ item }}:{{ site_port }}/"
+        return_content: true
+      loop: "{{ groups['myhosts'] }}"
+      register: result_sites
+
+    - name: Print the titles
+      ansible.builtin.debug:
+        msg: "{{ item.item }}: {{ item.content | regex_search('<title>(.*)</title>', '\\1') | first }}"
+      loop: "{{ result_sites.results }}"
+      loop_control:
+        label: "{{ item.item }}"

@@ -1,0 +1,4 @@
+HOST={{ ansible_facts['hostname'] }}
+MEMORY={{ ansible_facts['memtotal_mb'] }}
+BIOS={{ ansible_facts['bios_version'] }}
+SDA_DISK_SIZE={{ ansible_facts['devices']['sda']['size'] if 'sda' in ansible_facts['devices'] else 'NONE' }}

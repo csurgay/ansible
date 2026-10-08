@@ -1,0 +1,14 @@
+My favourite color is {{ favourite_color }}
+
+{% if age | int > 18 %}
+You are an adult, and you can vote in the voting center: {{ voting_center }}
+{% else %}
+Sorry, you are a minor and you can't vote yet.
+{% endif %}
+
+A list of fruits:
+{% for fruit in fruits %}
+ - {{ fruit }}
+{% endfor %}
+{# This is a Jinja2 comment, it does not appear in the result #}
+Generated for {{ inventory_hostname }} ({{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }})
