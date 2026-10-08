@@ -388,7 +388,7 @@ Magic variables are automatically set by Ansible and can be used to get informat
 | **`hostvars`** | Used to get another managed host's variables. Includes facts after `gather_facts: true` |
 | **`group_names`** | All the groups the current managed host is member of |
 | **`groups`** | Indexed by a group, stores all hosts of that group |
-| **`ansible_hostname`** | Hostname of the currently visited managed host. |
+| **`ansible_host`** | Hostname of the currently visited managed host. |
 | **`inventory_hostname`** | Alias in inventory of the currently visited managed host. |
 
 #### Usage examples
