@@ -388,8 +388,8 @@ Magic variables are automatically set by Ansible and can be used to get informat
 | **`hostvars`** | Used to get another managed host's variables. Includes facts after `gather_facts: true` |
 | **`group_names`** | All the groups the current managed host is member of |
 | **`groups`** | Indexed by a group, stores all hosts of that group |
-| **`ansible_host`** | Hostname of the currently visited managed host. |
-| **`inventory_hostname`** | Alias in inventory of the currently visited managed host. |
+| **`ansible_host`** |  of the currently visited managed host. |
+| **`inventory_`** | Alias in inventory of the currently visited managed host. |
 
 #### Usage examples
 
@@ -399,7 +399,7 @@ ansible host2     -m debug -a 'var=hostvars'
 ansible all       -m debug -a 'var=hostvars.host3.ansible_version.string'
 ansible host1     -m debug -a 'var=group_names'
 ansible localhost -m debug -a 'var=groups'
-ansible host1     -m debug -a 'var=inventory_hostname'
+ansible host1     -m debug -a 'var=inventory_'
 ```
 
 ---
@@ -411,7 +411,7 @@ Connection variables are placed into inventory to control how Ansible connect to
 
 | Magic variable | Description |
 |----------------|-------------|
-| **`ansible_hostname`** | The actual name of the host (not neccessarily the inventory alias inventory_hostname, which is the default value) |
+| **`ansible_host`** | The actual name of the host (not neccessarily the inventory alias inventory_hostname, which is the default value) |
 | **`ansible_port`** | Might not be 22 for some hosts, but has no default value unless defined |
 | **`ansible_user`** | Define this if host is connected to with some other user, no default user |
 | **`ansible_become`** | Same as --become for the host in the inventory, no default value |
@@ -431,9 +431,9 @@ appserver ansible_host=host3
 
 #### Sample Playbook usage
 ```yaml
-# Playbook to illustrate inventory_hostname vs. ansible_hostname
+# Playbook to illustrate inventory_hostname vs. ansible_host
 ---
-- name: inventory_hostname vs. ansible_hostname
+- name: inventory_hostname vs. ansible_host
   hosts: all
   become: false
   gather_facts: false
