@@ -149,6 +149,23 @@ ansible-playbook hostdata.yml
 Compare the two: which one is easier to read and to extend? When is `lineinfile` still the right tool?
 (Hint: when you own only one line of a file that someone else manages.)
 
+If you own **several** consecutive lines of such a file, use `ansible.builtin.blockinfile` instead of
+`lineinfile`: it wraps the block in marker comments and updates (not duplicates) it on the next run.
+
+```yaml
+- name: Manage the proxy section of app.ini
+  ansible.builtin.blockinfile:
+    path: /etc/myapp/app.ini
+    block: |
+      [proxy]
+      host={{ proxy_host }}
+      port={{ proxy_port }}
+```
+
+The file then contains `# BEGIN ANSIBLE MANAGED BLOCK` ... `# END ANSIBLE MANAGED BLOCK` around the lines.
+A multi-line `line:` in `lineinfile` would never match a single line of the file, so it would be inserted
+again on every run.
+
 ```bash
 cd 02-report
 ansible-playbook report.yml && ansible host1 -m command -a "cat /tmp/report.txt"

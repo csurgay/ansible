@@ -1,0 +1,28 @@
+---
+- name: Rolling update, one webserver at a time
+  hosts: webservers
+  become: true
+  gather_facts: false
+  serial: 1                 # one host per batch (also: 2, or "25%")
+  max_fail_percentage: 0    # stop the whole Play as soon as any host fails
+
+  tasks:
+
+    - name: Make sure nginx is installed and up to date
+      ansible.builtin.dnf:
+        name: nginx
+        state: present
+      notify: Restart nginx
+
+    - name: Make sure nginx is running
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: true
+
+  handlers:
+
+    - name: Restart nginx
+      ansible.builtin.service:
+        name: nginx
+        state: restarted

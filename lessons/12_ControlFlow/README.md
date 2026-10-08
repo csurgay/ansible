@@ -7,6 +7,7 @@
 1. Handlers
 1. Blocks
 1. Error handling
+1. Rolling updates and failure thresholds
 1. Delegation
 1. Conditional Roles
 
@@ -384,6 +385,58 @@ stops executing the Play. These keywords change that:
 ```bash
 ansible-playbook errors.yml
 ```
+
+---
+## Rolling updates and failure thresholds
+
+By default a Play runs each task on **all** its hosts in parallel (up to `forks`), and a host that fails is simply
+dropped: the Play **continues on the remaining hosts**. Three Play keywords change that:
+
+| Keyword | Effect |
+|---------|--------|
+| `serial: 1` (or `2`, `"25%"`, `[1, 5, "50%"]`) | Run the **whole Play** (handlers included) on one batch of hosts at a time — a rolling update |
+| `max_fail_percentage: 10` | Abort the whole Play if more than 10% of the hosts (of the current batch, with `serial`) failed |
+| `any_errors_fatal: true` | Abort the whole Play as soon as any single host fails |
+
+#### rolling.yml
+```yaml
+---
+- name: Rolling update, one webserver at a time
+  hosts: webservers
+  become: true
+  gather_facts: false
+  serial: 1                 # one host per batch (also: 2, or "25%")
+  max_fail_percentage: 0    # stop the whole Play as soon as any host fails
+
+  tasks:
+
+    - name: Make sure nginx is installed and up to date
+      ansible.builtin.dnf:
+        name: nginx
+        state: present
+      notify: Restart nginx
+
+    - name: Make sure nginx is running
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: true
+
+  handlers:
+
+    - name: Restart nginx
+      ansible.builtin.service:
+        name: nginx
+        state: restarted
+```
+
+```bash
+ansible-playbook rolling.yml
+```
+
+Watch the output: the Play runs completely on `host1` (including the handler), then starts again for `host2`.
+Without `serial`, a broken package version would hit every server at the same moment; with `serial` and
+`max_fail_percentage: 0` the rollout stops after the first broken host.
 
 ---
 ## Delegation
