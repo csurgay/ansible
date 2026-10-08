@@ -1,0 +1,25 @@
+---
+- name: motd
+  hosts: all
+  become: true
+  gather_facts: false
+ 
+ 
+  vars_prompt:
+    - name: yourname
+      prompt: Irjal be egy nevet..
+      private: false
+
+  tasks:
+
+    - name: motd task
+      ansible.builtin.copy:
+        dest: /etc/motd
+        content: |
+          Szia {{ yourname }}
+          Jo reggelt kivanok.
+        owner: root
+        group: root
+        mode: "0644"
+        backup: true
+

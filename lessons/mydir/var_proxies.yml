@@ -1,0 +1,10 @@
+---
+proxies:
+      - name: nginx
+        docroot: "/usr/share/fedora-testpage/"
+      - name: httpd
+        docroot: "/var/www/html/"
+      - name: lighttpd
+        docroot: "/var/www/lighttpd/"
+
+

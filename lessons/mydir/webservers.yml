@@ -2,14 +2,8 @@
 - name: Webservers
   hosts: host*
   gather_facts: false
-  vars:
-    proxies:
-      - name: nginx
-        docroot: "/usr/share/fedora-testpage/"
-      - name: httpd
-        docroot: "/var/www/html/"
-      - name: lighttpd
-        docroot: "/var/www/lighttpd/"
+  vars_files:
+    - "./var_proxies.yml"
 
   tasks:
 

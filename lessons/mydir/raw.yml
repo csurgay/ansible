@@ -1,0 +1,25 @@
+---
+- name: uname and uptime
+  hosts: all
+  become: true
+  gather_facts: false
+
+
+  tasks:
+
+    - name: uname
+      ansible.builtin.raw: uname -a
+      changed_when: false
+#      check_mode: false
+      register: result_uname
+    - ansible.builtin.debug:
+        var: result_uname.stdout | default ('')
+
+    - name: uptime
+      ansible.builtin.raw: uptime
+      changed_when: false
+#      check_mode: false
+      register: result_uptime
+    - ansible.builtin.debug:
+        msg: "eredmény: {{ result_uptime_stdout | default('orrodalászalámi') }}"
+

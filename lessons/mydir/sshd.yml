@@ -1,0 +1,25 @@
+---
+- name: Start sshd Configuration
+  hosts: all
+  become: true
+  gather_facts: false
+
+  tasks:
+
+    - name: Start sshd
+      ansible.builtin.service:
+        name: sshd
+        state: started
+      register: status_sshd
+      check_mode: true
+
+    - name: status
+      ansible.builtin.debug:
+        msg: | 
+          SSHD_service.state:
+            - Running: {{ status_sshd.status.ActiveState=='active' }}
+            - State: {{ status_sshd.status.ActiveState }}
+            - Loaded: {{ status_sshd.status.LoadState == 'loaded' }}
+            - Load state: {{ status_sshd.status.LoadState }}
+
+

@@ -1,0 +1,13 @@
+---
+- name: sshkey play
+  hosts: all
+  gather_facts: false
+  become: true
+
+  tasks:
+    - name: sshkey
+      ansible.posix.authorized_key:
+        user: "bob"
+        state: present
+        key: "{{ lookup('file', '/home/devops/.ssh/id_ed25519.pub') }}"
+

@@ -1,0 +1,44 @@
+---
+- name: HA proxies
+  hosts: host1
+  become: true
+  gather_facts: false
+
+
+  tasks:
+
+    - name: Install haproxy
+      become: true
+      ansible.builtin.dnf:
+        name: "haproxy"
+        state: present
+        
+
+    - name: create config dir
+      ansible.builtin.file:
+        path: /etc/haproxy
+        state: directory
+
+    - name: copy config
+      ansible.builtin.copy:
+        src: ./haproxy.cfg.sample
+        dest: /etc/haproxy/haproxy.cfg
+        mode: "0644"
+        owner: root
+        group: root
+        backup: true
+
+
+    - name: restart haproxy
+      ansible.builtin.service:
+        name: haproxy
+        state: restarted
+        enabled: true
+
+    - name: firewall
+      ansible.posix.firewalld:
+        port: 5000/tcp
+        state: enabled
+        permanent: true
+        immediate: true
+        

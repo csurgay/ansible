@@ -1,0 +1,16 @@
+---
+- name: Backup with fetch
+  hosts: all
+  become: false
+  gather_facts: false
+  vars:
+    src: /etc
+    dest: /tmp/backup/fetch
+
+  tasks:
+    - name: Fetch
+      ansible.builtin.fetch:
+        src: "{{ src }}/hosts"
+        dest: "{{ dest }}"
+
+

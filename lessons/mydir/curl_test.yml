@@ -1,0 +1,26 @@
+---
+- name: curl test
+  hosts: host1
+  become: true
+  gather_facts: false
+
+
+  tasks:
+
+    - name: Install nginx
+      become: true
+      ansible.builtin.dnf:
+        name: "nginx"
+        state: present
+        
+
+    - name: curl test
+      ansible.builtin.uri:
+        url: "http://host1:5000"
+        return_content: true
+        status_code:
+          - 200
+      register: result_curl
+    - ansible.builtin.debug:
+        var: result_curl.content
+      

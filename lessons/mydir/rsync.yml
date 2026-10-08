@@ -1,0 +1,33 @@
+---
+- name: rsync
+  hosts: all
+  become: false
+  gather_facts: false
+  vars:
+    src: "/var/spool/mail"
+    dest: "/tmp/backup/rsync"
+
+  tasks:
+    - name: install rsync
+      become: true
+      ansible.builtin.package:
+        name: rsync
+        state: present
+
+    - name: Create dest dir
+      ansible.builtin.file:
+        path: "{{ dest }}"
+        state: directory
+        owner: devops
+        group: devops
+        mode: "0755"
+      delegate_to: controlnode
+
+    - name: rsync pull
+      become: true
+      ansible.posix.synchronize:
+        src: "{{ src }}"
+        dest: "{{ dest }}/{{ ansible_host }}"
+        mode: pull
+      when: inventory_hostname != 'controlnode'
+

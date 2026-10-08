@@ -1,0 +1,41 @@
+---
+- name: User play
+  hosts: all
+  become: true
+  gather_facts: false
+  vars_files:
+    - "./passwords.yml"
+
+  vars:
+    users:
+      - name: "alice"
+        password: "{{ pwd_alice}}"
+        home: "/home/alice"
+      - name: "bob"
+        password: "{{ pwd_bob }}"
+        home: "/home/bob"
+      - name: "charlie"
+        password: "{{ pwd_charlie }}"
+        home: "/home/charlie"
+
+
+
+  tasks:
+
+    - name: Create user
+      ansible.builtin.user:
+        name: "{{ item.name }}"
+        password: "{{ item.password | password_hash('sha512') }}"
+        comment: Alice User
+        shell: "/bin/bash"
+        home: "{{ item.home }}"
+        create_home: true
+        state: present
+      with_items: "{{ users }}"
+
+    - name: Force pwd change
+      ansible.builtin.shell:
+        cmd: "chage -d 0 bob"
+
+
+         
