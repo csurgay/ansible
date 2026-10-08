@@ -19,6 +19,8 @@
 > Lesson numbers follow the topics, not strictly the calendar: `14_LinuxAdminLabs` builds on everything up to
 > Templates and is done on Day 5, `18_Tags` fits right after Vault on Day 2.
 
+See [coverage.md](coverage.md) for how far each lesson covers the chapters of docs.ansible.com.
+
 ---
 ## Day 1 Session 1 – Introduction to Automation and Ansible
 
