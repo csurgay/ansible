@@ -108,7 +108,7 @@ A single Playbook can contain several Plays, each with its own `hosts`, `become`
     - name: Test nginx status code
       ansible.builtin.uri:
         url: "http://{{ item }}:80"
-      loop: "{{ groups['webservers'] }}"
+      with_items: "{{ groups['webservers'] }}"
       register: result_curl
     - ansible.builtin.debug:
         var: result_curl
