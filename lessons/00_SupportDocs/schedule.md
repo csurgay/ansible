@@ -13,7 +13,7 @@
 | 4 | 7 | Importing and including in large playbooks, Roles, Role structure, using and creating roles, best practices | [15](../15_Roles), [16](../16_BestPractice) |
 |   | 8 | Ansible Galaxy, collections, requirements file, system roles, playbooks and vars from Git | [15](../15_Roles#ansible-galaxy), [19](../19_Git) |
 | 5 | 9 | Linux admin tasks with Ansible: users, packages, services, sshd, backup, time sync; check mode, troubleshooting | [14](../14_LinuxAdminLabs) |
-|   | 10 | Ansible in the broader toolchain (Kubernetes), summary and Q&A | [17](../17_Kubernetes) |
+|   | 10 | Ansible in the broader toolchain (Kubernetes); optional: Windows hosts, network devices (demo); summary and Q&A | [17](../17_Kubernetes), [20](../20_Windows), [21](../21_Network) |
 
 > [!NOTE]
 > Lesson numbers follow the topics, not strictly the calendar: `14_LinuxAdminLabs` builds on everything up to
@@ -98,4 +98,7 @@ See [coverage.md](coverage.md) for how far each lesson covers the chapters of do
 ## Day 5 Session 10 – Further topics, Summary, Q&A
 
 - Ansible with Kubernetes
+- Optional, as a demo (no Windows hosts or network devices in the lab):
+  - Managing Windows hosts: WinRM / SSH connection, `ansible.windows` modules, IIS, users, updates
+  - Network automation: `network_cli`, `ansible_network_os`, Cisco IOS facts, show commands, backup, config, resource modules
 - Summary of the week, Q&A

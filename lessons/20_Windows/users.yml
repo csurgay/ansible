@@ -1,0 +1,38 @@
+---
+- name: Local groups and users
+  hosts: windows
+  gather_facts: false
+  vars_prompt:
+    - name: initial_password
+      prompt: Initial password for the new users (must meet the Windows complexity rules)
+      private: true
+  vars:
+    win_users:
+      - name: alice
+        fullname: Alice Admin
+        groups: [Administrators]
+      - name: bob
+        fullname: Bob Operator
+        groups: [AppOperators, "Remote Desktop Users"]
+
+  tasks:
+    - name: Create the local group
+      ansible.windows.win_group:
+        name: AppOperators
+        description: Operators of our application
+        state: present
+
+    - name: Create the users
+      ansible.windows.win_user:
+        name: "{{ item.name }}"
+        fullname: "{{ item.fullname }}"
+        password: "{{ initial_password }}"
+        update_password: on_create
+        password_expired: true
+        groups: "{{ item.groups }}"
+        groups_action: add
+        state: present
+      loop: "{{ win_users }}"
+      loop_control:
+        label: "{{ item.name }}"
+      no_log: true

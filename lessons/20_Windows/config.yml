@@ -1,0 +1,47 @@
+---
+- name: Typical Windows configuration tasks
+  hosts: windows
+  gather_facts: false
+
+  tasks:
+    - name: Create an application directory
+      ansible.windows.win_file:
+        path: C:\App\logs
+        state: directory
+
+    - name: Copy a config file (no line ending conversion!)
+      ansible.windows.win_copy:
+        content: |
+          [app]
+          log_dir=C:\App\logs
+        dest: C:\App\app.ini
+
+    - name: Do not open Server Manager at logon (registry)
+      ansible.windows.win_regedit:
+        path: HKLM:\SOFTWARE\Microsoft\ServerManager
+        name: DoNotOpenServerManagerAtLogon
+        data: 1
+        type: dword
+
+    - name: Set the time zone
+      ansible.windows.win_timezone:
+        timezone: Central Europe Standard Time
+
+    - name: Set a system environment variable
+      ansible.windows.win_environment:
+        name: APP_HOME
+        value: C:\App
+        level: machine
+        state: present
+
+    - name: Run PowerShell and report changes correctly
+      ansible.windows.win_powershell:
+        script: |
+          $svc = Get-Service -Name Spooler
+          if ($svc.StartType -ne 'Disabled') {
+              Set-Service -Name Spooler -StartupType Disabled
+              Stop-Service -Name Spooler -Force
+              $Ansible.Changed = $true
+          } else {
+              $Ansible.Changed = $false
+          }

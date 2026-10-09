@@ -1,0 +1,30 @@
+---
+- name: Configure a router with CLI lines
+  hosts: routers
+  gather_facts: false
+  vars:
+    ntp_server: 192.0.2.123
+    uplink: GigabitEthernet1
+
+  tasks:
+    - name: Global configuration lines
+      cisco.ios.ios_config:
+        lines:
+          - "ntp server {{ ntp_server }}"
+          - service timestamps log datetime msec
+        save_when: modified
+
+    - name: Interface configuration (lines under a parent)
+      cisco.ios.ios_config:
+        parents: "interface {{ uplink }}"
+        lines:
+          - description Uplink - managed by Ansible
+        save_when: modified
+
+    - name: Login banner
+      cisco.ios.ios_banner:
+        banner: motd
+        text: |
+          Authorized access only.
+          This device is managed by Ansible - manual changes will be overwritten.
+        state: present

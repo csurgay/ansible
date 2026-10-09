@@ -1,0 +1,20 @@
+# Cisco IOS / IOS XE devices over SSH (CLI)
+# Replace the address with your own router, a lab VM (e.g. Cisco CML) or a DevNet sandbox
+[routers]
+rtr1 ansible_host=192.168.56.60
+
+# a Layer 2 switch for vlans.yml (a Catalyst or an IOSvL2 image in CML)
+[switches]
+sw1 ansible_host=192.168.56.61
+
+[ios:children]
+routers
+switches
+
+[ios:vars]
+ansible_user=admin
+ansible_connection=ansible.netcommon.network_cli
+ansible_network_os=cisco.ios.ios
+# enter privileged EXEC mode ("enable") for config commands
+ansible_become=true
+ansible_become_method=enable

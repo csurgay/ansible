@@ -1,0 +1,22 @@
+---
+- name: Gather facts from network devices
+  hosts: routers
+  gather_facts: false             # the Linux "setup" module cannot run on a router
+
+  tasks:
+    - name: Gather IOS facts and the VLAN / interface configuration
+      cisco.ios.ios_facts:
+        gather_subset: min
+        gather_network_resources:
+          - interfaces
+          - vlans
+
+    - name: Show the device
+      ansible.builtin.debug:
+        msg: >-
+          {{ ansible_net_hostname }} is a {{ ansible_net_model | default('?') }}
+          running IOS {{ ansible_net_version }} ({{ ansible_net_iostype }})
+
+    - name: Show the interfaces as structured data
+      ansible.builtin.debug:
+        var: ansible_network_resources.interfaces

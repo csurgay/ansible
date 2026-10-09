@@ -1,0 +1,47 @@
+---
+- name: Install and configure IIS
+  hosts: windows
+  gather_facts: true
+  vars:
+    web_root: C:\inetpub\wwwroot
+    web_port: 80
+
+  tasks:
+    - name: Install the IIS Windows feature
+      ansible.windows.win_feature:
+        name: Web-Server
+        include_management_tools: true
+        state: present
+      register: iis
+
+    - name: Reboot if the feature installation needs it
+      ansible.windows.win_reboot:
+      when: iis.reboot_required
+
+    - name: Make sure the IIS service runs and starts at boot
+      ansible.windows.win_service:
+        name: W3SVC
+        state: started
+        start_mode: auto
+
+    - name: Deploy the start page from a template
+      ansible.windows.win_template:
+        src: templates/index.html.j2
+        dest: '{{ web_root }}\index.html'
+
+    - name: Open the firewall for HTTP
+      community.windows.win_firewall_rule:
+        name: HTTP (Ansible)
+        localport: "{{ web_port }}"
+        protocol: tcp
+        direction: in
+        action: allow
+        state: present
+        enabled: true
+
+    - name: Test the page from the Windows host itself
+      ansible.windows.win_uri:
+        url: "http://localhost:{{ web_port }}/"
+        return_content: true
+      register: page
+      failed_when: "'Ansible' not in page.content"

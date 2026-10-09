@@ -1,0 +1,17 @@
+---
+- name: Back up the running configuration
+  hosts: routers
+  gather_facts: false
+
+  tasks:
+    - name: Save the running-config to the Control Node
+      cisco.ios.ios_config:
+        backup: true
+        backup_options:
+          dir_path: ./backups
+          filename: "{{ inventory_hostname }}.cfg"
+      register: bkp
+
+    - name: Show where it went
+      ansible.builtin.debug:
+        msg: "Backup saved to {{ bkp.backup_path }}"

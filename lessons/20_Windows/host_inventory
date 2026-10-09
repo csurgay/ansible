@@ -1,0 +1,13 @@
+# Windows Managed Hosts over WinRM (HTTPS, port 5986)
+# Replace the address with your own Windows VM / server
+[windows]
+win1 ansible_host=192.168.56.50
+
+[windows:vars]
+ansible_user=Administrator
+ansible_connection=winrm
+ansible_port=5986
+ansible_winrm_scheme=https
+ansible_winrm_transport=ntlm
+# lab only: the WinRM listener uses a self-signed certificate
+ansible_winrm_server_cert_validation=ignore

@@ -1,0 +1,23 @@
+---
+- name: Test the connection to the Windows hosts
+  hosts: windows
+  gather_facts: true
+
+  tasks:
+    - name: Ping (ansible.builtin.ping does NOT work on Windows)
+      ansible.windows.win_ping:
+
+    - name: Show a few facts
+      ansible.builtin.debug:
+        msg: >-
+          {{ ansible_facts['hostname'] }} runs {{ ansible_facts['os_name'] }}
+          ({{ ansible_facts['distribution_version'] }}),
+          {{ ansible_facts['memtotal_mb'] }} MB RAM
+
+    - name: Who am I on the remote side?
+      ansible.windows.win_whoami:
+      register: me
+
+    - name: Show the user and whether we are elevated
+      ansible.builtin.debug:
+        msg: "{{ me.account.account_name }}, integrity level: {{ me.label.account_name }}"

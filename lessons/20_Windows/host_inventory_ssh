@@ -1,0 +1,8 @@
+# The same host over OpenSSH (supported since ansible-core 2.18, Windows Server 2022 or newer)
+[windows]
+win1 ansible_host=192.168.56.50
+
+[windows:vars]
+ansible_user=Administrator
+ansible_connection=ssh
+ansible_shell_type=powershell

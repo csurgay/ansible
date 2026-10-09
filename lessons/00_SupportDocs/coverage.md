@@ -34,8 +34,8 @@ Use it to find where a topic is taught, and what to read on docs.ansible.com aft
 | [Ansible Galaxy](https://docs.ansible.com/ansible/latest/galaxy/user_guide.html) | 1 | 67 % | 2 | `█████░░░░░` 50 % |
 | [Ansible tips and tricks](https://docs.ansible.com/ansible/latest/tips_tricks/index.html) | 2 | 83 % | 2 | `████████░░` 83 % |
 | [Reference & appendices](https://docs.ansible.com/ansible/latest/reference_appendices/playbooks_keywords.html) | 9 | 67 % | 11 | `██████░░░░` 61 % |
-| [Other guides (outside the scope of this bootcamp)](https://docs.ansible.com/ansible/latest/index.html) | – | – | – | out of scope |
-| **Total** | **55** | **78 %** | **73** | **66 %** |
+| [Other guides](https://docs.ansible.com/ansible/latest/index.html) | 0 | – | 2 | `███████░░░` 67 % |
+| **Total** | **55** | **78 %** | **75** | **66 %** |
 
 The percentage is the average of the coverage marks (●●● = 100 %, ●●○ = 67 %, ●○○ = 33 %, ○○○ = 0 %).
 
@@ -186,12 +186,14 @@ The percentage is the average of the coverage marks (●●● = 100 %, ●●�
 | Glossary, FAQ | ●○○ | Core | [Intro](../README.md) (concepts table) |
 | Red Hat Ansible Automation Platform, Automation Hub | ●○○ | Advanced | [04](../04_Inventory/README.md), [15](../15_Roles/README.md#ansible-galaxy) (mentioned) |
 
-### [Other guides (outside the scope of this bootcamp)](https://docs.ansible.com/ansible/latest/index.html)
+### [Other guides](https://docs.ansible.com/ansible/latest/index.html)
 
 | Topic on docs.ansible.com | Coverage | Scope | Where in the course |
 |---|---|---|---|
-| Windows, BSD and z/OS hosts | ○○○ | Out of scope | — |
-| Network automation (getting started, advanced, developer) | ○○○ | Out of scope | — |
+| Managing Windows hosts (WinRM, SSH, win_ modules) | ●●○ | Advanced | [20](../20_Windows/README.md) (no Windows host in the lab: own VM or demo) |
+| BSD and z/OS hosts | ○○○ | Out of scope | — |
+| Network automation: getting started, network_cli, resource modules | ●●○ | Advanced | [21](../21_Network/README.md) (no devices in the lab: sandbox or demo) |
+| Network automation: advanced and developer guides | ○○○ | Out of scope | — |
 | Developer guide (custom modules and plugins) | ○○○ | Out of scope | [09](../09_DirectoryLayout/README.md), [16](../16_BestPractice/README.md) (library/ mentioned) |
 | Legacy public cloud guides | ○○○ | Out of scope | — |
 | Contributing, roadmaps, porting guides | ○○○ | Out of scope | — |
