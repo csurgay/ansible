@@ -9,8 +9,8 @@
 | Managed Hosts | Dozens of containerized Linux servers on the same single host |
 | Training Lab | Fully automated setup and real playbook exercises |
 | Versions | Ansible core 2.18, Python 3.13, Jinja 3.1, Podman 5.4, Git 2.51, Fedora 42, Linux 6.14 |
-| Date Created | 2025-09-01 |
-| Last Modified | 2026-10-08 |
+| Date Created | 2022-06-18 (notes for the first offline and early git versions) |
+| Last Modified | 2026-10-09 |
 | Contact | csurgay@gmail.com |
 | Author | Automation Architect, Father of three, Red Hat Certified Engineer, Red Hat Certified Instructor |
 
