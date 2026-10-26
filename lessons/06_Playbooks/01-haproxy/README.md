@@ -8,7 +8,7 @@
 1. Start and enable services with `systemd`
 1. Test the result from the Control Node with `uri` in a second Play
 
-![Figure 1. Proxy setup](https://csurgay.com/ansible/proxy-setup.png)
+![Figure 1. Proxy setup](../../images/proxy-setup.png)
 
 ---
 ## The setup

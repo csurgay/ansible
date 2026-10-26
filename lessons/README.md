@@ -230,7 +230,7 @@ Examples of things you can manage with IaC:
 | **Resilience** | Recover from failures by re-applying playbooks |
 | **Version control** | Earlier versions and branches at your fingertip |
 
-<img src="https://csurgay.com/ansible/gitops.png" width="600">
+<img src="images/gitops.png" width="600">
 
 ### Visual Workflow
 

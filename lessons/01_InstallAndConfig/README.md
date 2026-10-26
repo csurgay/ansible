@@ -14,7 +14,7 @@
 
 ### Ansible Training Environment
 
-![Figure 1. Training lab environment](https://csurgay.com/ansible/labenv.png)
+![Figure 1. Training lab environment](../images/labenv.png)
 
 ---
 ## Launch Training-Lab containers
