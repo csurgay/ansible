@@ -26,7 +26,7 @@ On the other hand, pre-designed environments for different exercises can also be
 
 ### Container based Ansible Training Lab
 
-<img width="677" height="319" alt="image" src="https://github.com/user-attachments/assets/654a78e4-48f4-414a-864e-a051eb9ddc13" />
+<img width="677" alt="Container based Ansible Training Lab" src="lessons/images/labenv.png" />
 
 ---
 # Usage
