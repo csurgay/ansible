@@ -1,0 +1,17 @@
+---
+# The same variables in a YAML inventory: compare with types.ini
+myhosts:
+  hosts:
+    host1:
+      http_port: 8080
+      enabled: true
+      users: [anna, bela]
+      vhosts:                 # a list of dictionaries: not possible in INI
+        - name: shop
+          port: 443
+        - name: blog
+          port: 8443
+    host2:
+    host3:
+  vars:
+    debug: false

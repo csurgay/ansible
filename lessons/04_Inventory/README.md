@@ -11,6 +11,7 @@
 1. Testing Inventories
 1. Overriding default Inventory
 1. Inventory variables
+1. YAML Inventory
 1. Multiple inventories
 1. Dynamic Inventory
 
@@ -159,6 +160,119 @@ dbserver default_db=cities
 ```
 
 More on this topic and best practice for ansible variables will be discussed later.
+
+---
+### YAML Inventory
+
+The same inventory can be written in YAML as well. [host_inventory.yml](host_inventory.yml) is our
+[host_inventory](host_inventory) in YAML format:
+
+```yaml
+---
+myhosts:
+  hosts:
+    host1:
+      web_port: 8081
+    host2:
+      web_port: 8082
+    host3:
+      web_port: 8083
+```
+
++ The top level keys are the groups (the group `all` is implicit, you may also write `all:` and put the groups under
+  its `children:`)
++ `hosts:` lists the hosts of a group, every host name ends with a colon, even without variables
++ `vars:` holds the group variables (the INI `[myhosts:vars]` section)
++ `children:` holds the nested groups (the INI `[myhosts:children]` section)
+
+Both formats describe the same inventory:
+
+```bash
+ansible-inventory --graph
+ansible-inventory -i host_inventory.yml --graph
+ansible-inventory --list -y        # shows the INI inventory in YAML: a quick way to convert
+```
+
+#### Why YAML: variable types
+
+In YAML a value has a real type: `true` is a boolean, `8080` a number, `[anna, bela]` a list. In the INI format
+`true` and `false` stay **strings**. [types.ini](types.ini) and [types.yml](types.yml) define the same variables:
+
+```ini
+[myhosts]
+host1 http_port=8080 enabled=true users="['anna', 'bela']"
+host2
+host3
+
+[myhosts:vars]
+debug=false
+```
+
+```yaml
+myhosts:
+  hosts:
+    host1:
+      http_port: 8080
+      enabled: true
+      users: [anna, bela]
+      vhosts:                 # a list of dictionaries: not possible in INI
+        - name: shop
+          port: 443
+        - name: blog
+          port: 8443
+    host2:
+    host3:
+  vars:
+    debug: false
+```
+
+Compare what Ansible makes of them:
+
+```bash
+ansible-inventory -i types.ini --host host1
+ansible-inventory -i types.yml --host host1
+```
+
+| Variable | INI | YAML |
+|----------|-----|------|
+| `http_port` | `8080` (number) | `8080` (number) |
+| `enabled` | `"true"` (**string**) | `true` (boolean) |
+| `debug` | `"false"` (**string**) | `false` (boolean) |
+| `users` | list, but only in Python syntax inside quotes | list |
+| `vhosts` | (cannot be written) | list of dictionaries |
+
+The trap: the string `"false"` is not empty, so it counts as **true** in a condition:
+
+```bash
+ansible -i types.ini host1 -m ansible.builtin.debug -a "msg='{{ debug | type_debug }}: {{ debug | ternary(\"ON\", \"off\") }}'"
+ansible -i types.yml host1 -m ansible.builtin.debug -a "msg='{{ debug | type_debug }}: {{ debug | ternary(\"ON\", \"off\") }}'"
+```
+
+```
+host1 | SUCCESS =>
+    msg: 'str: ON'
+host1 | SUCCESS =>
+    msg: 'bool: off'
+```
+
+With the INI inventory debugging is switched **on**, although the inventory says `debug=false`. The same happens
+later with `when: debug` ([Section 12](../12_ControlFlow/README.md)) and with `{% if debug %}` in a template
+([Section 13](../13_Templates/README.md)). In INI write `True`/`False` (Python spelling), or convert with the `bool`
+filter: `{{ debug | bool }}`.
+
+| | INI | YAML |
+|---|---|---|
+| Short and quick to write | ✔ | |
+| Booleans, lists, dictionaries as variables | | ✔ |
+| Same syntax as Playbooks, `group_vars`, `host_vars` | | ✔ |
+| Nested groups visible by indentation | | ✔ |
+| Host ranges `host[1:3]` | ✔ | ✔ |
+| Typical mistakes | `true` is a string | indentation, missing colon after a host name |
+
+> [!TIP]
+> Best practice is to keep the variables in `group_vars/` and `host_vars/` YAML files (see
+> [Section 8](../08_Variables/README.md)). Then the inventory only lists hosts and groups, and the two formats are
+> equally good. If you put variables into the inventory itself, especially booleans and lists, use YAML.
 
 ---
 ### Multiple Inventories
