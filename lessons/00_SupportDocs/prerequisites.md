@@ -21,7 +21,7 @@
 
 ### SSH	
 1. SSH-kapcsolat létrehozása Linux szerverhez
-1. SSH-kulcs alapú autentikáció fogalma
+1. SSH-kulcs alapú autentikáció fogalma (részletesen, ábrákkal: [ssh-keys.md](ssh-keys.md))
 
 ### Hálózati alapismeretek
 1. IP-cím, hostname, DNS, port

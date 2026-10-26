@@ -88,6 +88,10 @@ Set up SSH keys so that Ansible Control Node can manage itself and Managed Hosts
 
 ### Generate devops SSH keys on Control Node
 
+> [!TIP]
+> How the key pair, `ssh-copy-id`, `authorized_keys` and `known_hosts` fit together, with diagrams:
+> [SSH keys for Ansible](../00_SupportDocs/ssh-keys.md)
+
 1.	Enter Control Node with the command **`sudo podman exec -it -u devops ansible bash`**
 2.	Generate SSH keys with the command **`ssh-keygen -t rsa -b 4096`** (the same key type `setup_devops.sh` creates, `~/.ssh/id_rsa`)
 3.	Answer with empty **`Enter`** to all three questions

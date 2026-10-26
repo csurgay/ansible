@@ -87,7 +87,7 @@ flowchart TD
 | 12 | **password** | `devops` has a password (needed for `ssh-copy-id`) | **`sudo passwd -S devops`** | **`sudo passwd devops`** |
 | 13 | **sudo** | `devops` can sudo without password | **`sudo -l -U devops`** | `/etc/sudoers.d/devops` with `devops ALL=(ALL) NOPASSWD: ALL` |
 | 14 | **SSH keys** | Key pair exists on Control node | **`ls ~/.ssh/id_*`** | **`ssh-keygen`** |
-| 15 | **key copied** | Public key is on all Managed hosts | **`ssh host1 whoami`** (no password prompt) | **`ssh-copy-id host1`** |
+| 15 | **key copied** | Public key is on all Managed hosts | **`ssh host1 whoami`** (no password prompt) | **`ssh-copy-id host1`**, see [SSH keys](../00_SupportDocs/ssh-keys.md#troubleshooting) |
 | 16 | **python** | Python3 is installed on all nodes | **`ansible all -m raw -a "python3 --version"`** | **`sudo dnf install -y python3`** |
 
 Finally: **`ansible all -m ping`** and **`ansible all -m command -a whoami --become`** must succeed on all hosts.
