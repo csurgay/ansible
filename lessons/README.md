@@ -231,11 +231,24 @@ Examples of things you can manage with IaC:
 | **Version control** | Earlier versions and branches at your fingertip |
 
 ```mermaid
-%%{init: {"themeVariables": {"fontSize": "20px"}}}%%
-flowchart LR
-    Y["YAML<br>desired state"] -->|commit| G["Git repo<br>/ CMDB"]
-    G ==>|triggers| E["Ansible in an<br>Execution Environment"]
-    E ==>|applies| I["Infrastructure"]
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "18px", "lineColor": "#8a8f98", "edgeLabelBackground": "#ffffff", "clusterBkg": "#fafafa", "clusterBorder": "#d0d4da"}, "flowchart": {"wrappingWidth": 480, "curve": "basis", "padding": 14}}}%%
+flowchart TB
+    Y("<b>YAML</b><br>desired state of the infrastructure")
+    G("<b>Git repo / CMDB</b><br>single source of truth")
+    E("<b>Ansible</b><br>in an Execution Environment")
+    I("<b>Infrastructure</b><br>servers · network · cloud")
+    Y -->|"commit"| G
+    G ==>|"triggers"| E
+    E ==>|"applies"| I
+    classDef sand fill:#f3efe7,stroke:#b9b09f,color:#3e3a33
+    classDef mint fill:#e2f4ec,stroke:#6db59a,color:#1f5c48
+    classDef lilac fill:#edecfc,stroke:#8f89d9,color:#383291
+    classDef rose fill:#fbeae6,stroke:#d99b8c,color:#7a2f20
+    classDef leaf fill:#e9f4e1,stroke:#8cb975,color:#2e5a1c
+    class Y sand
+    class G rose
+    class E mint
+    class I lilac
 ```
 
 ### Visual Workflow

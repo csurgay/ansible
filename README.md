@@ -26,17 +26,7 @@ On the other hand, pre-designed environments for different exercises can also be
 
 ### Container based Ansible Training Lab
 
-```mermaid
-%%{init: {"themeVariables": {"fontSize": "20px"}}}%%
-flowchart LR
-    REG["Quay.io / Docker.io<br>container images"]
-    subgraph VM["builder VM (podman)"]
-        A["Control Node<br>container 'ansible'"]
-        H["Managed Hosts<br>containers host1, host2, host3"]
-        A ==>|"ssh as devops"| H
-    end
-    REG -->|"podman pull"| VM
-```
+<img width="677" alt="Container based Ansible Training Lab" src="lessons/images/labenv.png" />
 
 ---
 # Usage

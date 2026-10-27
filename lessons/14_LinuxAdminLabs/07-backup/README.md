@@ -9,13 +9,20 @@
 1. Understand `pull` vs `push` mode in `synchronize`
 
 ```mermaid
-%%{init: {"themeVariables": {"fontSize": "20px"}}}%%
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "18px", "lineColor": "#8a8f98", "edgeLabelBackground": "#ffffff", "clusterBkg": "#fafafa", "clusterBorder": "#d0d4da"}, "flowchart": {"wrappingWidth": 480, "curve": "basis", "padding": 14, "rankSpacing": 110}}}%%
 flowchart LR
-    MH["Managed Host<br>/srv/appdata"]
-    CN["Control Node<br>/tmp/backup/"]
-    MH -->|"fetch: config.txt"| CN
+    MH("<b>Managed Host</b><br>source: /srv/appdata")
+    CN("<b>Control Node</b><br>destination: /tmp/backup/")
+    MH -->|"fetch: one file (config.txt)"| CN
     MH ==>|"synchronize: pull"| CN
-    CN -.->|"push"| MH
+    CN -.->|"push: the other way"| MH
+    classDef sand fill:#f3efe7,stroke:#b9b09f,color:#3e3a33
+    classDef mint fill:#e2f4ec,stroke:#6db59a,color:#1f5c48
+    classDef lilac fill:#edecfc,stroke:#8f89d9,color:#383291
+    classDef rose fill:#fbeae6,stroke:#d99b8c,color:#7a2f20
+    classDef leaf fill:#e9f4e1,stroke:#8cb975,color:#2e5a1c
+    class MH mint
+    class CN lilac
 ```
 
 ---

@@ -9,17 +9,28 @@
 1. Read file type, size and permissions from `stat`
 
 ```mermaid
-%%{init: {"themeVariables": {"fontSize": "20px"}}}%%
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "18px", "lineColor": "#8a8f98", "edgeLabelBackground": "#ffffff", "clusterBkg": "#fafafa", "clusterBorder": "#d0d4da"}, "flowchart": {"wrappingWidth": 480, "curve": "basis", "padding": 14}}}%%
 flowchart TB
-    H1["host1<br>file: state=touch"]
-    H2["host2<br>copy from Control Node"]
-    H3["host3<br>file: state=absent"]
-    S["stat: path=/home/devops/file.txt<br>register: result_stat"]
+    H1("<b>host1</b><br>file: state=touch")
+    H2("<b>host2</b><br>copy from the Control Node")
+    H3("<b>host3</b><br>file: state=absent")
+    S("<b>stat</b>: /home/devops/file.txt<br>register: result_stat")
+    E("<b>file exists</b><br>debug: report exists")
+    N("<b>file missing</b><br>debug: report missing")
     H1 --> S
     H2 --> S
     H3 --> S
-    S -->|"result_stat.stat.exists"| E["debug:<br>the file exists"]
-    S -->|"not result_stat.stat.exists"| N["debug:<br>the file doesn't exist"]
+    S -->|"result_stat.stat.exists"| E
+    S -->|"not result_stat.stat.exists"| N
+    classDef sand fill:#f3efe7,stroke:#b9b09f,color:#3e3a33
+    classDef mint fill:#e2f4ec,stroke:#6db59a,color:#1f5c48
+    classDef lilac fill:#edecfc,stroke:#8f89d9,color:#383291
+    classDef rose fill:#fbeae6,stroke:#d99b8c,color:#7a2f20
+    classDef leaf fill:#e9f4e1,stroke:#8cb975,color:#2e5a1c
+    class H1,H2,H3 sand
+    class S mint
+    class E leaf
+    class N rose
 ```
 
 ---

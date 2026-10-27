@@ -16,12 +16,12 @@
 1. Difference between fetch vs. pull
 
 ```mermaid
-%%{init: {"themeVariables": {"fontSize": "20px"}}}%%
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "18px", "lineColor": "#8a8f98", "edgeLabelBackground": "#ffffff", "clusterBkg": "#fafafa", "clusterBorder": "#d0d4da"}, "flowchart": {"wrappingWidth": 480, "curve": "basis", "padding": 14}}}%%
 flowchart TB
-    W["Working directory<br>files you edit"]
-    S["Staging area (index)<br>what the next commit holds"]
-    L["Local repository<br>.git commit history"]
-    R["Remote repository<br>origin, e.g. GitHub"]
+    W("<b>Working directory</b><br>files you edit")
+    S("<b>Staging area (index)</b><br>what the next commit holds")
+    L("<b>Local repository</b><br>.git commit history")
+    R("<b>Remote repository</b><br>origin, e.g. GitHub")
     W -->|"git add"| S
     S -->|"git commit"| L
     L -->|"git push"| R
@@ -29,6 +29,15 @@ flowchart TB
     L -->|"git reset"| S
     S -->|"git restore"| W
     R -.->|"git clone"| W
+    classDef sand fill:#f3efe7,stroke:#b9b09f,color:#3e3a33
+    classDef mint fill:#e2f4ec,stroke:#6db59a,color:#1f5c48
+    classDef lilac fill:#edecfc,stroke:#8f89d9,color:#383291
+    classDef rose fill:#fbeae6,stroke:#d99b8c,color:#7a2f20
+    classDef leaf fill:#e9f4e1,stroke:#8cb975,color:#2e5a1c
+    class W sand
+    class S mint
+    class L lilac
+    class R rose
 ```
 
 ---

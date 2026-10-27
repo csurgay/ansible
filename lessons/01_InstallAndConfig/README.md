@@ -14,19 +14,7 @@
 
 ### Ansible Training Environment
 
-#### Figure 1. Training lab environment
-
-```mermaid
-%%{init: {"themeVariables": {"fontSize": "20px"}}}%%
-flowchart LR
-    REG["Quay.io / Docker.io<br>container images"]
-    subgraph VM["builder VM (podman)"]
-        A["Control Node<br>container 'ansible'"]
-        H["Managed Hosts<br>containers host1, host2, host3"]
-        A ==>|"ssh as devops"| H
-    end
-    REG -->|"podman pull"| VM
-```
+![Figure 1. Training lab environment](../images/labenv.png)
 
 ---
 ## Launch Training-Lab containers

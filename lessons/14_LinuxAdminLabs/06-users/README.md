@@ -10,14 +10,22 @@
 1. Copy an SSH public key to a Managed Host
 
 ```mermaid
-%%{init: {"themeVariables": {"fontSize": "20px"}}}%%
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "18px", "lineColor": "#8a8f98", "edgeLabelBackground": "#ffffff", "clusterBkg": "#fafafa", "clusterBorder": "#d0d4da"}, "flowchart": {"wrappingWidth": 480, "curve": "basis", "padding": 14}}}%%
 flowchart TB
-    P["01-setup.yml<br>passlib on the Control Node<br>(delegate_to + run_once)"]
-    V["02-create.yml<br>passwords from Vault"]
-    U["create alice, bob, charlie<br>password_hash, on_create"]
-    C["chage -d 0<br>new users only"]
-    K["03-copysshid.yml<br>devops's key → bob"]
+    P("<b>01-setup.yml</b><br>dnf: python3-passlib on the Control Node<br>delegate_to: localhost · run_once: true")
+    V("<b>02-create.yml</b><br>vars_files: passwords.yml (Vault)")
+    U("<b>Create alice, bob, charlie</b><br>password_hash('sha512') · update_password: on_create")
+    C("<b>Force password change</b><br>chage -d 0, for new users only")
+    K("<b>03-copysshid.yml</b><br>authorized_key: devops's id_rsa.pub → bob")
     P --> V --> U --> C --> K
+    classDef sand fill:#f3efe7,stroke:#b9b09f,color:#3e3a33
+    classDef mint fill:#e2f4ec,stroke:#6db59a,color:#1f5c48
+    classDef lilac fill:#edecfc,stroke:#8f89d9,color:#383291
+    classDef rose fill:#fbeae6,stroke:#d99b8c,color:#7a2f20
+    classDef leaf fill:#e9f4e1,stroke:#8cb975,color:#2e5a1c
+    class P sand
+    class V,U,C mint
+    class K lilac
 ```
 
 > [!NOTE]

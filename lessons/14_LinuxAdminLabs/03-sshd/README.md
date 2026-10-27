@@ -8,15 +8,23 @@
 1. Print a multi-line summary with inline Jinja2 expressions
 
 ```mermaid
-%%{init: {"themeVariables": {"fontSize": "20px"}}}%%
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "18px", "lineColor": "#8a8f98", "edgeLabelBackground": "#ffffff", "clusterBkg": "#fafafa", "clusterBorder": "#d0d4da"}, "flowchart": {"wrappingWidth": 480, "curve": "basis", "padding": 14}}}%%
 flowchart TB
-    M["ansible.builtin.systemd: name=sshd<br>check_mode: true"]
-    R["register: sshd_status<br>sshd_status.status"]
+    M("<b>ansible.builtin.systemd</b><br>name: sshd · check_mode: true")
+    R("<b>register: sshd_status</b><br>sshd_status.status")
     M --> R
-    R --> A["running?<br>ActiveState == 'active'"]
-    R --> B["state<br>ActiveState"]
-    R --> C["enabled?<br>UnitFileState == 'enabled'"]
-    R --> D["loaded?<br>LoadState == 'loaded'"]
+    R --> A("<b>running?</b><br>ActiveState == 'active'")
+    R --> B("<b>state</b><br>ActiveState")
+    R --> C("<b>enabled?</b><br>UnitFileState == 'enabled'")
+    R --> D("<b>loaded?</b><br>LoadState == 'loaded'")
+    classDef sand fill:#f3efe7,stroke:#b9b09f,color:#3e3a33
+    classDef mint fill:#e2f4ec,stroke:#6db59a,color:#1f5c48
+    classDef lilac fill:#edecfc,stroke:#8f89d9,color:#383291
+    classDef rose fill:#fbeae6,stroke:#d99b8c,color:#7a2f20
+    classDef leaf fill:#e9f4e1,stroke:#8cb975,color:#2e5a1c
+    class M mint
+    class R sand
+    class A,B,C,D leaf
 ```
 
 ---

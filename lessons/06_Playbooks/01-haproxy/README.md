@@ -11,20 +11,29 @@
 #### Figure 1. The HAProxy setup
 
 ```mermaid
-%%{init: {"themeVariables": {"fontSize": "20px"}, "flowchart": {"nodeSpacing": 40, "rankSpacing": 90}}}%%
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "18px", "lineColor": "#8a8f98", "edgeLabelBackground": "#ffffff", "clusterBkg": "#fafafa", "clusterBorder": "#d0d4da"}, "flowchart": {"wrappingWidth": 480, "curve": "basis", "padding": 14}}}%%
 flowchart LR
     subgraph CN["Control Node 'ansible'"]
-        PB["install-haproxy.yaml<br>(Play 1)"]
-        T["test: Play 2 uri<br>or curl hostN:5000"]
+        PB("<b>install-haproxy.yaml</b><br>Play 1")
+        T("<b>test</b><br>Play 2 uri · or curl hostN:5000")
     end
     subgraph MH["host1, host2, host3"]
-        HA["haproxy<br>:5000"]
-        NG["nginx<br>:80"]
+        HA("<b>haproxy</b><br>:5000")
+        NG("<b>nginx</b><br>:80")
     end
-    PB ==>|install| NG
+    PB ==>|"install"| NG
     PB ==>|"install + config"| HA
     T ==>|"http :5000"| HA
-    HA -->|"forward to<br>127.0.0.1:80"| NG
+    HA -->|"forward to 127.0.0.1:80"| NG
+    classDef sand fill:#f3efe7,stroke:#b9b09f,color:#3e3a33
+    classDef mint fill:#e2f4ec,stroke:#6db59a,color:#1f5c48
+    classDef lilac fill:#edecfc,stroke:#8f89d9,color:#383291
+    classDef rose fill:#fbeae6,stroke:#d99b8c,color:#7a2f20
+    classDef leaf fill:#e9f4e1,stroke:#8cb975,color:#2e5a1c
+    class PB sand
+    class T lilac
+    class HA mint
+    class NG leaf
 ```
 
 ---
