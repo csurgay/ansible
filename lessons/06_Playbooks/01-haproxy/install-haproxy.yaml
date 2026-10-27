@@ -16,6 +16,12 @@
         state: started
         enabled: true
 
+    - name: Content for nginx
+      ansible.builtin.copy:
+        content: |
+          Hi there from {{ inventory_hostname }}
+        dest: /usr/share/nginx/html/index.html
+
     - name: Ensure haproxy package is installed
       ansible.builtin.dnf:
         name: haproxy
@@ -66,7 +72,7 @@
 
     - name: Show the status codes
       ansible.builtin.debug:
-        msg: "{{ item.item }}:5000 -> {{ item.status }}"
+        msg: "{{ item.item }}:5000 -> {{ item.status }}: {{ item.content }}"
       loop: "{{ result_proxy.results }}"
       loop_control:
         label: "{{ item.item }}"
