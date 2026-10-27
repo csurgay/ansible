@@ -8,64 +8,32 @@
 1. Start and enable services with `systemd`
 1. Test the result from the Control Node with `uri` in a second Play
 
-#### Figure 1. What the Playbook does
+#### Figure 1. The HAProxy setup
 
 ```mermaid
+%%{init: {"themeVariables": {"fontSize": "20px"}, "flowchart": {"nodeSpacing": 40, "rankSpacing": 90}}}%%
 flowchart LR
     subgraph CN["Control Node 'ansible'"]
-        direction TB
-        PB["install-haproxy.yaml"]
-        CFG["haproxy.cfg.sample"]
+        PB["install-haproxy.yaml<br>(Play 1)"]
+        T["test: Play 2 uri<br>or curl hostN:5000"]
     end
-    subgraph MH["Play 1 · hosts: myhosts"]
-        direction TB
-        T1["1 · dnf: nginx present"]
-        T2["2 · systemd: nginx started + enabled"]
-        T3["3 · dnf: haproxy present"]
-        T4["4 · copy → /etc/haproxy/haproxy.cfg<br>(backup: true keeps the old file)"]
-        T5["5 · firewalld: eth0 in zone public"]
-        T6["6 · firewalld: open 5000/tcp"]
-        T7["7 · systemd: haproxy restarted + enabled"]
-        T1 --> T2 --> T3 --> T4 --> T5 --> T6 --> T7
+    subgraph MH["host1, host2, host3"]
+        HA["haproxy<br>:5000"]
+        NG["nginx<br>:80"]
     end
-    subgraph P2["Play 2 · hosts: localhost"]
-        direction TB
-        U["uri: http://hostN:5000/<br>for every host in groups['myhosts']"]
-        D["debug: hostN:5000 -> 200"]
-        U --> D
-    end
-    PB ==>|"ssh devops@host1..3<br>become: true"| MH
-    CFG -.->|"src: of task 4"| MH
-    MH ==>|"then"| P2
+    PB ==>|install| NG
+    PB ==>|"install + config"| HA
+    T ==>|"http :5000"| HA
+    HA -->|"forward to<br>127.0.0.1:80"| NG
 ```
 
 ---
 ## The setup
 
-On every Managed Host, HAProxy listens on port **5000** and forwards each request to the local nginx on port **80**.
-Figure 2 shows the two kinds of requests of the test: the normal page, and a "static" URL that ends in a `503`.
+On every Managed Host, HAProxy listens on port **5000** and forwards each request to the local nginx on port **80**:
 
-#### Figure 2. A request through HAProxy
-
-```mermaid
-sequenceDiagram
-    autonumber
-    participant C as Control Node<br>uri / curl
-    participant F as hostN: firewalld<br>zone public
-    participant H as hostN: haproxy<br>*:5000 (frontend main)
-    participant N as hostN: nginx<br>127.0.0.1:80 (backend app)
-    participant S as 127.0.0.1:4331<br>(backend static)
-    C->>F: GET http://hostN:5000/
-    F->>H: 5000/tcp is open
-    Note over H: no static ACL matches:<br>default_backend app
-    H->>N: GET /
-    N-->>H: 200 welcome page
-    H-->>C: 200 welcome page
-    C->>F: GET http://hostN:5000/static/x.css
-    F->>H: 5000/tcp is open
-    Note over H: acl url_static matches:<br>use_backend static
-    H-xS: nothing listens on 4331
-    H-->>C: 503 Service Unavailable
+```
+Control Node  --http:5000-->  haproxy (hostN)  --http:80-->  nginx (hostN, 127.0.0.1)
 ```
 
 The relevant part of `haproxy.cfg.sample` (the default Fedora config, with the port changed to 5000):
