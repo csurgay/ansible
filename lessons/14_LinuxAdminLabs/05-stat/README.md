@@ -8,7 +8,19 @@
 1. Override a variable from the command line with `-e`
 1. Read file type, size and permissions from `stat`
 
-<img width="2720" height="1760" alt="stat_file_check_flow" src="https://github.com/user-attachments/assets/6e5d46a9-9978-4d2a-b9ac-50f2ee3ed06b" />
+```mermaid
+%%{init: {"themeVariables": {"fontSize": "20px"}}}%%
+flowchart TB
+    H1["host1<br>file: state=touch"]
+    H2["host2<br>copy from Control Node"]
+    H3["host3<br>file: state=absent"]
+    S["stat: path=/home/devops/file.txt<br>register: result_stat"]
+    H1 --> S
+    H2 --> S
+    H3 --> S
+    S -->|"result_stat.stat.exists"| E["debug:<br>the file exists"]
+    S -->|"not result_stat.stat.exists"| N["debug:<br>the file doesn't exist"]
+```
 
 ---
 ## Set up different starting conditions per host

@@ -9,7 +9,16 @@
 1. Keep secrets out of the output with `loop_control: label`
 1. Copy an SSH public key to a Managed Host
 
-<img width="2720" height="2024" alt="users_lesson_flow" src="https://github.com/user-attachments/assets/4a639c1d-06fc-4d94-9bc4-227b9cd96794" />
+```mermaid
+%%{init: {"themeVariables": {"fontSize": "20px"}}}%%
+flowchart TB
+    P["01-setup.yml<br>passlib on the Control Node<br>(delegate_to + run_once)"]
+    V["02-create.yml<br>passwords from Vault"]
+    U["create alice, bob, charlie<br>password_hash, on_create"]
+    C["chage -d 0<br>new users only"]
+    K["03-copysshid.yml<br>devops's key → bob"]
+    P --> V --> U --> C --> K
+```
 
 > [!NOTE]
 > This lab uses [11_Vault](../../11_Vault/README.md): the Vault password of `passwords.yml` is **`secret`**.

@@ -15,7 +15,21 @@
 1. Tags
 1. Difference between fetch vs. pull
 
-<img width="2720" height="2104" alt="git_staging_areas_flow" src="https://github.com/user-attachments/assets/ec0b9f2c-7234-4a2f-8373-5b25e2e067fa" />
+```mermaid
+%%{init: {"themeVariables": {"fontSize": "20px"}}}%%
+flowchart TB
+    W["Working directory<br>files you edit"]
+    S["Staging area (index)<br>what the next commit holds"]
+    L["Local repository<br>.git commit history"]
+    R["Remote repository<br>origin, e.g. GitHub"]
+    W -->|"git add"| S
+    S -->|"git commit"| L
+    L -->|"git push"| R
+    R -->|"git fetch / pull"| L
+    L -->|"git reset"| S
+    S -->|"git restore"| W
+    R -.->|"git clone"| W
+```
 
 ---
 ## The four areas a change moves through

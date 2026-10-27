@@ -230,7 +230,13 @@ Examples of things you can manage with IaC:
 | **Resilience** | Recover from failures by re-applying playbooks |
 | **Version control** | Earlier versions and branches at your fingertip |
 
-<img src="images/gitops.png" width="600">
+```mermaid
+%%{init: {"themeVariables": {"fontSize": "20px"}}}%%
+flowchart LR
+    Y["YAML<br>desired state"] -->|commit| G["Git repo<br>/ CMDB"]
+    G ==>|triggers| E["Ansible in an<br>Execution Environment"]
+    E ==>|applies| I["Infrastructure"]
+```
 
 ### Visual Workflow
 

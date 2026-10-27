@@ -8,7 +8,15 @@
 1. Sync whole directory trees with `ansible.posix.synchronize` (rsync)
 1. Understand `pull` vs `push` mode in `synchronize`
 
-<img width="2720" height="1160" alt="backup_fetch_vs_rsync_flow" src="https://github.com/user-attachments/assets/33282738-f70c-41c3-a0e3-d0bed2a2cc9e" />
+```mermaid
+%%{init: {"themeVariables": {"fontSize": "20px"}}}%%
+flowchart LR
+    MH["Managed Host<br>/srv/appdata"]
+    CN["Control Node<br>/tmp/backup/"]
+    MH -->|"fetch: config.txt"| CN
+    MH ==>|"synchronize: pull"| CN
+    CN -.->|"push"| MH
+```
 
 ---
 ## Prepare some data to back up

@@ -7,7 +7,17 @@
 1. Read detailed unit status fields from the registered result
 1. Print a multi-line summary with inline Jinja2 expressions
 
-<img width="2720" height="1340" alt="sshd_status_flow" src="https://github.com/user-attachments/assets/e5e29bd0-a705-4a22-9582-df7586f06e16" />
+```mermaid
+%%{init: {"themeVariables": {"fontSize": "20px"}}}%%
+flowchart TB
+    M["ansible.builtin.systemd: name=sshd<br>check_mode: true"]
+    R["register: sshd_status<br>sshd_status.status"]
+    M --> R
+    R --> A["running?<br>ActiveState == 'active'"]
+    R --> B["state<br>ActiveState"]
+    R --> C["enabled?<br>UnitFileState == 'enabled'"]
+    R --> D["loaded?<br>LoadState == 'loaded'"]
+```
 
 ---
 ## Query a service's state without changing it
