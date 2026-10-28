@@ -37,3 +37,6 @@
       ansible.builtin.debug:
         var: hostvars['host1']['my_fact']
 
+    - name: Debug host facts
+      ansible.builtin.debug:
+        var: hostvars['host1']['ansible_version']
