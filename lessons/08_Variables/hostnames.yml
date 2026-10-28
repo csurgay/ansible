@@ -9,6 +9,7 @@
     - name: Print app_inventory
       ansible.builtin.debug:
         var: "{{ lookup('file', 'app_inventory') }}"
+      run_once: true
 
     - name: Print hostnames
       ansible.builtin.debug:
