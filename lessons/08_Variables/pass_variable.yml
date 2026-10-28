@@ -1,6 +1,6 @@
 ---
 - name: Pass variable from one play to the next in a playbook
-  hosts: localhost
+  hosts: host1
   gather_facts: false
   vars:
     my_play_var: "play var value"
