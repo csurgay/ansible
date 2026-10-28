@@ -39,4 +39,4 @@
 
     - name: Debug host facts
       ansible.builtin.debug:
-        var: hostvars['host1']['ansible_version']
+        var: hostvars['host1']['ansible_default_ipv4']
