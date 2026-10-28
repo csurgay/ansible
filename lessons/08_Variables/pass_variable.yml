@@ -35,5 +35,5 @@
 
     - name: Debug hostvars
       ansible.builtin.debug:
-        var: hostvars['localhost']['my_fact']
+        var: hostvars['host1']['my_fact']
 
