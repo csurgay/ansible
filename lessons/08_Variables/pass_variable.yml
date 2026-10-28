@@ -43,6 +43,8 @@
 
     - name: Gather host facts
       ansible.builtin.setup:
+      delegate_to: host1
+      run_once: true
       
     - name: Debug host facts
       ansible.builtin.debug:
