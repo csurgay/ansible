@@ -3,7 +3,7 @@
   ansible.builtin.systemd:
     name: "{{ loopvar }}"
     state: stopped
-  with_items:
+  loop:
     - httpd
     - nginx
     - lighttpd
