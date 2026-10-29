@@ -343,7 +343,8 @@ done
 hdr "4. Syntax check of every Playbook found in lessons/ (coverage)"
 SYN_FAIL=0; SYN_EXPECTED=0
 cexec /tmp "echo secret > /tmp/.vp"   # both vault lessons use the password 'secret'
-cexec "$L" "grep -rlE '^\s*-?\s*hosts:' --include=*.yml --include=*.yaml . | grep -v -e '^./mydir/' | sort" \
+# Playbooks are YAML lists (a '- ' in column 0); YAML inventories also contain 'hosts:' but are mappings
+cexec "$L" "grep -rlE '^\s*-?\s*hosts:' --include=*.yml --include=*.yaml . | grep -v -e '^./mydir/' | xargs grep -lE '^- ' | sort" \
     > "$OUT/all_playbooks.txt" 2>/dev/null
 NOT_RUN=""
 while read -r pb; do
