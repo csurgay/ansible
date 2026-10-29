@@ -33,7 +33,7 @@
 
     - name: Install and start webserver package
       ansible.builtin.include_tasks: "service.yml"
-      with_items: "{{ hostvars['controlnode']['cmdb'].data }}"
+      loop: "{{ hostvars['controlnode']['cmdb'].data }}"
 
     - name: Test all hosts webservers
       ansible.builtin.uri:
