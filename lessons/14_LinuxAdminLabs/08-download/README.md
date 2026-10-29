@@ -7,6 +7,30 @@
 1. Verify integrity with a checksum
 1. Set ownership and permissions on the downloaded file
 
+```mermaid
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "18px", "lineColor": "#8a8f98", "edgeLabelBackground": "#ffffff", "clusterBkg": "#fafafa", "clusterBorder": "#d0d4da"}, "flowchart": {"wrappingWidth": 480, "curve": "basis", "padding": 14}}}%%
+flowchart LR
+    CN("<b>Control Node</b><br>hosts: host1")
+    WS("<b>Web server</b><br>raw.githubusercontent.com<br>…/LICENSE")
+    H1("<b>host1</b><br>get_url → /home/devops/LICENSE.txt")
+    OK("<b>checksum matches</b><br>owner devops · mode 0644")
+    BAD("<b>checksum differs</b><br>the task fails")
+    CN -.->|"runs get_url on host1"| H1
+    WS ==>|"download"| H1
+    H1 -->|"sha256 ok"| OK
+    H1 -->|"sha256 wrong"| BAD
+    classDef sand fill:#f3efe7,stroke:#b9b09f,color:#3e3a33
+    classDef mint fill:#e2f4ec,stroke:#6db59a,color:#1f5c48
+    classDef lilac fill:#edecfc,stroke:#8f89d9,color:#383291
+    classDef rose fill:#fbeae6,stroke:#d99b8c,color:#7a2f20
+    classDef leaf fill:#e9f4e1,stroke:#8cb975,color:#2e5a1c
+    class CN lilac
+    class WS sand
+    class H1 mint
+    class OK leaf
+    class BAD rose
+```
+
 ---
 ## Target a single host with hosts
 

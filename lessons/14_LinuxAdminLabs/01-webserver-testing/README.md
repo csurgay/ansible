@@ -9,6 +9,39 @@
 1. Deploy content with a Jinja2 `template`
 1. Test a webserver with `uri`, on the host itself and from the Control Node
 
+```mermaid
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "18px", "lineColor": "#8a8f98", "edgeLabelBackground": "#ffffff", "clusterBkg": "#fafafa", "clusterBorder": "#d0d4da"}, "flowchart": {"wrappingWidth": 480, "curve": "basis", "padding": 14}}}%%
+flowchart TB
+    IN("<b>-e webserver=httpd</b> or <b>nginx</b>")
+    subgraph P1["Play 1 · myhosts"]
+        A("<b>assert</b><br>webserver in ['httpd', 'nginx']")
+        S("<b>Stop the other webservers</b><br>port 80 must be free · failed_when: false")
+        I("<b>package + systemd</b><br>install, start and enable the chosen one")
+        W("<b>set_fact + when</b><br>weblocation per webserver")
+        T("<b>template</b><br>index.html.j2 → weblocation/index.html")
+        F("<b>firewalld</b><br>open the http service")
+        U1("<b>uri: http://localhost</b><br>test on the host itself")
+    end
+    subgraph P2["Play 2 · localhost"]
+        U2("<b>uri: http://host1..host3</b><br>loop: groups['myhosts']")
+    end
+    X("<b>fail_msg</b><br>Run with -e webserver=…")
+    IN --> A
+    A -->|"other value"| X
+    A -->|"httpd or nginx"| S --> I --> W --> T --> F --> U1
+    U1 --> U2
+    classDef sand fill:#f3efe7,stroke:#b9b09f,color:#3e3a33
+    classDef mint fill:#e2f4ec,stroke:#6db59a,color:#1f5c48
+    classDef lilac fill:#edecfc,stroke:#8f89d9,color:#383291
+    classDef rose fill:#fbeae6,stroke:#d99b8c,color:#7a2f20
+    classDef leaf fill:#e9f4e1,stroke:#8cb975,color:#2e5a1c
+    class IN sand
+    class A,S,I,W,T,F mint
+    class U1 leaf
+    class U2 lilac
+    class X rose
+```
+
 ---
 ## Switch between two webservers
 

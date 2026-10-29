@@ -8,6 +8,36 @@
 1. Register and format looped command results
 1. Alternative: loop over nested Ansible facts
 
+```mermaid
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "18px", "lineColor": "#8a8f98", "edgeLabelBackground": "#ffffff", "clusterBkg": "#fafafa", "clusterBorder": "#d0d4da"}, "flowchart": {"wrappingWidth": 480, "curve": "basis", "padding": 14}}}%%
+flowchart TB
+    C("<b>command: systemctl is-active</b><br>loop: sshd · nginx · firewalld<br>changed_when: false · failed_when: false")
+    R("<b>register: results_state</b><br>results_state.results: one entry per service")
+    R1("<b>sshd</b><br>stdout: active")
+    R2("<b>nginx</b><br>stdout: inactive")
+    R3("<b>firewalld</b><br>stdout: active")
+    I("<b>include_tasks: print.yml</b><br>loop: results_state.results")
+    P("<b>print.yml</b>, once per item<br>set_fact: state_line · debug")
+    C --> R
+    R --> R1
+    R --> R2
+    R --> R3
+    R1 --> I
+    R2 --> I
+    R3 --> I
+    I --> P
+    classDef sand fill:#f3efe7,stroke:#b9b09f,color:#3e3a33
+    classDef mint fill:#e2f4ec,stroke:#6db59a,color:#1f5c48
+    classDef lilac fill:#edecfc,stroke:#8f89d9,color:#383291
+    classDef rose fill:#fbeae6,stroke:#d99b8c,color:#7a2f20
+    classDef leaf fill:#e9f4e1,stroke:#8cb975,color:#2e5a1c
+    class C mint
+    class R sand
+    class R1,R2,R3 sand
+    class I mint
+    class P leaf
+```
+
 ---
 ## Check the state of multiple services
 

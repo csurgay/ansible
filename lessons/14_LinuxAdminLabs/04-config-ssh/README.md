@@ -8,6 +8,40 @@
 1. Notify a handler only when a change occurs
 1. Copy a multi-line file with the `copy` module
 
+```mermaid
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "18px", "lineColor": "#8a8f98", "edgeLabelBackground": "#ffffff", "clusterBkg": "#fafafa", "clusterBorder": "#d0d4da"}, "flowchart": {"wrappingWidth": 480, "curve": "basis", "padding": 14}}}%%
+flowchart TB
+    subgraph CS["config-ssh.yml"]
+        Q("<b>vars_prompt</b><br>PasswordAuthentication yes or no?")
+        A("<b>assert</b><br>yesorno in ['yes', 'no']")
+        L("<b>lineinfile</b><br>/etc/ssh/sshd_config<br>regexp: ^PasswordAuthentication")
+        V("<b>validate</b><br>sshd -t -f %s on a temporary copy")
+        K("<b>sshd_config untouched</b><br>the task fails")
+        H("<b>notify → handler</b><br>Restart sshd, at the end of the Play")
+        N("<b>no change</b><br>the handler does not run")
+        X("<b>fail_msg</b><br>Please answer yes or no")
+        Q --> A
+        A -->|"other answer"| X
+        A -->|"yes or no"| L --> V
+        V -->|"syntax error"| K
+        V -->|"valid · changed"| H
+        V -.->|"valid · already set"| N
+    end
+    subgraph CM["copy-motd.yml"]
+        M("<b>copy: content</b><br>multi-line text → /etc/motd<br>backup: true")
+    end
+    classDef sand fill:#f3efe7,stroke:#b9b09f,color:#3e3a33
+    classDef mint fill:#e2f4ec,stroke:#6db59a,color:#1f5c48
+    classDef lilac fill:#edecfc,stroke:#8f89d9,color:#383291
+    classDef rose fill:#fbeae6,stroke:#d99b8c,color:#7a2f20
+    classDef leaf fill:#e9f4e1,stroke:#8cb975,color:#2e5a1c
+    class Q sand
+    class A,L,V,M mint
+    class H leaf
+    class N sand
+    class K,X rose
+```
+
 ---
 ## Prompt for a variable at runtime
 

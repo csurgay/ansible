@@ -6,6 +6,37 @@
 1. Using `--syntax-check`, `-v` and `ansible-doc` to locate problems
 1. Fixing one problem at a time until the acceptance test passes
 
+```mermaid
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "18px", "lineColor": "#8a8f98", "edgeLabelBackground": "#ffffff", "clusterBkg": "#fafafa", "clusterBorder": "#d0d4da"}, "flowchart": {"wrappingWidth": 480, "curve": "basis", "padding": 14}}}%%
+flowchart TB
+    subgraph GOAL["What site.yml should do on managed1 (host1)"]
+        G1("<b>Install nginx</b>")
+        G2("<b>Deploy nginx.conf</b><br>from nginx.conf.j2")
+        G3("<b>nginx running and enabled</b>")
+        G1 --> G2 --> G3
+    end
+    R("<b>Run</b><br>--syntax-check · -v")
+    E("<b>Read the error</b><br>which task? what kind of problem?")
+    F("<b>Fix one thing</b><br>ansible-doc · the Playbook · the template")
+    T("<b>./test.sh</b><br>curl localhost on host1")
+    OK("<b>Greeting printed</b><br>done")
+    GOAL -.-> R
+    R -->|"fails"| E --> F --> R
+    R -->|"runs clean"| T
+    T -->|"greeting"| OK
+    T -->|"no greeting"| E
+    classDef sand fill:#f3efe7,stroke:#b9b09f,color:#3e3a33
+    classDef mint fill:#e2f4ec,stroke:#6db59a,color:#1f5c48
+    classDef lilac fill:#edecfc,stroke:#8f89d9,color:#383291
+    classDef rose fill:#fbeae6,stroke:#d99b8c,color:#7a2f20
+    classDef leaf fill:#e9f4e1,stroke:#8cb975,color:#2e5a1c
+    class G1,G2,G3 sand
+    class R,F mint
+    class E rose
+    class T lilac
+    class OK leaf
+```
+
 ---
 ## The scenario
 

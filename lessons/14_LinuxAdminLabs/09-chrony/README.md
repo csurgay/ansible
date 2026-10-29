@@ -14,6 +14,29 @@
 1. Set the system timezone with a collection module
 1. Confirm the result with `command` and `debug`
 
+```mermaid
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "18px", "lineColor": "#8a8f98", "edgeLabelBackground": "#ffffff", "clusterBkg": "#fafafa", "clusterBorder": "#d0d4da"}, "flowchart": {"wrappingWidth": 480, "curve": "basis", "padding": 14}}}%%
+flowchart TB
+    V("<b>vars: ntp_servers</b><br>a list · 2.fedora.pool.ntp.org")
+    D("<b>dnf</b><br>chrony: present")
+    T("<b>template</b><br>chrony.conf.j2 → /etc/chrony.conf<br>for server in ntp_servers")
+    S("<b>systemd</b><br>chronyd started and enabled")
+    Z("<b>community.general.timezone</b><br>Europe/Budapest")
+    C("<b>command: date</b><br>register · debug")
+    H("<b>handler: Restart chronyd</b><br>runs once, at the end of the Play")
+    V -.-> T
+    D --> T --> S --> Z --> C
+    T -->|"notify, only if changed"| H
+    classDef sand fill:#f3efe7,stroke:#b9b09f,color:#3e3a33
+    classDef mint fill:#e2f4ec,stroke:#6db59a,color:#1f5c48
+    classDef lilac fill:#edecfc,stroke:#8f89d9,color:#383291
+    classDef rose fill:#fbeae6,stroke:#d99b8c,color:#7a2f20
+    classDef leaf fill:#e9f4e1,stroke:#8cb975,color:#2e5a1c
+    class V sand
+    class D,T,S,Z,C mint
+    class H leaf
+```
+
 ---
 ## Deploy a config file with template
 
