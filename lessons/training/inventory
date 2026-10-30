@@ -1,0 +1,10 @@
+controlnode ansible_host=localhost
+
+[myhosts]
+host1 myhostvar=nginx
+host2 myhostvar=httpd
+host3 myhostvar=nginx
+
+[myhosts:vars]
+mygroupvar="Hi there from "
+

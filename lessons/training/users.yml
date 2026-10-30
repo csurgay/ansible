@@ -1,0 +1,37 @@
+---
+- name: Gitops users creation
+  hosts: controlnode
+  gather_facts: false
+  become: true
+
+  tasks:
+
+    - name: Fetch (clone) cmdb from git
+      ansible.builtin.git:
+        repo: "https://github.com/csurgay/cmdb.git"
+        dest: /tmp/cmdb
+        force: true
+        version: main
+
+    - name: Load variable values
+      ansible.builtin.include_vars:
+        file: /tmp/cmdb/users.yml
+        name: cmdb
+
+    - name: Test git variables
+      ansible.builtin.debug:
+        var: cmdb
+
+- name: Create the actual users
+  hosts: myhosts
+  gather_facts: false
+  become: true
+
+  tasks:
+
+    - name: Create users
+      ansible.builtin.user:
+        name: "{{ item.name }}"
+        password: "{{ item.password | password_hash('sha512') }}"
+      loop: "{{ hostvars['controlnode'].cmdb.users }}"
+

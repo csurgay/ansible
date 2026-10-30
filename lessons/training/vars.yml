@@ -1,0 +1,51 @@
+---
+- name: Debug hostvars
+  hosts: myhosts
+  gather_facts: false
+  vars_files:
+    - varsfile.yml
+
+  tasks:
+    - name: Hostvars
+      ansible.builtin.debug:
+        msg: "hostvar: {{ myhostvar | default('')}}, groupvar: {{ mygroupvar | default('') }}. Docroot: {{ docroots[myhostvar] }}"
+
+    - name: Install
+      dnf:
+        name: "{{ myhostvar }}"
+        state: present
+
+    - name: Config
+      copy:
+        content: |
+          {{ mygroupvar }}{{ ansible_host }}!
+        dest: "{{ docroots[myhostvar] }}"
+        mode: "0644"
+        owner: root
+        group: root
+
+    - name: Stop others
+      systemd:
+        name: "{{ item }}"
+        state: stopped
+      when: myhostvar != item
+      loop:
+        - haproxy
+        - httpd
+        - nginx
+        - lighttpd
+      ignore_errors: true
+
+    - name: Restart
+      systemd:
+        name: "{{ myhostvar }}"
+        state: restarted
+
+    - name: Firewalld
+      firewalld:
+        service: http
+        state: enabled
+        immediate: true
+        permanent: true
+
+

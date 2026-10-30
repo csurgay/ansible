@@ -1,0 +1,5 @@
+---
+docroots:
+  httpd: /var/www/html/index.html
+  nginx: /usr/share/nginx/html/index.html
+
